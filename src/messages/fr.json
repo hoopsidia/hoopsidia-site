@@ -1,0 +1,85 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "stats": "Stats",
+    "clients": "Clients",
+    "pimpMyCourt": "Pimp My Court",
+    "contact": "Contact"
+  },
+  "hero": {
+    "baseline": "Créateur de contenu basketball",
+    "subtitle": "Depuis 2016, je documente ma passion pour le basket, des sièges courtside en NBA jusqu'à la construction de terrains de basket.",
+    "cta": "Travailler avec moi",
+    "stats": {
+      "youtube": "Abonnés YouTube",
+      "instagram": "Followers Instagram",
+      "courts": "Terrains rénovés",
+      "views": "Vues cumulées"
+    }
+  },
+  "reels": {
+    "title": "Derniers Reels",
+    "subtitle": "Mes dernières vidéos sur Instagram @hoopsidia",
+    "placeholder": "Connexion API Meta en attente — les reels s'afficheront automatiquement"
+  },
+  "stats": {
+    "title": "Performances Instagram",
+    "subtitle": "Données en temps réel du compte @hoopsidia",
+    "engagement": "Taux d'engagement",
+    "views30d": "Vues (30 jours)",
+    "followers": "Followers",
+    "reach": "Portée moyenne",
+    "growthTitle": "Évolution des abonnés",
+    "gender": "Genre",
+    "male": "Hommes",
+    "female": "Femmes",
+    "ages": "Tranches d'âge",
+    "cities": "Villes",
+    "placeholder": "Données de démonstration — connexion API Meta en attente"
+  },
+  "clients": {
+    "title": "Ils m'ont fait confiance",
+    "subtitle": "Marques et partenaires avec lesquels j'ai collaboré"
+  },
+  "pmc": {
+    "title": "Pimp My Court",
+    "subtitle": "Je rénove des terrains de basketball laissés à l'abandon",
+    "watchVideo": "Voir la vidéo",
+    "season": "Saison",
+    "comingSoon": "Prochainement",
+    "seasons": {
+      "s1": {
+        "title": "Le terrain de mon enfance",
+        "location": "Normandie (Orne)",
+        "description": "Tout a commencé par la rénovation du terrain personnel chez mes parents. Un projet porté par la communauté et soutenu par Tarmak."
+      },
+      "s2": {
+        "title": "Des abonnés au terrain public",
+        "location": "Saint-Apollinaire (Dijon)",
+        "description": "Rénovation de terrains d'abonnés puis création du HOOPSCOURT, un terrain public en partenariat avec OnCourt, Mega Slam Hoops et la Mairie."
+      },
+      "s3": {
+        "title": "Jardin des Curiosités",
+        "location": "Lyon 5ème",
+        "description": "Le prochain projet ambitieux : transformer un espace dans le Jardin des Curiosités en terrain de basket. Collaboration avec la Ville de Lyon en cours."
+      }
+    }
+  },
+  "contact": {
+    "title": "Travaillons ensemble",
+    "subtitle": "Une idée de collaboration ? Un projet de contenu ? Contactez-moi.",
+    "name": "Nom / Prénom",
+    "email": "Email",
+    "company": "Société (optionnel)",
+    "subject": "Objet",
+    "message": "Message",
+    "send": "Envoyer",
+    "sending": "Envoi en cours...",
+    "success": "Message envoyé avec succès ! Je vous répondrai rapidement.",
+    "error": "Une erreur est survenue. Réessayez ou contactez-moi directement par email."
+  },
+  "footer": {
+    "rights": "Tous droits réservés.",
+    "madeWith": "Fait avec passion pour le basket"
+  }
+}

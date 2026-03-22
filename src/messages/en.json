@@ -1,0 +1,85 @@
+{
+  "nav": {
+    "home": "Home",
+    "stats": "Stats",
+    "clients": "Clients",
+    "pimpMyCourt": "Pimp My Court",
+    "contact": "Contact"
+  },
+  "hero": {
+    "baseline": "Basketball content creator",
+    "subtitle": "Since 2016, I've been documenting my passion for basketball, from courtside seats at the NBA to building basketball courts.",
+    "cta": "Work with me",
+    "stats": {
+      "youtube": "YouTube Subscribers",
+      "instagram": "Instagram Followers",
+      "courts": "Courts Renovated",
+      "views": "Total Views"
+    }
+  },
+  "reels": {
+    "title": "Latest Reels",
+    "subtitle": "My latest videos on Instagram @hoopsidia",
+    "placeholder": "Meta API connection pending — reels will display automatically"
+  },
+  "stats": {
+    "title": "Instagram Performance",
+    "subtitle": "Live data from @hoopsidia",
+    "engagement": "Engagement Rate",
+    "views30d": "Views (30 days)",
+    "followers": "Followers",
+    "reach": "Average Reach",
+    "growthTitle": "Follower Growth",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "ages": "Age Groups",
+    "cities": "Cities",
+    "placeholder": "Demo data — Meta API connection pending"
+  },
+  "clients": {
+    "title": "They trusted me",
+    "subtitle": "Brands and partners I've worked with"
+  },
+  "pmc": {
+    "title": "Pimp My Court",
+    "subtitle": "I renovate abandoned basketball courts",
+    "watchVideo": "Watch video",
+    "season": "Season",
+    "comingSoon": "Coming soon",
+    "seasons": {
+      "s1": {
+        "title": "My childhood court",
+        "location": "Normandy (Orne)",
+        "description": "It all started with renovating the personal court at my parents' house. A community-driven project supported by Tarmak."
+      },
+      "s2": {
+        "title": "From subscribers to public court",
+        "location": "Saint-Apollinaire (Dijon)",
+        "description": "Renovating subscribers' courts then creating HOOPSCOURT, a public court in partnership with OnCourt, Mega Slam Hoops and the city."
+      },
+      "s3": {
+        "title": "Jardin des Curiosités",
+        "location": "Lyon 5th",
+        "description": "The next ambitious project: transforming a space in the Jardin des Curiosités into a basketball court. Collaboration with the City of Lyon in progress."
+      }
+    }
+  },
+  "contact": {
+    "title": "Let's work together",
+    "subtitle": "Have an idea for a collaboration? A content project? Get in touch.",
+    "name": "Full Name",
+    "email": "Email",
+    "company": "Company (optional)",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send",
+    "sending": "Sending...",
+    "success": "Message sent successfully! I'll get back to you soon.",
+    "error": "Something went wrong. Please try again or email me directly."
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "madeWith": "Made with passion for basketball"
+  }
+}
