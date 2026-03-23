@@ -121,7 +121,7 @@ export default function Header() {
           >
             {/* Glass pill that follows hover/scroll */}
             <div
-              className="absolute top-1/2 -translate-y-1/2 h-8 rounded-full transition-all duration-300 ease-out pointer-events-none hidden sm:block"
+              className="absolute top-1/2 -translate-y-1/2 h-8 rounded-full transition-all duration-300 ease-out pointer-events-none"
               style={{
                 left: pillStyle ? pillStyle.left : 0,
                 width: pillStyle ? pillStyle.width : 0,
