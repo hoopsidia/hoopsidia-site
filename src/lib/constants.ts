@@ -38,9 +38,8 @@ export const PMC_SEASONS = [
   {
     id: "s3",
     season: 3,
-    youtubeId: null, // coming soon
+    youtubeId: "_t8Iovh-avE",
     thumbnail: "/images/logo-pmc.png",
-    comingSoon: true,
   },
 ];
 
