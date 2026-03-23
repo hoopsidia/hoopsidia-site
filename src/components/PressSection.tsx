@@ -59,7 +59,7 @@ const PRESS_ARTICLES = [
     title: "Des sneakers collector créées pour Suzuki avec Hoopsidia",
     date: "Juillet 2023",
     url: "https://presse.suzuki.fr/des-sneakers-collector-creees-pour-suzuki-avec-hoopsidia-createur-de-contenu-basketball/",
-    icon: "/press/suzuki.png",
+    icon: "/press/suzuki-s.png",
   },
   {
     source: "Saint-Apollinaire",

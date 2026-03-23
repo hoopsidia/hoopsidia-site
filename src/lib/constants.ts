@@ -17,6 +17,11 @@ export const CLIENTS = [
   { name: "Suzuki", logo: "/logos/suzuki.webp", hasLogo: true },
   { name: "Centre Commercial", logo: "/logos/centre-commercial.webp", hasLogo: true },
   { name: "HelloFresh", logo: "/logos/hellofresh.png", hasLogo: true },
+  { name: "FIBA", logo: "/logos/fiba.png", hasLogo: true },
+  { name: "Sport en Ligne", logo: "/logos/sport-en-ligne.png", hasLogo: true },
+  { name: "Stella Artois", logo: "/logos/stella.png", hasLogo: true },
+  { name: "Dr. Dish", logo: "/logos/dr-dish.webp", hasLogo: true },
+  { name: "Jeep", logo: "/logos/jeep.png", hasLogo: true },
 ];
 
 export const PMC_SEASONS = [
