@@ -70,6 +70,11 @@
       }
     }
   },
+  "press": {
+    "title": "Presse Tout Terrain",
+    "subtitle": "Ils ont parlé d'Hoopsidia",
+    "read": "Lire"
+  },
   "contact": {
     "title": "Travaillons ensemble",
     "subtitle": "Une idée de collaboration ? Un projet de contenu ? Contactez-moi.",

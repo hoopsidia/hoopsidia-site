@@ -70,6 +70,11 @@
       }
     }
   },
+  "press": {
+    "title": "Press Coverage",
+    "subtitle": "They talked about Hoopsidia",
+    "read": "Read"
+  },
   "contact": {
     "title": "Let's work together",
     "subtitle": "Have an idea for a collaboration? A content project? Get in touch.",
