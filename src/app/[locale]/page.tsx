@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import ReelsGrid from "@/components/ReelsGrid";
+import LyonCourt from "@/components/LyonCourt";
 import StatsDashboard from "@/components/StatsDashboard";
 import ClientsCarousel from "@/components/ClientsCarousel";
 import PimpMyCourt from "@/components/PimpMyCourt";
@@ -14,6 +15,7 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <ReelsGrid />
+        <LyonCourt />
         <StatsDashboard />
         <ClientsCarousel />
         <PimpMyCourt />

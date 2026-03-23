@@ -23,6 +23,10 @@
     "subtitle": "Mes dernières vidéos sur Instagram @hoopsidia",
     "placeholder": "Connexion API Meta en attente — les reels s'afficheront automatiquement"
   },
+  "lyon": {
+    "title": "Le terrain de Lyon",
+    "subtitle": "4 épisodes sur la rénovation d'un terrain à Lyon"
+  },
   "stats": {
     "title": "Performances Instagram",
     "subtitle": "Données en temps réel du compte @hoopsidia",
