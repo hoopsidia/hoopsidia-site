@@ -137,12 +137,12 @@ export default function PressSection() {
               transition={{ duration: 0.4, delay: i * 0.06 }}
               className="glass rounded-xl p-5 flex items-start gap-4 hover:bg-white/[0.08] transition-colors group"
             >
-              {/* Logo rond */}
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 overflow-hidden flex items-center justify-center">
+              {/* Logo rond liquid glass */}
+              <div className="flex-shrink-0 w-14 h-14 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_4px_12px_rgba(0,0,0,0.3)] overflow-hidden flex items-center justify-center">
                 <img
                   src={article.icon}
                   alt={article.source}
-                  className="w-6 h-6 object-contain"
+                  className="w-8 h-8 object-contain"
                 />
               </div>
 
@@ -158,7 +158,7 @@ export default function PressSection() {
                     </span>
                   )}
                 </div>
-                <h3 className="font-heading text-sm font-bold text-white/80 group-hover:text-white transition-colors leading-snug">
+                <h3 className="font-heading text-sm font-bold text-white/80 group-hover:text-white transition-colors leading-snug uppercase">
                   {article.title}
                 </h3>
                 <div className="mt-auto flex items-center gap-1 text-orange/60 group-hover:text-orange transition-colors">
