@@ -10,7 +10,7 @@ export async function GET() {
 
   try {
     const res = await fetch(
-      `https://graph.instagram.com/v21.0/me/media?fields=id,media_type,media_url,permalink,thumbnail_url,caption&limit=50&access_token=${accessToken}`,
+      `https://graph.instagram.com/v21.0/me/media?fields=id,media_type,media_url,permalink,thumbnail_url,caption,video_views&limit=50&access_token=${accessToken}`,
       { next: { revalidate: 3600 } }
     );
     const data = await res.json();
@@ -21,12 +21,13 @@ export async function GET() {
           item.media_type === "VIDEO"
       )
       .slice(0, 12)
-      .map((item: { id: string; permalink: string; thumbnail_url?: string; media_url?: string; caption?: string }) => ({
+      .map((item: { id: string; permalink: string; thumbnail_url?: string; media_url?: string; caption?: string; video_views?: number }) => ({
         id: item.id,
         permalink: item.permalink,
         thumbnail_url: item.thumbnail_url,
         media_url: item.media_url,
         caption: item.caption,
+        video_views: item.video_views ?? null,
       }));
 
     return NextResponse.json({ reels, isPlaceholder: false });

@@ -9,7 +9,14 @@ type Reel = {
   thumbnail_url?: string;
   media_url?: string;
   caption?: string;
+  video_views?: number | null;
 };
+
+function formatViews(views: number): string {
+  if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  if (views >= 1_000) return `${(views / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
+  return views.toString();
+}
 
 // Placeholder reels for when API is not configured
 const PLACEHOLDER_REELS: Reel[] = Array.from({ length: 12 }, (_, i) => ({
@@ -82,6 +89,19 @@ export default function ReelsGrid() {
                     <path d="M10 8l6 4-6 4V8z" fill="currentColor" />
                   </svg>
                   <span className="text-white/20 text-xs">Reel</span>
+                </div>
+              )}
+              {/* Views overlay */}
+              {reel.video_views != null && (
+                <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+                  <div className="flex items-center gap-1">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-80">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                    <span className="font-heading text-xs text-white/90">
+                      {formatViews(reel.video_views)}
+                    </span>
+                  </div>
                 </div>
               )}
               {/* Hover overlay */}
