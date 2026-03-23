@@ -85,16 +85,15 @@ function FallingBall({
       animate={
         ball.scored
           ? { opacity: 0, scale: 0.6 }
-          : { top: "110vh" }
+          : { top: "100%" }
       }
       transition={
         ball.scored
           ? { duration: 0.8, ease: "easeOut" }
           : { duration: 8 / ball.speed, ease: "linear" }
       }
-      className="z-[20] pointer-events-none"
+      className="z-[20] pointer-events-none absolute"
       style={{
-        position: "fixed",
         filter: ball.scored
           ? "brightness(1.2) sepia(1) saturate(5) hue-rotate(-10deg)"
           : undefined,
@@ -167,17 +166,19 @@ export default function Hero() {
   const cardPosRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
   const scoredSetRef = useRef(new Set<string>());
 
-  // Track card position
+  // Track card position relative to section
   useEffect(() => {
     const interval = setInterval(() => {
       const card = cardRef.current;
-      if (!card) return;
-      const rect = card.getBoundingClientRect();
+      const section = sectionRef.current;
+      if (!card || !section) return;
+      const cardRect = card.getBoundingClientRect();
+      const sectionRect = section.getBoundingClientRect();
       cardPosRef.current = {
-        x: rect.left,
-        y: rect.bottom,
-        width: rect.width,
-        height: rect.height,
+        x: cardRect.left - sectionRect.left,
+        y: cardRect.bottom - sectionRect.top,
+        width: cardRect.width,
+        height: cardRect.height,
       };
     }, 50);
     return () => clearInterval(interval);
@@ -189,7 +190,7 @@ export default function Hero() {
       const section = sectionRef.current;
       if (!section) return;
       const sectionRect = section.getBoundingClientRect();
-      const ballX = Math.random() * (sectionRect.width - 60) + sectionRect.left;
+      const ballX = Math.random() * (sectionRect.width - 60);
       const speed = 1.5 + Math.random() * 2;
       setBalls((prev) => [
         ...prev.slice(-15), // keep max 16 balls
@@ -200,19 +201,14 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, []);
 
-  // Cleanup old balls
+  // Cleanup old balls (remove after 10 seconds)
   useEffect(() => {
     const cleanup = setInterval(() => {
-      setBalls((prev) =>
-        prev.filter((b) => {
-          if (b.scored) return true; // let scored balls animate out
-          const el = document.querySelector(`[data-ball-id="${b.id}"]`);
-          if (!el) return false;
-          const rect = el.getBoundingClientRect();
-          return rect.top < window.innerHeight + 100;
-        })
-      );
-    }, 4000);
+      setBalls((prev) => {
+        if (prev.length > 20) return prev.slice(-15);
+        return prev;
+      });
+    }, 5000);
     return () => clearInterval(cleanup);
   }, []);
 
@@ -228,10 +224,13 @@ export default function Hero() {
     (ballId: string, el: HTMLDivElement) => {
       if (scoredSetRef.current.has(ballId)) return;
 
+      const section = sectionRef.current;
+      if (!section) return;
+      const sectionRect = section.getBoundingClientRect();
       const ballRect = el.getBoundingClientRect();
       const card = cardPosRef.current;
-      const ballCenterX = ballRect.left + ballRect.width / 2;
-      const ballBottom = ballRect.top + ballRect.height;
+      const ballCenterX = ballRect.left - sectionRect.left + ballRect.width / 2;
+      const ballBottom = ballRect.top - sectionRect.top + ballRect.height;
 
       // Rim zone
       const rimLeft = card.x + card.width * 0.2;
@@ -325,7 +324,7 @@ export default function Hero() {
             animate={{ opacity: 0, y: -80, scale: 2 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="fixed z-30 pointer-events-none font-heading text-3xl font-bold text-orange"
+            className="absolute z-30 pointer-events-none font-heading text-3xl font-bold text-orange"
             style={{ left: flash.x - 20, top: flash.y - 50 }}
           >
             +3
