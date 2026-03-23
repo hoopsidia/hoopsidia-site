@@ -297,7 +297,7 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative min-h-screen flex items-center justify-center bg-black text-white overflow-hidden pt-16"
+      className="relative min-h-[70vh] flex items-center justify-center bg-black text-white overflow-hidden pt-16"
       onMouseMove={isMobile ? undefined : handleMouseMove}
       onMouseLeave={isMobile ? undefined : handleMouseLeave}
     >

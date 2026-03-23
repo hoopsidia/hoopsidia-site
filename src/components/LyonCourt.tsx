@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, useInView } from "framer-motion";
+import CountUpStat from "./CountUpStat";
 import Image from "next/image";
 
 type Reel = {
@@ -50,6 +51,7 @@ export default function LyonCourt() {
   const [reels, setReels] = useState<Reel[]>(PLACEHOLDER_REELS);
   const [isPlaceholder, setIsPlaceholder] = useState(true);
   const [mutedMap, setMutedMap] = useState<Record<string, boolean>>({});
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-50px" });
@@ -110,6 +112,8 @@ export default function LyonCourt() {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.2 + i * 0.1 }}
                 className="relative aspect-[9/16] glass-subtle rounded-lg overflow-hidden group"
+                onMouseEnter={() => setHoveredId(reel.id)}
+                onMouseLeave={() => setHoveredId(null)}
               >
                 {!isPlaceholder && reel.media_url ? (
                   <>
@@ -166,7 +170,7 @@ export default function LyonCourt() {
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
                             <path d="M8 5v14l11-7z" />
                           </svg>
-                          <span className="font-heading text-[10px] font-bold text-white mt-0.5">{formatViews(reel.views)}</span>
+                          <CountUpStat value={reel.views} isHovered={hoveredId === reel.id} className="font-heading text-[10px] font-bold text-white mt-0.5" />
                         </div>
                       )}
                       {reel.like_count != null && (
@@ -174,7 +178,7 @@ export default function LyonCourt() {
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                           </svg>
-                          <span className="font-heading text-[10px] font-bold text-white mt-0.5">{formatViews(reel.like_count)}</span>
+                          <CountUpStat value={reel.like_count} isHovered={hoveredId === reel.id} className="font-heading text-[10px] font-bold text-white mt-0.5" />
                         </div>
                       )}
                       {reel.comments_count != null && (
@@ -182,7 +186,7 @@ export default function LyonCourt() {
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
                             <path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" />
                           </svg>
-                          <span className="font-heading text-[10px] font-bold text-white mt-0.5">{formatViews(reel.comments_count)}</span>
+                          <CountUpStat value={reel.comments_count} isHovered={hoveredId === reel.id} className="font-heading text-[10px] font-bold text-white mt-0.5" />
                         </div>
                       )}
                       {reel.shares != null && (
@@ -190,7 +194,7 @@ export default function LyonCourt() {
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
                             <polygon points="22 2 15 22 11 13 2 9 22 2" />
                           </svg>
-                          <span className="font-heading text-[10px] font-bold text-white mt-0.5">{formatViews(reel.shares)}</span>
+                          <CountUpStat value={reel.shares} isHovered={hoveredId === reel.id} className="font-heading text-[10px] font-bold text-white mt-0.5" />
                         </div>
                       )}
                       {reel.saved != null && (
@@ -198,7 +202,7 @@ export default function LyonCourt() {
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
                             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                           </svg>
-                          <span className="font-heading text-[10px] font-bold text-white mt-0.5">{formatViews(reel.saved)}</span>
+                          <CountUpStat value={reel.saved} isHovered={hoveredId === reel.id} className="font-heading text-[10px] font-bold text-white mt-0.5" />
                         </div>
                       )}
                     </div>
