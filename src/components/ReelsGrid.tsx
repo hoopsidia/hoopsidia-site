@@ -159,7 +159,7 @@ export default function ReelsGrid() {
                     {reel.comments_count != null && (
                       <div className="flex flex-col items-center">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="white" className="opacity-90">
-                          <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm0 15.17L18.83 16H4V4h16v13.17z" />
+                          <path d="M12 2C6.48 2 2 5.92 2 10.5c0 2.56 1.33 4.86 3.43 6.43L4 22l4.55-2.53c1.1.33 2.25.53 3.45.53 5.52 0 10-3.92 10-8.5S17.52 2 12 2zm0 15c-1.05 0-2.05-.17-3-.47l-.63-.2-2.8 1.56.66-2.63-.46-.38C4.08 13.56 3 12.1 3 10.5 3 6.47 7.03 3 12 3s9 3.47 9 7.5-4.03 7.5-9 7.5z" />
                         </svg>
                         <span className="font-heading text-xs font-bold italic text-white mt-0.5">{formatViews(reel.comments_count)}</span>
                       </div>

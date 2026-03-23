@@ -2,11 +2,18 @@ import { NextResponse } from "next/server";
 
 async function fetchViews(mediaId: string, accessToken: string): Promise<number | null> {
   try {
-    const res = await fetch(
-      `https://graph.instagram.com/v21.0/${mediaId}/insights?metric=views&access_token=${accessToken}`,
-    );
-    const data = await res.json();
-    return data.data?.[0]?.values?.[0]?.value ?? null;
+    // Try fetching both IG views and Facebook views
+    const [igRes, fbRes] = await Promise.all([
+      fetch(`https://graph.instagram.com/v21.0/${mediaId}/insights?metric=views&access_token=${accessToken}`),
+      fetch(`https://graph.instagram.com/v21.0/${mediaId}/insights?metric=facebook_views&access_token=${accessToken}`),
+    ]);
+    const igData = await igRes.json();
+    const fbData = await fbRes.json();
+
+    const igViews = igData.data?.[0]?.values?.[0]?.value ?? 0;
+    const fbViews = fbData.data?.[0]?.values?.[0]?.value ?? 0;
+
+    return igViews + fbViews || null;
   } catch {
     return null;
   }
