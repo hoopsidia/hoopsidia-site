@@ -8,21 +8,26 @@ const LYON_SHORTCODES = [
   "DJPpxc1s88J",
 ];
 
-async function fetchViews(mediaId: string, accessToken: string): Promise<number | null> {
+async function fetchInsights(mediaId: string, accessToken: string) {
   try {
-    const [igRes, fbRes] = await Promise.all([
+    const [viewsRes, fbViewsRes, sharesRes] = await Promise.all([
       fetch(`https://graph.instagram.com/v21.0/${mediaId}/insights?metric=views&access_token=${accessToken}`),
       fetch(`https://graph.instagram.com/v21.0/${mediaId}/insights?metric=facebook_views&access_token=${accessToken}`),
+      fetch(`https://graph.instagram.com/v21.0/${mediaId}/insights?metric=shares,saved&access_token=${accessToken}`),
     ]);
-    const igData = await igRes.json();
-    const fbData = await fbRes.json();
+    const viewsData = await viewsRes.json();
+    const fbViewsData = await fbViewsRes.json();
+    const sharesData = await sharesRes.json();
 
-    const igViews = igData.data?.[0]?.values?.[0]?.value ?? 0;
-    const fbViews = fbData.data?.[0]?.values?.[0]?.value ?? 0;
+    const igViews = viewsData.data?.[0]?.values?.[0]?.value ?? 0;
+    const fbViews = fbViewsData.data?.[0]?.values?.[0]?.value ?? 0;
 
-    return igViews + fbViews || null;
+    const shares = sharesData.data?.find((m: { name: string }) => m.name === "shares")?.values?.[0]?.value ?? null;
+    const saved = sharesData.data?.find((m: { name: string }) => m.name === "saved")?.values?.[0]?.value ?? null;
+
+    return { views: (igViews + fbViews) || null, shares, saved };
   } catch {
-    return null;
+    return { views: null, shares: null, saved: null };
   }
 }
 
@@ -69,12 +74,11 @@ export async function GET() {
       };
     }).filter(Boolean) as Array<{ id: string; permalink: string; thumbnail_url?: string; media_url?: string; caption?: string; like_count: number | null; comments_count: number | null }>;
 
-    // Fetch reach for each reel in parallel
     const reels = await Promise.all(
-      baseReels.map(async (reel) => ({
-        ...reel,
-        views: await fetchViews(reel.id, accessToken),
-      }))
+      baseReels.map(async (reel) => {
+        const insights = await fetchInsights(reel.id, accessToken);
+        return { ...reel, ...insights };
+      })
     );
 
     if (reels.length === 0) {

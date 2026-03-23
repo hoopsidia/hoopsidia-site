@@ -14,6 +14,8 @@ type Reel = {
   views?: number | null;
   like_count?: number | null;
   comments_count?: number | null;
+  shares?: number | null;
+  saved?: number | null;
 };
 
 function formatViews(views: number): string {
@@ -156,13 +158,13 @@ export default function LyonCourt() {
                   </a>
                 )}
                 {/* Stats overlay on hover */}
-                {(reel.views != null || reel.like_count != null || reel.comments_count != null) && (
+                {(reel.views != null || reel.like_count != null) && (
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none flex items-center justify-center">
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center justify-center gap-2">
                       {reel.views != null && (
                         <div className="flex flex-col items-center">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
-                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                            <path d="M8 5v14l11-7z" />
                           </svg>
                           <span className="font-heading text-[10px] font-bold italic text-white mt-0.5">{formatViews(reel.views)}</span>
                         </div>
@@ -177,10 +179,27 @@ export default function LyonCourt() {
                       )}
                       {reel.comments_count != null && (
                         <div className="flex flex-col items-center">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
-                            <path d="M12 2C6.48 2 2 5.92 2 10.5c0 2.56 1.33 4.86 3.43 6.43L4 22l4.55-2.53c1.1.33 2.25.53 3.45.53 5.52 0 10-3.92 10-8.5S17.52 2 12 2zm0 15c-1.05 0-2.05-.17-3-.47l-.63-.2-2.8 1.56.66-2.63-.46-.38C4.08 13.56 3 12.1 3 10.5 3 6.47 7.03 3 12 3s9 3.47 9 7.5-4.03 7.5-9 7.5z" />
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="opacity-90">
+                            <path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" fill="none" stroke="white" strokeLinejoin="round" strokeWidth="2" />
                           </svg>
                           <span className="font-heading text-[10px] font-bold italic text-white mt-0.5">{formatViews(reel.comments_count)}</span>
+                        </div>
+                      )}
+                      {reel.shares != null && (
+                        <div className="flex flex-col items-center">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-90">
+                            <line x1="22" y1="2" x2="11" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" fill="none" />
+                          </svg>
+                          <span className="font-heading text-[10px] font-bold italic text-white mt-0.5">{formatViews(reel.shares)}</span>
+                        </div>
+                      )}
+                      {reel.saved != null && (
+                        <div className="flex flex-col items-center">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="opacity-90">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                          </svg>
+                          <span className="font-heading text-[10px] font-bold italic text-white mt-0.5">{formatViews(reel.saved)}</span>
                         </div>
                       )}
                     </div>

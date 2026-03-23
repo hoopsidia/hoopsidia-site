@@ -1,21 +1,35 @@
 import { NextResponse } from "next/server";
 
-async function fetchViews(mediaId: string, accessToken: string): Promise<number | null> {
+// Manual view overrides for reels where API doesn't report sponsored views
+const VIEW_OVERRIDES: Record<string, number> = {
+  "18311093566267140": 500000, // Maillot reel with sponso
+};
+
+async function fetchInsights(mediaId: string, accessToken: string) {
   try {
-    // Try fetching both IG views and Facebook views
-    const [igRes, fbRes] = await Promise.all([
+    const [viewsRes, fbViewsRes, sharesRes] = await Promise.all([
       fetch(`https://graph.instagram.com/v21.0/${mediaId}/insights?metric=views&access_token=${accessToken}`),
       fetch(`https://graph.instagram.com/v21.0/${mediaId}/insights?metric=facebook_views&access_token=${accessToken}`),
+      fetch(`https://graph.instagram.com/v21.0/${mediaId}/insights?metric=shares,saved&access_token=${accessToken}`),
     ]);
-    const igData = await igRes.json();
-    const fbData = await fbRes.json();
+    const viewsData = await viewsRes.json();
+    const fbViewsData = await fbViewsRes.json();
+    const sharesData = await sharesRes.json();
 
-    const igViews = igData.data?.[0]?.values?.[0]?.value ?? 0;
-    const fbViews = fbData.data?.[0]?.values?.[0]?.value ?? 0;
+    const igViews = viewsData.data?.[0]?.values?.[0]?.value ?? 0;
+    const fbViews = fbViewsData.data?.[0]?.values?.[0]?.value ?? 0;
+    const apiViews = igViews + fbViews;
 
-    return igViews + fbViews || null;
+    // Use override if it's higher than API value
+    const override = VIEW_OVERRIDES[mediaId];
+    const views = override && override > apiViews ? override : apiViews;
+
+    const shares = sharesData.data?.find((m: { name: string }) => m.name === "shares")?.values?.[0]?.value ?? null;
+    const saved = sharesData.data?.find((m: { name: string }) => m.name === "saved")?.values?.[0]?.value ?? null;
+
+    return { views: views || null, shares, saved };
   } catch {
-    return null;
+    return { views: VIEW_OVERRIDES[mediaId] ?? null, shares: null, saved: null };
   }
 }
 
@@ -50,12 +64,12 @@ export async function GET() {
         comments_count: item.comments_count ?? null,
       }));
 
-    // Fetch reach for each reel in parallel
+    // Fetch insights for each reel in parallel
     const reels = await Promise.all(
-      baseReels.map(async (reel: { id: string; permalink: string; thumbnail_url?: string; media_url?: string; caption?: string; like_count: number | null; comments_count: number | null }) => ({
-        ...reel,
-        views: await fetchViews(reel.id, accessToken),
-      }))
+      baseReels.map(async (reel: { id: string; permalink: string; thumbnail_url?: string; media_url?: string; caption?: string; like_count: number | null; comments_count: number | null }) => {
+        const insights = await fetchInsights(reel.id, accessToken);
+        return { ...reel, ...insights };
+      })
     );
 
     return NextResponse.json({ reels, isPlaceholder: false });
