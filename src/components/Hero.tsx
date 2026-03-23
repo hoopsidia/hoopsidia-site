@@ -293,7 +293,7 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative min-h-[55vh] flex items-center justify-center bg-black text-white overflow-hidden pt-16"
+      className="relative min-h-[45vh] flex items-center justify-center bg-black text-white overflow-hidden pt-16"
       onMouseMove={isMobile ? undefined : handleMouseMove}
       onMouseLeave={isMobile ? undefined : handleMouseLeave}
     >
@@ -342,7 +342,7 @@ export default function Hero() {
           style={isMobile ? undefined : { x: xSpring, y: ySpring }}
           className="glass rounded-2xl p-6 sm:p-8 max-w-2xl w-full border border-white/10 will-change-transform relative"
         >
-          <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
+          <div className="flex flex-row gap-4 sm:gap-8">
             {/* Left side — Photo + Logo */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
@@ -350,7 +350,7 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="shrink-0 flex flex-col items-center justify-between gap-3"
             >
-              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2 border-orange">
+              <div className="w-20 h-20 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2 border-orange">
                 <Image
                   src="/images/valentin.jpg"
                   alt="Valentin Turgot - Hoopsidia"
@@ -360,11 +360,11 @@ export default function Hero() {
                   priority
                 />
               </div>
-              <h1 className="font-heading text-2xl sm:text-3xl font-bold italic">
+              <h1 className="font-heading text-lg sm:text-3xl font-bold italic">
                 <span className="text-orange">HOOPS</span>
                 <span className="text-white">IDIA</span>
               </h1>
-              <p className="font-heading text-[10px] sm:text-xs text-white/50 italic text-center">
+              <p className="font-heading text-[10px] sm:text-xs text-white/50 italic text-center hidden sm:block">
                 &ldquo;{t("card.quote")}&rdquo;
               </p>
             </motion.div>
