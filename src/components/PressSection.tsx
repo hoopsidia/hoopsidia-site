@@ -151,7 +151,7 @@ export default function PressSection() {
                 <img
                   src={article.icon}
                   alt={article.source}
-                  className="w-8 h-8 object-contain relative z-10"
+                  className="w-full h-full object-cover relative z-10"
                 />
               </div>
 
