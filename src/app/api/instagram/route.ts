@@ -87,17 +87,22 @@ export async function GET() {
         allDays.unshift({ date: new Date(day.end_time), followers: runningTotal });
         runningTotal -= day.value;
       }
-      // Sample weekly (every 7 days) + always include last point
+      // Sample monthly (one point per month) + always include last point
       const months = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
       const history: { date: string; followers: number }[] = [];
-      for (let i = 0; i < allDays.length; i += 7) {
-        const d = allDays[i];
-        history.push({ date: `${d.date.getDate()} ${months[d.date.getMonth()]}`, followers: d.followers });
+      let lastMonth = -1;
+      for (const d of allDays) {
+        const m = d.date.getMonth();
+        if (m !== lastMonth) {
+          history.push({ date: `${months[m]} ${d.date.getFullYear()}`, followers: d.followers });
+          lastMonth = m;
+        }
       }
       // Always include the last data point
       const last = allDays[allDays.length - 1];
-      if (history[history.length - 1]?.followers !== last.followers) {
-        history.push({ date: `${last.date.getDate()} ${months[last.date.getMonth()]}`, followers: last.followers });
+      const lastLabel = `${months[last.date.getMonth()]} ${last.date.getFullYear()}`;
+      if (history[history.length - 1]?.date !== lastLabel) {
+        history.push({ date: lastLabel, followers: last.followers });
       }
       followerHistory = history;
     }
