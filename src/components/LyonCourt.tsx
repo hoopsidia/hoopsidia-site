@@ -80,8 +80,8 @@ export default function LyonCourt() {
           className="flex items-center gap-6 sm:gap-10"
         >
           {/* Logo PMC à gauche */}
-          <div className="flex-shrink-0 flex flex-col items-center gap-3">
-            <div className="relative w-28 h-28 sm:w-40 sm:h-40">
+          <div className="flex-shrink-0 flex flex-col items-center gap-2 w-20 sm:w-28">
+            <div className="relative w-20 h-20 sm:w-28 sm:h-28">
               <Image
                 src="/images/logo-pmc.png"
                 alt="Pimp My Court"
@@ -90,10 +90,10 @@ export default function LyonCourt() {
               />
             </div>
             <div className="text-center">
-              <h2 className="font-heading text-sm sm:text-lg font-bold italic uppercase text-white">
+              <h2 className="font-heading text-[10px] sm:text-sm font-bold italic uppercase text-white leading-tight">
                 {t("title")}
               </h2>
-              <p className="text-[10px] sm:text-xs text-white/40">{t("subtitle")}</p>
+              <p className="text-[8px] sm:text-[10px] text-white/40">{t("subtitle")}</p>
             </div>
           </div>
 
