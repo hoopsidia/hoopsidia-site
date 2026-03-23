@@ -35,7 +35,7 @@ export default function ClientsCarousel() {
                   src={client.logo}
                   alt={client.name}
                   style={{ height: "36px", width: "auto", maxWidth: "140px" }}
-                  className="brightness-0 invert opacity-80 hover:opacity-100 transition-opacity"
+                  className="opacity-80 hover:opacity-100 transition-opacity"
                 />
               ) : (
                 <span className="text-white/60 font-heading font-bold text-sm sm:text-base whitespace-nowrap px-2">

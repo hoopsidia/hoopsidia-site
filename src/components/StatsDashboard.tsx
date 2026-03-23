@@ -37,7 +37,7 @@ function StatCard({
       className="glass rounded-2xl p-6 text-center"
     >
       <div className="text-3xl font-heading font-bold text-orange">{value}</div>
-      <div className="mt-2 text-sm text-white/50">{label}</div>
+      <div className="mt-2 text-sm text-white">{label}</div>
     </motion.div>
   );
 }
@@ -72,7 +72,7 @@ export default function StatsDashboard() {
           <h2 className="font-heading text-3xl sm:text-4xl font-bold italic uppercase">
             {t("title")}
           </h2>
-          <p className="mt-3 text-white/50">{t("subtitle")}</p>
+          <p className="mt-3 text-white">{t("subtitle")}</p>
         </div>
 
         {/* Stats grid */}
@@ -109,7 +109,7 @@ export default function StatsDashboard() {
             transition={{ duration: 0.5 }}
             className="glass rounded-2xl p-6"
           >
-            <h3 className="font-heading text-sm font-bold text-white/50 uppercase tracking-wider mb-4">
+            <h3 className="font-heading text-sm font-bold text-white uppercase tracking-wider mb-4">
               {t("gender")}
             </h3>
             <div className="flex items-center gap-4">
@@ -117,7 +117,7 @@ export default function StatsDashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={stats.demographics.gender.filter(g => g.label === "M" || g.label === "F")}
+                      data={stats.demographics.gender.filter(g => g.label === "M" || g.label === "F").reverse()}
                       dataKey="value"
                       nameKey="label"
                       cx="50%"
@@ -126,7 +126,7 @@ export default function StatsDashboard() {
                       outerRadius={55}
                       strokeWidth={0}
                     >
-                      {stats.demographics.gender.filter(g => g.label === "M" || g.label === "F").map((g, i) => (
+                      {stats.demographics.gender.filter(g => g.label === "M" || g.label === "F").reverse().map((g, i) => (
                         <Cell key={g.label} fill={g.label === "F" ? "#FC8D33" : "#222222"} />
                       ))}
                     </Pie>
@@ -134,7 +134,7 @@ export default function StatsDashboard() {
                 </ResponsiveContainer>
               </div>
               <div className="space-y-2">
-                {stats.demographics.gender.filter(g => g.label === "M" || g.label === "F").map((g, i) => (
+                {stats.demographics.gender.filter(g => g.label === "M" || g.label === "F").reverse().map((g, i) => (
                   <div key={g.label} className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{ background: g.label === "F" ? "#FC8D33" : "#222222" }} />
                     <span className="text-sm text-white/70">{g.label === "M" ? t("male") : t("female")}</span>
@@ -153,7 +153,7 @@ export default function StatsDashboard() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="glass rounded-2xl p-6"
           >
-            <h3 className="font-heading text-sm font-bold text-white/50 uppercase tracking-wider mb-4">
+            <h3 className="font-heading text-sm font-bold text-white uppercase tracking-wider mb-4">
               {t("ages")}
             </h3>
             <div className="space-y-3">
@@ -182,7 +182,7 @@ export default function StatsDashboard() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="glass rounded-2xl p-6"
           >
-            <h3 className="font-heading text-sm font-bold text-white/50 uppercase tracking-wider mb-4">
+            <h3 className="font-heading text-sm font-bold text-white uppercase tracking-wider mb-4">
               {t("cities")}
             </h3>
             <div className="space-y-3">

@@ -13,7 +13,7 @@ export const CLIENTS = [
   { name: "France TV", logo: "/logos/francetv.png", hasLogo: true },
   { name: "Kellogg's", logo: "/logos/kelloggs.png", hasLogo: true },
   { name: "Spalding", logo: "/logos/spalding.png", hasLogo: true },
-  { name: "OnCourt", logo: "/logos/oncourt.png", hasLogo: true },
+  { name: "HelloFresh", logo: "/logos/hellofresh.png", hasLogo: false },
   { name: "Mega Slam Hoops", logo: "/logos/megaslam.png", hasLogo: true },
   { name: "Stramatel", logo: "/logos/stramatel.png", hasLogo: true },
   { name: "Hoops Factory", logo: "/logos/hoopsfactory.png", hasLogo: true },

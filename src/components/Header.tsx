@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "@/i18n/navigation";
 
 const navItems = [
   { key: "home", href: "#hero" },
-  { key: "stats", href: "#stats" },
+  { key: "mediaKit", href: "#stats" },
   { key: "clients", href: "#clients" },
   { key: "pimpMyCourt", href: "#pmc" },
   { key: "contact", href: "#contact" },
@@ -45,12 +45,7 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-strong">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <a href="#hero" className="font-heading text-xl font-bold italic">
-            <span className="text-orange">HOOPS</span><span className="text-white">IDIA</span>
-          </a>
-
+        <div className="flex items-center justify-center h-16">
           {/* Desktop nav */}
           <nav
             ref={navRef}
