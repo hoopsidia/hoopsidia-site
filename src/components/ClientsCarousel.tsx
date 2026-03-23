@@ -18,7 +18,6 @@ export default function ClientsCarousel() {
   const t = useTranslations("clients");
   const [showAll, setShowAll] = useState(false);
 
-  // Shuffle on mount, then double for seamless infinite scroll
   const shuffled = useMemo(() => shuffle(CLIENTS), []);
   const items = [...shuffled, ...shuffled];
 
@@ -31,71 +30,59 @@ export default function ClientsCarousel() {
         <p className="mt-3 text-white/50 text-center">{t("subtitle")}</p>
       </div>
 
-      {/* Carousel track */}
-      <div className="relative">
-        {/* Fade edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-black to-transparent z-10" />
-        <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-black to-transparent z-10" />
+      {/* Carousel track — clic sur un logo ouvre la grid */}
+      {!showAll && (
+        <div className="relative cursor-pointer" onClick={() => setShowAll(true)}>
+          <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-black to-transparent z-10" />
+          <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-black to-transparent z-10" />
 
-        <div className="flex animate-scroll items-center py-4">
-          {items.map((client, i) => (
-            <div
-              key={`${client.name}-${i}`}
-              className="flex-shrink-0 px-6 sm:px-8 flex items-center justify-center glass rounded-xl mx-2 py-3"
-            >
-              {client.hasLogo ? (
-                <img
-                  src={client.logo}
-                  alt={client.name}
-                  style={{ height: "36px", width: "auto", maxWidth: "140px" }}
-                  className="opacity-80 hover:opacity-100 transition-opacity"
-                />
-              ) : (
-                <span className="text-white/60 font-heading font-bold text-sm sm:text-base whitespace-nowrap px-2">
-                  {client.name}
-                </span>
-              )}
-            </div>
-          ))}
+          <div className="flex animate-scroll items-center py-4">
+            {items.map((client, i) => (
+              <div
+                key={`${client.name}-${i}`}
+                className="flex-shrink-0 mx-2 flex items-center justify-center glass rounded-xl px-6 sm:px-8 py-3"
+              >
+                {client.hasLogo ? (
+                  <img
+                    src={client.logo}
+                    alt={client.name}
+                    className="h-9 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity"
+                  />
+                ) : (
+                  <span className="text-white/60 font-heading font-bold text-sm sm:text-base whitespace-nowrap px-2">
+                    {client.name}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-
-      {/* View All button */}
-      <div className="text-center mt-8">
-        <button
-          onClick={() => setShowAll(!showAll)}
-          className="font-heading text-sm font-bold uppercase tracking-wider text-orange hover:text-white transition-colors"
-        >
-          {showAll ? "Fermer" : "Voir tout"}
-        </button>
-      </div>
+      )}
 
       {/* Grid view */}
       <AnimatePresence>
         {showAll && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="overflow-hidden"
           >
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {CLIENTS.map((client) => (
+                {CLIENTS.map((client, i) => (
                   <motion.div
                     key={client.name}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: i * 0.04 }}
                     className="glass rounded-xl p-6 flex items-center justify-center aspect-[3/2]"
                   >
                     {client.hasLogo ? (
                       <img
                         src={client.logo}
                         alt={client.name}
-                        style={{ height: "40px", width: "auto", maxWidth: "120px" }}
-                        className="opacity-80"
+                        className="max-h-10 w-auto object-contain opacity-80"
                       />
                     ) : (
                       <span className="text-white/60 font-heading font-bold text-sm text-center">
@@ -104,6 +91,15 @@ export default function ClientsCarousel() {
                     )}
                   </motion.div>
                 ))}
+              </div>
+
+              <div className="text-center mt-8">
+                <button
+                  onClick={() => setShowAll(false)}
+                  className="font-heading text-sm font-bold uppercase tracking-wider text-orange hover:text-white transition-colors"
+                >
+                  Fermer
+                </button>
               </div>
             </div>
           </motion.div>
