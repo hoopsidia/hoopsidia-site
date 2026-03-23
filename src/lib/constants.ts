@@ -27,6 +27,7 @@ export const PMC_SEASONS = [
     youtubeId: "zRUHXt26hfI",
     playlistId: "PLs1FwAcUOToY7VnprrDTsrtyMjUQV_Kcs",
     thumbnail: "/images/logo-pmc.png",
+    comingSoon: false,
   },
   {
     id: "s2",
@@ -34,12 +35,14 @@ export const PMC_SEASONS = [
     youtubeId: "JUtZ8hTM-AI",
     playlistId: "PLs1FwAcUOToaTZ9TX1zPhROMeP5f4rK7p",
     thumbnail: "/images/logo-pmc.png",
+    comingSoon: false,
   },
   {
     id: "s3",
     season: 3,
     youtubeId: "_t8Iovh-avE",
     thumbnail: "/images/logo-pmc.png",
+    comingSoon: true,
   },
 ];
 
