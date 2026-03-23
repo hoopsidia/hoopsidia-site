@@ -24,7 +24,8 @@ export const PMC_SEASONS = [
   {
     id: "s1",
     season: 1,
-    youtubeId: "dQw4w9WgXcQ", // placeholder — replace with real video ID
+    youtubeId: "zRUHXt26hfI",
+    playlistId: "PLs1FwAcUOToY7VnprrDTsrtyMjUQV_Kcs",
     thumbnail: "/images/logo-pmc.png",
   },
   {

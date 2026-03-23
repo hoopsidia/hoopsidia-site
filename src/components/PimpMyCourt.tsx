@@ -7,11 +7,14 @@ import { useRef } from "react";
 import Image from "next/image";
 import { PMC_SEASONS } from "@/lib/constants";
 
-function YouTubeEmbed({ videoId }: { videoId: string }) {
+function YouTubeEmbed({ videoId, playlistId }: { videoId: string; playlistId?: string }) {
+  const src = playlistId
+    ? `https://www.youtube-nocookie.com/embed/${videoId}?list=${playlistId}`
+    : `https://www.youtube-nocookie.com/embed/${videoId}`;
   return (
     <div className="relative w-full aspect-video rounded-xl overflow-hidden">
       <iframe
-        src={`https://www.youtube-nocookie.com/embed/${videoId}`}
+        src={src}
         title="YouTube video"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
@@ -47,7 +50,7 @@ function SeasonCard({
       {/* Thumbnail / Video */}
       <div className="relative aspect-video bg-black/50">
         {showVideo && season.youtubeId ? (
-          <YouTubeEmbed videoId={season.youtubeId} />
+          <YouTubeEmbed videoId={season.youtubeId} playlistId={(season as { playlistId?: string }).playlistId} />
         ) : (
           <button
             onClick={() => season.youtubeId && setShowVideo(true)}
