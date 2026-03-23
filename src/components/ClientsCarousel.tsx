@@ -39,6 +39,7 @@ function ClientCard({ client }: { client: (typeof CLIENTS)[number] }) {
           src={client.logo}
           alt={client.name}
           className="max-h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity"
+          style={(client as { scale?: number }).scale ? { transform: `scale(${(client as { scale?: number }).scale})` } : undefined}
         />
       ) : (
         <span className="text-white/60 font-heading font-bold text-sm text-center">
