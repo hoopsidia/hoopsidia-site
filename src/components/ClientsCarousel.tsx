@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useMemo, useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { CLIENTS } from "@/lib/constants";
 
 function shuffle<T>(array: T[]): T[] {
@@ -59,7 +59,10 @@ function ClientCard({ client }: { client: (typeof CLIENTS)[number] }) {
 
 export default function ClientsCarousel() {
   const t = useTranslations("clients");
-  const shuffled = useMemo(() => shuffle(CLIENTS), []);
+  const [shuffled, setShuffled] = useState(CLIENTS);
+  useEffect(() => {
+    setShuffled(shuffle(CLIENTS));
+  }, []);
 
   return (
     <section id="clients" className="bg-black py-24">
