@@ -16,6 +16,18 @@
       "instagram": "Instagram Followers",
       "courts": "Courts Renovated",
       "views": "Total Views"
+    },
+    "card": {
+      "lastName": "Last name",
+      "firstName": "First name",
+      "age": "Age",
+      "height": "Height",
+      "courts": "Courts built",
+      "since": "Started",
+      "platforms": "Platforms",
+      "ageValue": "33 y/o",
+      "heightValue": "5'8\"",
+      "sinceValue": "September 2016"
     }
   },
   "reels": {

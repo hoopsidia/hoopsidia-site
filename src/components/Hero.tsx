@@ -27,14 +27,16 @@ function SocialIcon({ platform }: { platform: "youtube" | "instagram" | "tiktok"
   return icons[platform];
 }
 
-const fields = [
-  { label: "Nom", value: "Turgot" },
-  { label: "Prénom", value: "Valentin" },
-  { label: "Âge", value: "33 ans" },
-  { label: "Taille", value: "1m73" },
-  { label: "Terrains construits", value: "4" },
-  { label: "Débuts", value: "Septembre 2016" },
-];
+function getFields(t: (key: string) => string) {
+  return [
+    { label: t("card.lastName"), value: "Turgot" },
+    { label: t("card.firstName"), value: "Valentin" },
+    { label: t("card.age"), value: t("card.ageValue") },
+    { label: t("card.height"), value: t("card.heightValue") },
+    { label: t("card.courts"), value: "4" },
+    { label: t("card.since"), value: t("card.sinceValue") },
+  ];
+}
 
 type Ball = {
   id: string;
@@ -380,7 +382,7 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex-1 space-y-2.5 sm:pt-2"
             >
-              {fields.map((field) => (
+              {getFields(t).map((field) => (
                 <div key={field.label} className="flex gap-2">
                   <span className="text-white/40 text-sm shrink-0">
                     {field.label}:
@@ -392,7 +394,7 @@ export default function Hero() {
               ))}
               <div className="flex items-center gap-2 pt-0.5">
                 <span className="text-white/40 text-sm shrink-0">
-                  Plateformes:
+                  {t("card.platforms")}:
                 </span>
                 <div className="flex items-center gap-2.5">
                   {(
