@@ -8,7 +8,6 @@ const navItems = [
   { key: "home", href: "#hero" },
   { key: "mediaKit", href: "#stats" },
   { key: "clients", href: "#clients" },
-  { key: "pimpMyCourt", href: "#pmc" },
   { key: "contact", href: "#contact" },
 ] as const;
 
