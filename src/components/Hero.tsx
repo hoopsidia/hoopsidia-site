@@ -84,20 +84,16 @@ function FallingBall({
       initial={{ top: -60, left: ball.x, opacity: 1, scale: 1 }}
       animate={
         ball.scored
-          ? { opacity: 0, scale: 0.6 }
+          ? { top: "+=80", opacity: 0, scale: 0.5 }
           : { top: "100%" }
       }
       transition={
         ball.scored
-          ? { duration: 0.8, ease: "easeOut" }
+          ? { duration: 1, ease: "easeIn" }
           : { duration: 8 / ball.speed, ease: "linear" }
       }
-      className="z-[20] pointer-events-none absolute"
-      style={{
-        filter: ball.scored
-          ? "brightness(1.2) sepia(1) saturate(5) hue-rotate(-10deg)"
-          : undefined,
-      }}
+      className="z-[15] pointer-events-none absolute"
+      style={{}}
     >
       <Image
         src="/images/logo-head.png"
@@ -112,7 +108,7 @@ function FallingBall({
 
 function BasketNet() {
   return (
-    <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center">
+    <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center z-[25]">
       {/* Rim */}
       <div className="w-24 h-3 rounded-full border-2 border-orange bg-orange/20 shadow-[0_0_12px_rgba(252,141,51,0.3)]" />
       {/* Net with swing animation */}
@@ -149,16 +145,21 @@ export default function Hero() {
   const cardRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const translateX = useMotionValue(0);
   const translateY = useMotionValue(0);
-  const rotateXVal = useMotionValue(0);
-  const rotateYVal = useMotionValue(0);
 
   const springConfig = { damping: 20, stiffness: 120 };
   const xSpring = useSpring(translateX, springConfig);
   const ySpring = useSpring(translateY, springConfig);
-  const rotateX = useSpring(rotateXVal, springConfig);
-  const rotateY = useSpring(rotateYVal, springConfig);
 
   const [balls, setBalls] = useState<Ball[]>([]);
   const [score, setScore] = useState(0);
@@ -166,8 +167,9 @@ export default function Hero() {
   const cardPosRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
   const scoredSetRef = useRef(new Set<string>());
 
-  // Track card position relative to section
+  // Track card position relative to section (desktop only)
   useEffect(() => {
+    if (isMobile) return;
     const interval = setInterval(() => {
       const card = cardRef.current;
       const section = sectionRef.current;
@@ -182,24 +184,27 @@ export default function Hero() {
       };
     }, 50);
     return () => clearInterval(interval);
-  }, []);
+  }, [isMobile]);
 
-  // Spawn balls
+  // Spawn balls (desktop only)
   useEffect(() => {
+    if (isMobile) return;
     const spawnBall = () => {
       const section = sectionRef.current;
       if (!section) return;
       const sectionRect = section.getBoundingClientRect();
-      const ballX = Math.random() * (sectionRect.width - 60);
+      // Balls fall in the middle third
+      const thirdWidth = sectionRect.width / 3;
+      const ballX = thirdWidth + Math.random() * (thirdWidth - 60);
       const speed = 1.5 + Math.random() * 2;
       setBalls((prev) => [
-        ...prev.slice(-15), // keep max 16 balls
+        ...prev.slice(-15),
         { id: nextBallId(), x: ballX, speed, scored: false },
       ]);
     };
     const interval = setInterval(spawnBall, 2200);
     return () => clearInterval(interval);
-  }, []);
+  }, [isMobile]);
 
   // Cleanup old balls (remove after 10 seconds)
   useEffect(() => {
@@ -279,18 +284,11 @@ export default function Hero() {
 
     translateX.set(clampedX);
     translateY.set(clampedY);
-
-    const px = (e.clientX - cardRect.left) / cardRect.width - 0.5;
-    const py = (e.clientY - cardRect.top) / cardRect.height - 0.5;
-    rotateXVal.set(py * -10);
-    rotateYVal.set(px * 10);
   };
 
   const handleMouseLeave = () => {
     translateX.set(0);
     translateY.set(0);
-    rotateXVal.set(0);
-    rotateYVal.set(0);
   };
 
   return (
@@ -298,17 +296,19 @@ export default function Hero() {
       ref={sectionRef}
       id="hero"
       className="relative min-h-screen flex items-center justify-center bg-black text-white overflow-hidden pt-16"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseMove={isMobile ? undefined : handleMouseMove}
+      onMouseLeave={isMobile ? undefined : handleMouseLeave}
     >
       {/* Subtle background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-orange/5 via-transparent to-transparent" />
 
-      {/* Score counter */}
-      <div className="absolute top-20 right-6 z-20 font-heading text-lg font-bold">
-        <span className="text-orange">{score}</span>
-        <span className="text-white/40 ml-1">pts</span>
-      </div>
+      {/* Score counter (desktop only) */}
+      {!isMobile && (
+        <div className="absolute top-20 right-6 z-20 font-heading text-lg font-bold">
+          <span className="text-orange">{score}</span>
+          <span className="text-white/40 ml-1">pts</span>
+        </div>
+      )}
 
       {/* Falling balls */}
       {balls.map((ball) => (
@@ -334,7 +334,6 @@ export default function Hero() {
 
       <div
         className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex items-center justify-center"
-        style={{ perspective: 800 }}
       >
         {/* Identity Card with hoop */}
         <motion.div
@@ -342,7 +341,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          style={{ x: xSpring, y: ySpring, rotateX, rotateY }}
+          style={isMobile ? undefined : { x: xSpring, y: ySpring }}
           className="glass rounded-2xl p-6 sm:p-8 max-w-2xl w-full border border-white/10 will-change-transform relative"
         >
           <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
@@ -418,8 +417,8 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* Basketball net */}
-          <BasketNet />
+          {/* Basketball net (desktop only) */}
+          {!isMobile && <BasketNet />}
         </motion.div>
       </div>
     </section>
