@@ -14,35 +14,42 @@ function shuffle<T>(array: T[]): T[] {
 }
 
 function ClientCard({ client }: { client: (typeof CLIENTS)[number] }) {
-  const [transform, setTransform] = useState("");
+  const [logoTransform, setLogoTransform] = useState("");
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setTransform(`translate(${x * 8}px, ${y * 8}px)`);
+    // Le logo suit la souris mais reste limité à ±12px
+    setLogoTransform(`translate(${x * 24}px, ${y * 24}px)`);
   }, []);
 
   const handleMouseLeave = useCallback(() => {
-    setTransform("");
+    setLogoTransform("");
   }, []);
+
+  const scale = (client as { scale?: number }).scale;
 
   return (
     <div
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="glass rounded-xl p-6 flex items-center justify-center aspect-[3/2] transition-transform duration-200 ease-out"
-      style={{ transform: transform || undefined }}
+      className="glass rounded-xl p-6 flex items-center justify-center aspect-[3/2] overflow-hidden cursor-default"
     >
       {client.hasLogo ? (
         <img
           src={client.logo}
           alt={client.name}
-          className="max-h-10 w-auto object-contain brightness-0 invert"
-          style={(client as { scale?: number }).scale ? { transform: `scale(${(client as { scale?: number }).scale})` } : undefined}
+          className="max-h-10 w-auto object-contain brightness-0 invert transition-transform duration-150 ease-out"
+          style={{
+            transform: [logoTransform, scale ? `scale(${scale})` : ""].filter(Boolean).join(" ") || undefined,
+          }}
         />
       ) : (
-        <span className="text-white/60 font-heading font-bold text-sm text-center">
+        <span
+          className="text-white font-heading font-bold text-sm text-center transition-transform duration-150 ease-out"
+          style={{ transform: logoTransform || undefined }}
+        >
           {client.name}
         </span>
       )}
