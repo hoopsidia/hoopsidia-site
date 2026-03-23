@@ -127,7 +127,7 @@ export default function StatsDashboard() {
                       strokeWidth={0}
                     >
                       {stats.demographics.gender.filter(g => g.label === "M" || g.label === "F").map((g, i) => (
-                        <Cell key={g.label} fill={i === 0 ? "#FC8D33" : "#ffffff30"} />
+                        <Cell key={g.label} fill={g.label === "F" ? "#FC8D33" : "#222222"} />
                       ))}
                     </Pie>
                   </PieChart>
@@ -136,7 +136,7 @@ export default function StatsDashboard() {
               <div className="space-y-2">
                 {stats.demographics.gender.filter(g => g.label === "M" || g.label === "F").map((g, i) => (
                   <div key={g.label} className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ background: i === 0 ? "#FC8D33" : "rgba(255,255,255,0.2)" }} />
+                    <div className="w-3 h-3 rounded-full" style={{ background: g.label === "F" ? "#FC8D33" : "#222222" }} />
                     <span className="text-sm text-white/70">{g.label === "M" ? t("male") : t("female")}</span>
                     <span className="text-sm text-orange font-bold ml-auto">{g.percent}%</span>
                   </div>
