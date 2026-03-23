@@ -21,7 +21,7 @@ export const CLIENTS = [
   { name: "Sport en Ligne", logo: "/logos/sport-en-ligne.png", hasLogo: true },
   { name: "Stella Artois", logo: "/logos/stella.png", hasLogo: true },
   { name: "Dr. Dish", logo: "/logos/dr-dish.webp", hasLogo: true },
-  { name: "Jeep", logo: "/logos/jeep.png", hasLogo: true, scale: 1.6 },
+  { name: "Jeep", logo: "/logos/jeep.png", hasLogo: true },
 ];
 
 export const PMC_SEASONS = [
