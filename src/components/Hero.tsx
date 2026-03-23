@@ -369,9 +369,7 @@ export default function Hero() {
                 <span className="text-white">IDIA</span>
               </h1>
               <p className="font-heading text-[10px] sm:text-xs text-white/50 italic text-center">
-                &ldquo;Je retape des terrains
-                <br />
-                avec ma caméra&rdquo;
+                &ldquo;{t("card.quote")}&rdquo;
               </p>
             </motion.div>
 
