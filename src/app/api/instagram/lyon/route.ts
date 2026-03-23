@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 // The 4 Lyon court reel shortcodes (in order)
 const LYON_SHORTCODES = [
   "DIW7YFDMZCj",
+  "DJH27XPs9Uq",
   "DJCwQ-_sIJQ",
   "DJPpxc1s88J",
-  "DJH27XPs9Uq",
 ];
 
 export async function GET() {

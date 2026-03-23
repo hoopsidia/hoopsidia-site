@@ -6,18 +6,16 @@ export const HERO_STATS = {
 };
 
 export const CLIENTS = [
-  { name: "Tarmak", logo: "/logos/tarmak.png", hasLogo: true },
-  { name: "NBA", logo: "/logos/nba.png", hasLogo: true },
-  { name: "LNB", logo: "/logos/lnb.png", hasLogo: true },
-  { name: "Euroleague", logo: "/logos/euroleague.png", hasLogo: true },
-  { name: "France TV", logo: "/logos/francetv.png", hasLogo: true },
-  { name: "Kellogg's", logo: "/logos/kelloggs.png", hasLogo: true },
-  { name: "Spalding", logo: "/logos/spalding.png", hasLogo: true },
-  { name: "HelloFresh", logo: "/logos/hellofresh.png", hasLogo: false },
-  { name: "Mega Slam Hoops", logo: "/logos/megaslam.png", hasLogo: true },
-  { name: "Stramatel", logo: "/logos/stramatel.png", hasLogo: true },
-  { name: "Hoops Factory", logo: "/logos/hoopsfactory.png", hasLogo: true },
-  { name: "Saint-Apollinaire", logo: "/logos/saint-apollinaire.png", hasLogo: true },
+  { name: "NBA", logo: "/logos/nba.webp", hasLogo: true },
+  { name: "Euroleague", logo: "/logos/euroleague.webp", hasLogo: true },
+  { name: "Betclic Élite", logo: "/logos/betclic-elite.webp", hasLogo: true },
+  { name: "Decathlon", logo: "/logos/decathlon.png", hasLogo: true },
+  { name: "Puma", logo: "/logos/puma.webp", hasLogo: true },
+  { name: "Visa", logo: "/logos/visa.webp", hasLogo: true },
+  { name: "Back Market", logo: "/logos/back-market.webp", hasLogo: true },
+  { name: "Caisse d'Épargne", logo: "/logos/caisse-depargne.webp", hasLogo: true },
+  { name: "Suzuki", logo: "/logos/suzuki.webp", hasLogo: true },
+  { name: "Centre Commercial", logo: "/logos/centre-commercial.webp", hasLogo: true },
 ];
 
 export const PMC_SEASONS = [
