@@ -17,10 +17,10 @@ function ClientCard({ client }: { client: (typeof CLIENTS)[number] }) {
   const [logoTransform, setLogoTransform] = useState("");
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (window.matchMedia("(hover: none)").matches) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    // Le logo suit la souris mais reste limité à ±12px
     setLogoTransform(`translate(${x * 24}px, ${y * 24}px)`);
   }, []);
 
