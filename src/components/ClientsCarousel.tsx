@@ -1,13 +1,24 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 import { CLIENTS } from "@/lib/constants";
+
+function shuffle<T>(array: T[]): T[] {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 export default function ClientsCarousel() {
   const t = useTranslations("clients");
 
-  // Double the items for seamless infinite scroll
-  const items = [...CLIENTS, ...CLIENTS];
+  // Shuffle on mount, then double for seamless infinite scroll
+  const shuffled = useMemo(() => shuffle(CLIENTS), []);
+  const items = [...shuffled, ...shuffled];
 
   return (
     <section id="clients" className="bg-black py-24 overflow-hidden">
