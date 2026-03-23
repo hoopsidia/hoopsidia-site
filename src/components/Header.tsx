@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 
@@ -18,10 +18,28 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hoverStyle, setHoverStyle] = useState<{ left: number; width: number } | null>(null);
+  const navRef = useRef<HTMLElement>(null);
 
   const switchLocale = () => {
     const next = locale === "fr" ? "en" : "fr";
     router.replace(pathname, { locale: next });
+  };
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const target = e.currentTarget;
+    const nav = navRef.current;
+    if (!nav) return;
+    const navRect = nav.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    setHoverStyle({
+      left: targetRect.left - navRect.left,
+      width: targetRect.width,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setHoverStyle(null);
   };
 
   return (
@@ -34,19 +52,38 @@ export default function Header() {
           </a>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav
+            ref={navRef}
+            className="hidden md:flex items-center gap-1 relative"
+            onMouseLeave={handleMouseLeave}
+          >
+            {/* Glass pill that follows hover */}
+            <div
+              className="absolute top-1/2 -translate-y-1/2 h-8 rounded-full transition-all duration-300 ease-out pointer-events-none"
+              style={{
+                left: hoverStyle ? hoverStyle.left : 0,
+                width: hoverStyle ? hoverStyle.width : 0,
+                opacity: hoverStyle ? 1 : 0,
+                background: "rgba(255, 255, 255, 0.06)",
+                backdropFilter: "blur(20px) saturate(1.4)",
+                WebkitBackdropFilter: "blur(20px) saturate(1.4)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 12px rgba(0, 0, 0, 0.15)",
+              }}
+            />
             {navItems.map((item) => (
               <a
                 key={item.key}
                 href={item.href}
-                className="text-sm text-white/70 hover:text-orange transition-colors"
+                onMouseEnter={handleMouseEnter}
+                className="relative z-10 text-sm text-white/70 hover:text-white transition-colors px-4 py-2"
               >
                 {t(item.key)}
               </a>
             ))}
             <button
               onClick={switchLocale}
-              className="text-sm font-medium text-orange border border-orange/30 px-3 py-1 rounded-full hover:bg-orange/10 transition-colors"
+              className="relative z-10 text-sm font-medium text-orange border border-orange/30 px-3 py-1 rounded-full hover:bg-orange/10 transition-colors ml-4"
             >
               {locale === "fr" ? "EN" : "FR"}
             </button>

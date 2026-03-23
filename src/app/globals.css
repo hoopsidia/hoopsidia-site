@@ -71,6 +71,23 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
 }
 
+/* Basketball net swing animation */
+@keyframes net-swing {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(2deg);
+  }
+  75% {
+    transform: rotate(-2deg);
+  }
+}
+
+.animate-net-swing {
+  animation: net-swing 3s ease-in-out infinite;
+}
+
 /* Infinite scroll animation for clients carousel */
 @keyframes scroll {
   0% {

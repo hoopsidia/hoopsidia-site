@@ -1,9 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 import { SOCIAL_LINKS } from "@/lib/constants";
 import Image from "next/image";
+import { useRef, useState, useEffect, useCallback } from "react";
 
 function SocialIcon({ platform }: { platform: "youtube" | "instagram" | "tiktok" }) {
   const icons = {
@@ -35,34 +36,324 @@ const fields = [
   { label: "Débuts", value: "Septembre 2016" },
 ];
 
+type Ball = {
+  id: string;
+  x: number;
+  speed: number;
+  scored: boolean;
+};
+
+type ScoreFlash = {
+  id: string;
+  x: number;
+  y: number;
+};
+
+let globalBallId = 0;
+function nextBallId() {
+  globalBallId += 1;
+  return `ball-${globalBallId}-${Date.now()}`;
+}
+
+function FallingBall({
+  ball,
+  onCollision,
+}: {
+  ball: Ball;
+  onCollision: (id: string, el: HTMLDivElement) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (ball.scored) return;
+    let active = true;
+    const check = () => {
+      if (!active || !ref.current) return;
+      onCollision(ball.id, ref.current);
+      if (active) requestAnimationFrame(check);
+    };
+    requestAnimationFrame(check);
+    return () => {
+      active = false;
+    };
+  }, [ball.id, ball.scored, onCollision]);
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ top: -60, left: ball.x, opacity: 1, scale: 1 }}
+      animate={
+        ball.scored
+          ? { opacity: 0, scale: 0.6 }
+          : { top: "110vh" }
+      }
+      transition={
+        ball.scored
+          ? { duration: 0.8, ease: "easeOut" }
+          : { duration: 8 / ball.speed, ease: "linear" }
+      }
+      className="z-[20] pointer-events-none"
+      style={{
+        position: "fixed",
+        filter: ball.scored
+          ? "brightness(1.2) sepia(1) saturate(5) hue-rotate(-10deg)"
+          : undefined,
+      }}
+    >
+      <Image
+        src="/images/logo-head.png"
+        alt=""
+        width={45}
+        height={45}
+        className="rounded-full"
+      />
+    </motion.div>
+  );
+}
+
+function BasketNet() {
+  return (
+    <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center">
+      {/* Rim */}
+      <div className="w-24 h-3 rounded-full border-2 border-orange bg-orange/20 shadow-[0_0_12px_rgba(252,141,51,0.3)]" />
+      {/* Net with swing animation */}
+      <svg
+        width="96"
+        height="72"
+        viewBox="0 0 96 72"
+        className="mt-[-2px] animate-net-swing"
+        style={{ transformOrigin: "top center" }}
+      >
+        {/* Vertical threads */}
+        <path d="M8 0 Q16 36, 28 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
+        <path d="M20 0 Q26 36, 33 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
+        <path d="M32 0 Q36 36, 38 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
+        <path d="M44 0 Q44 36, 43 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
+        <path d="M52 0 Q52 36, 53 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
+        <path d="M64 0 Q60 36, 58 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
+        <path d="M76 0 Q70 36, 63 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
+        <path d="M88 0 Q80 36, 68 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
+        {/* Cross threads */}
+        <path d="M12 10 Q48 16, 84 10" stroke="rgba(255,255,255,0.08)" fill="none" strokeWidth="0.8" />
+        <path d="M16 20 Q48 26, 80 20" stroke="rgba(255,255,255,0.08)" fill="none" strokeWidth="0.8" />
+        <path d="M20 30 Q48 36, 76 30" stroke="rgba(255,255,255,0.08)" fill="none" strokeWidth="0.8" />
+        <path d="M24 40 Q48 46, 72 40" stroke="rgba(255,255,255,0.08)" fill="none" strokeWidth="0.8" />
+        <path d="M28 50 Q48 56, 68 50" stroke="rgba(255,255,255,0.08)" fill="none" strokeWidth="0.8" />
+        <path d="M32 60 Q48 64, 64 60" stroke="rgba(255,255,255,0.08)" fill="none" strokeWidth="0.8" />
+      </svg>
+    </div>
+  );
+}
+
 export default function Hero() {
   const t = useTranslations("hero");
+  const cardRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const translateX = useMotionValue(0);
+  const translateY = useMotionValue(0);
+  const rotateXVal = useMotionValue(0);
+  const rotateYVal = useMotionValue(0);
+
+  const springConfig = { damping: 20, stiffness: 120 };
+  const xSpring = useSpring(translateX, springConfig);
+  const ySpring = useSpring(translateY, springConfig);
+  const rotateX = useSpring(rotateXVal, springConfig);
+  const rotateY = useSpring(rotateYVal, springConfig);
+
+  const [balls, setBalls] = useState<Ball[]>([]);
+  const [score, setScore] = useState(0);
+  const [flashes, setFlashes] = useState<ScoreFlash[]>([]);
+  const cardPosRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
+  const scoredSetRef = useRef(new Set<string>());
+
+  // Track card position
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const card = cardRef.current;
+      if (!card) return;
+      const rect = card.getBoundingClientRect();
+      cardPosRef.current = {
+        x: rect.left,
+        y: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+      };
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Spawn balls
+  useEffect(() => {
+    const spawnBall = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const sectionRect = section.getBoundingClientRect();
+      const ballX = Math.random() * (sectionRect.width - 60) + sectionRect.left;
+      const speed = 1.5 + Math.random() * 2;
+      setBalls((prev) => [
+        ...prev.slice(-15), // keep max 16 balls
+        { id: nextBallId(), x: ballX, speed, scored: false },
+      ]);
+    };
+    const interval = setInterval(spawnBall, 2200);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Cleanup old balls
+  useEffect(() => {
+    const cleanup = setInterval(() => {
+      setBalls((prev) =>
+        prev.filter((b) => {
+          if (b.scored) return true; // let scored balls animate out
+          const el = document.querySelector(`[data-ball-id="${b.id}"]`);
+          if (!el) return false;
+          const rect = el.getBoundingClientRect();
+          return rect.top < window.innerHeight + 100;
+        })
+      );
+    }, 4000);
+    return () => clearInterval(cleanup);
+  }, []);
+
+  // Remove scored balls after animation
+  useEffect(() => {
+    const cleanup = setInterval(() => {
+      setBalls((prev) => prev.filter((b) => !b.scored));
+    }, 2000);
+    return () => clearInterval(cleanup);
+  }, []);
+
+  const handleBallCollision = useCallback(
+    (ballId: string, el: HTMLDivElement) => {
+      if (scoredSetRef.current.has(ballId)) return;
+
+      const ballRect = el.getBoundingClientRect();
+      const card = cardPosRef.current;
+      const ballCenterX = ballRect.left + ballRect.width / 2;
+      const ballBottom = ballRect.top + ballRect.height;
+
+      // Rim zone
+      const rimLeft = card.x + card.width * 0.2;
+      const rimRight = card.x + card.width * 0.8;
+      const rimY = card.y;
+
+      if (
+        ballCenterX > rimLeft &&
+        ballCenterX < rimRight &&
+        ballBottom > rimY - 10 &&
+        ballBottom < rimY + 30
+      ) {
+        scoredSetRef.current.add(ballId);
+        setBalls((prev) =>
+          prev.map((b) => (b.id === ballId ? { ...b, scored: true } : b))
+        );
+        setScore((s) => s + 3);
+        const flashId = `flash-${Date.now()}-${Math.random()}`;
+        setFlashes((prev) => [
+          ...prev,
+          { id: flashId, x: ballCenterX, y: rimY },
+        ]);
+        setTimeout(() => {
+          setFlashes((prev) => prev.filter((f) => f.id !== flashId));
+        }, 1000);
+      }
+    },
+    []
+  );
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const section = sectionRef.current;
+    const card = cardRef.current;
+    if (!section || !card) return;
+
+    const sectionRect = section.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+
+    const targetX = e.clientX - sectionRect.left - sectionRect.width / 2;
+    const targetY = e.clientY - sectionRect.top - sectionRect.height / 2;
+
+    const maxX = (sectionRect.width - cardRect.width) / 2 - 16;
+    const maxY = (sectionRect.height - cardRect.height) / 2 - 40;
+    const clampedX = Math.max(-maxX, Math.min(maxX, targetX));
+    const clampedY = Math.max(-maxY, Math.min(maxY, targetY));
+
+    translateX.set(clampedX);
+    translateY.set(clampedY);
+
+    const px = (e.clientX - cardRect.left) / cardRect.width - 0.5;
+    const py = (e.clientY - cardRect.top) / cardRect.height - 0.5;
+    rotateXVal.set(py * -10);
+    rotateYVal.set(px * 10);
+  };
+
+  const handleMouseLeave = () => {
+    translateX.set(0);
+    translateY.set(0);
+    rotateXVal.set(0);
+    rotateYVal.set(0);
+  };
 
   return (
     <section
+      ref={sectionRef}
       id="hero"
       className="relative min-h-screen flex items-center justify-center bg-black text-white overflow-hidden pt-16"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Subtle background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-orange/5 via-transparent to-transparent" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex items-center justify-center">
-        {/* Identity Card */}
+      {/* Score counter */}
+      <div className="absolute top-20 right-6 z-20 font-heading text-lg font-bold">
+        <span className="text-orange">{score}</span>
+        <span className="text-white/40 ml-1">pts</span>
+      </div>
+
+      {/* Falling balls */}
+      {balls.map((ball) => (
+        <FallingBall key={ball.id} ball={ball} onCollision={handleBallCollision} />
+      ))}
+
+      {/* Score flashes */}
+      <AnimatePresence>
+        {flashes.map((flash) => (
+          <motion.div
+            key={flash.id}
+            initial={{ opacity: 1, y: 0, scale: 0.8 }}
+            animate={{ opacity: 0, y: -80, scale: 2 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="fixed z-30 pointer-events-none font-heading text-3xl font-bold text-orange"
+            style={{ left: flash.x - 20, top: flash.y - 50 }}
+          >
+            +3
+          </motion.div>
+        ))}
+      </AnimatePresence>
+
+      <div
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex items-center justify-center"
+        style={{ perspective: 800 }}
+      >
+        {/* Identity Card with hoop */}
         <motion.div
+          ref={cardRef}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="glass rounded-2xl p-6 sm:p-8 max-w-2xl w-full border border-white/10"
+          style={{ x: xSpring, y: ySpring, rotateX, rotateY }}
+          className="glass rounded-2xl p-6 sm:p-8 max-w-2xl w-full border border-white/10 will-change-transform relative"
         >
           <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
-            {/* Left side — Photo + Logo + Subtitle */}
+            {/* Left side — Photo + Logo */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="shrink-0 flex flex-col items-center justify-between gap-3"
             >
-              {/* Round photo */}
               <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2 border-orange">
                 <Image
                   src="/images/valentin.jpg"
@@ -73,18 +364,15 @@ export default function Hero() {
                   priority
                 />
               </div>
-
-              {/* Logo */}
               <h1 className="font-heading text-2xl sm:text-3xl font-bold italic">
                 <span className="text-orange">HOOPS</span>
                 <span className="text-white">IDIA</span>
               </h1>
-
-              {/* Citation */}
               <p className="font-heading text-[10px] sm:text-xs text-white/50 italic text-center">
-                &ldquo;Je retape des terrains<br />avec ma caméra&rdquo;
+                &ldquo;Je retape des terrains
+                <br />
+                avec ma caméra&rdquo;
               </p>
-
             </motion.div>
 
             {/* Right side — Fields */}
@@ -96,36 +384,43 @@ export default function Hero() {
             >
               {fields.map((field) => (
                 <div key={field.label} className="flex gap-2">
-                  <span className="text-white/40 text-sm shrink-0">{field.label}:</span>
+                  <span className="text-white/40 text-sm shrink-0">
+                    {field.label}:
+                  </span>
                   <span className="font-heading text-sm font-bold text-white">
                     {field.value}
                   </span>
                 </div>
               ))}
-
-              {/* Platforms */}
               <div className="flex items-center gap-2 pt-0.5">
-                <span className="text-white/40 text-sm shrink-0">Plateformes:</span>
+                <span className="text-white/40 text-sm shrink-0">
+                  Plateformes:
+                </span>
                 <div className="flex items-center gap-2.5">
-                  {(Object.entries(SOCIAL_LINKS) as [keyof typeof SOCIAL_LINKS, string][]).map(
-                    ([platform, url]) => (
-                      <a
-                        key={platform}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-white hover:text-orange transition-colors [&_svg]:w-3.5 [&_svg]:h-3.5"
-                        aria-label={platform}
-                      >
-                        <SocialIcon platform={platform} />
-                      </a>
-                    )
-                  )}
+                  {(
+                    Object.entries(SOCIAL_LINKS) as [
+                      keyof typeof SOCIAL_LINKS,
+                      string,
+                    ][]
+                  ).map(([platform, url]) => (
+                    <a
+                      key={platform}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-white hover:text-orange transition-colors [&_svg]:w-3.5 [&_svg]:h-3.5"
+                      aria-label={platform}
+                    >
+                      <SocialIcon platform={platform} />
+                    </a>
+                  ))}
                 </div>
               </div>
             </motion.div>
           </div>
 
+          {/* Basketball net */}
+          <BasketNet />
         </motion.div>
       </div>
     </section>
