@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 
-async function fetchReach(mediaId: string, accessToken: string): Promise<number | null> {
+async function fetchViews(mediaId: string, accessToken: string): Promise<number | null> {
   try {
     const res = await fetch(
-      `https://graph.instagram.com/v21.0/${mediaId}/insights?metric=reach&access_token=${accessToken}`,
+      `https://graph.instagram.com/v21.0/${mediaId}/insights?metric=views&access_token=${accessToken}`,
     );
     const data = await res.json();
     return data.data?.[0]?.values?.[0]?.value ?? null;
@@ -47,7 +47,7 @@ export async function GET() {
     const reels = await Promise.all(
       baseReels.map(async (reel: { id: string; permalink: string; thumbnail_url?: string; media_url?: string; caption?: string; like_count: number | null; comments_count: number | null }) => ({
         ...reel,
-        reach: await fetchReach(reel.id, accessToken),
+        views: await fetchViews(reel.id, accessToken),
       }))
     );
 
