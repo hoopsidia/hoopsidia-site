@@ -22,6 +22,7 @@ export const CLIENTS = [
   { name: "Stella Artois", logo: "/logos/stella.png", hasLogo: true },
   { name: "Dr. Dish", logo: "/logos/dr-dish.webp", hasLogo: true },
   { name: "Jeep", logo: "/logos/jeep.png", hasLogo: true, scale: 2 },
+  { name: "FFBB", logo: "/logos/ffbb.png", hasLogo: true },
 ];
 
 export const PMC_SEASONS = [
