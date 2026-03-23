@@ -137,12 +137,21 @@ export default function PressSection() {
               transition={{ duration: 0.4, delay: i * 0.06 }}
               className="glass rounded-xl p-5 flex items-start gap-4 hover:bg-white/[0.08] transition-colors group"
             >
-              {/* Logo rond liquid glass */}
-              <div className="flex-shrink-0 w-14 h-14 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_4px_12px_rgba(0,0,0,0.3)] overflow-hidden flex items-center justify-center">
+              {/* Logo carré liquid glass style app icon */}
+              <div
+                className="flex-shrink-0 w-14 h-14 rounded-[22%] relative overflow-hidden flex items-center justify-center"
+                style={{
+                  background: "linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0.1) 100%)",
+                  backdropFilter: "blur(12px)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  boxShadow: "inset 0 1px 1px rgba(255,255,255,0.06), 0 4px 12px rgba(0,0,0,0.3)",
+                }}
+              >
+                <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 40%)" }} />
                 <img
                   src={article.icon}
                   alt={article.source}
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 object-contain relative z-10"
                 />
               </div>
 
