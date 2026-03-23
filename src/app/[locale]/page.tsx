@@ -4,7 +4,6 @@ import ReelsGrid from "@/components/ReelsGrid";
 import LyonCourt from "@/components/LyonCourt";
 import StatsDashboard from "@/components/StatsDashboard";
 import ClientsCarousel from "@/components/ClientsCarousel";
-import PimpMyCourt from "@/components/PimpMyCourt";
 import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
 
@@ -18,7 +17,6 @@ export default function Home() {
         <LyonCourt />
         <StatsDashboard />
         <ClientsCarousel />
-        <PimpMyCourt />
         <ContactForm />
       </main>
       <Footer />
