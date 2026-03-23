@@ -112,37 +112,47 @@ export default function StatsDashboard() {
             <h3 className="font-heading text-sm font-bold text-white uppercase tracking-wider mb-4">
               {t("gender")}
             </h3>
-            <div className="flex items-center gap-4">
-              <div className="w-32 h-32 flex-shrink-0">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={stats.demographics.gender.filter(g => g.label === "M" || g.label === "F").reverse()}
-                      dataKey="value"
-                      nameKey="label"
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={30}
-                      outerRadius={55}
-                      strokeWidth={0}
-                    >
-                      {stats.demographics.gender.filter(g => g.label === "M" || g.label === "F").reverse().map((g, i) => (
-                        <Cell key={g.label} fill={g.label === "F" ? "#FC8D33" : "#222222"} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="space-y-2">
-                {stats.demographics.gender.filter(g => g.label === "M" || g.label === "F").reverse().map((g, i) => (
-                  <div key={g.label} className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ background: g.label === "F" ? "#FC8D33" : "#222222" }} />
-                    <span className="text-sm text-white/70">{g.label === "M" ? t("male") : t("female")}</span>
-                    <span className="text-sm text-orange font-bold ml-auto">{g.percent}%</span>
+            {(() => {
+              const mf = stats.demographics.gender.filter(g => g.label === "M" || g.label === "F");
+              const totalMF = mf.reduce((s, g) => s + g.value, 0);
+              const genderData = mf.map(g => ({
+                ...g,
+                percent: totalMF > 0 ? Math.round((g.value / totalMF) * 100) : g.percent,
+              })); // Hommes first
+              return (
+                <div className="flex items-center gap-4">
+                  <div className="w-32 h-32 flex-shrink-0">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={genderData}
+                          dataKey="value"
+                          nameKey="label"
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={30}
+                          outerRadius={55}
+                          strokeWidth={0}
+                        >
+                          {genderData.map((g) => (
+                            <Cell key={g.label} fill={g.label === "M" ? "#FC8D33" : "#ffffff30"} />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <div className="space-y-2">
+                    {genderData.map((g) => (
+                      <div key={g.label} className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full" style={{ background: g.label === "M" ? "#FC8D33" : "rgba(255,255,255,0.2)" }} />
+                        <span className="text-sm text-white/70">{g.label === "M" ? t("male") : t("female")}</span>
+                        <span className="text-sm text-orange font-bold ml-auto">{g.percent}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
           </motion.div>
 
           {/* Ages */}
