@@ -20,7 +20,7 @@ function ClientCard({ client }: { client: (typeof CLIENTS)[number] }) {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setTransform(`perspective(400px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) scale(1.05)`);
+    setTransform(`translate(${x * 8}px, ${y * 8}px)`);
   }, []);
 
   const handleMouseLeave = useCallback(() => {
@@ -38,7 +38,7 @@ function ClientCard({ client }: { client: (typeof CLIENTS)[number] }) {
         <img
           src={client.logo}
           alt={client.name}
-          className="max-h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity"
+          className="max-h-10 w-auto object-contain brightness-0 invert"
           style={(client as { scale?: number }).scale ? { transform: `scale(${(client as { scale?: number }).scale})` } : undefined}
         />
       ) : (
