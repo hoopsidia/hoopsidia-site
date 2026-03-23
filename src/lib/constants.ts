@@ -9,7 +9,7 @@ export const CLIENTS = [
   { name: "NBA", logo: "/logos/nba.webp", hasLogo: true },
   { name: "Euroleague", logo: "/logos/euroleague.webp", hasLogo: true },
   { name: "Betclic Élite", logo: "/logos/betclic-elite.webp", hasLogo: true },
-  { name: "Decathlon", logo: "/logos/decathlon.png", hasLogo: true, scale: 0.7 },
+  { name: "Decathlon", logo: "/logos/decathlon.png", hasLogo: true, scale: 0.85 },
   { name: "Puma", logo: "/logos/puma.webp", hasLogo: true },
   { name: "Visa", logo: "/logos/visa.webp", hasLogo: true },
   { name: "Back Market", logo: "/logos/back-market.webp", hasLogo: true },
