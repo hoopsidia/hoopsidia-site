@@ -19,7 +19,7 @@ export default function Home() {
         <LyonCourt />
         <StatsDashboard />
         <ClientsCarousel />
-        <CvTimeline />
+        {/* <CvTimeline /> */}
         <PressSection />
         <ContactForm />
       </main>

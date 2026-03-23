@@ -179,24 +179,23 @@ export default function LyonCourt() {
                       )}
                       {reel.comments_count != null && (
                         <div className="flex flex-col items-center">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="opacity-90">
-                            <path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" fill="none" stroke="white" strokeLinejoin="round" strokeWidth="2" />
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
+                            <path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" />
                           </svg>
                           <span className="font-heading text-[10px] font-bold text-white mt-0.5">{formatViews(reel.comments_count)}</span>
                         </div>
                       )}
                       {reel.shares != null && (
                         <div className="flex flex-col items-center">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-90">
-                            <line x1="22" y1="2" x2="11" y2="13" />
-                            <polygon points="22 2 15 22 11 13 2 9 22 2" fill="none" />
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
                           </svg>
                           <span className="font-heading text-[10px] font-bold text-white mt-0.5">{formatViews(reel.shares)}</span>
                         </div>
                       )}
                       {reel.saved != null && (
                         <div className="flex flex-col items-center">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="opacity-90">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
                             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                           </svg>
                           <span className="font-heading text-[10px] font-bold text-white mt-0.5">{formatViews(reel.saved)}</span>
