@@ -16,6 +16,7 @@ export const CLIENTS = [
   { name: "Caisse d'Épargne", logo: "/logos/caisse-depargne.webp", hasLogo: true },
   { name: "Suzuki", logo: "/logos/suzuki.webp", hasLogo: true },
   { name: "Centre Commercial", logo: "/logos/centre-commercial.webp", hasLogo: true },
+  { name: "HelloFresh", logo: "/logos/hellofresh.png", hasLogo: true },
 ];
 
 export const PMC_SEASONS = [
