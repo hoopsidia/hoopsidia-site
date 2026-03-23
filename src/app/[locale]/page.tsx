@@ -5,6 +5,7 @@ import LyonCourt from "@/components/LyonCourt";
 import StatsDashboard from "@/components/StatsDashboard";
 import ClientsCarousel from "@/components/ClientsCarousel";
 import PressSection from "@/components/PressSection";
+import CvTimeline from "@/components/CvTimeline";
 import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
 
@@ -18,6 +19,7 @@ export default function Home() {
         <LyonCourt />
         <StatsDashboard />
         <ClientsCarousel />
+        <CvTimeline />
         <PressSection />
         <ContactForm />
       </main>

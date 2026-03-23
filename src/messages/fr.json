@@ -29,6 +29,37 @@
       "heightValue": "1m73",
       "sinceValue": "Septembre 2016",
       "quote": "Je retape des terrains\navec ma caméra"
+    },
+    "cv": {
+      "title": "Parcours",
+      "subtitle": "De la pub au terrain",
+      "items": {
+        "school": {
+          "title": "Sup de Création",
+          "subtitle": "Paris — 2010-2015",
+          "description": "Master en création publicitaire, spécialisation concepteur-rédacteur"
+        },
+        "havas": {
+          "title": "Havas Paris",
+          "subtitle": "Créatif Social Media — 2014-2019",
+          "description": "Création de contenus pour les réseaux sociaux de grandes marques"
+        },
+        "hoopsidia": {
+          "title": "Hoopsidia",
+          "subtitle": "Création de la chaîne — 2017",
+          "description": "Lancement de la chaîne YouTube basketball en parallèle de Havas"
+        },
+        "fulltime": {
+          "title": "Full-time créateur",
+          "subtitle": "Démission — 2019",
+          "description": "Quitte son CDI pour se consacrer à 100% à la création de contenu basket"
+        },
+        "hoopsmakers": {
+          "title": "Hoopsmakers",
+          "subtitle": "Co-fondateur — 2020",
+          "description": "Production vidéo sportive immersive : LNB, BCL, LFP, FDJ, PSG..."
+        }
+      }
     }
   },
   "reels": {

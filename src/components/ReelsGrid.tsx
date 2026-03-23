@@ -147,7 +147,7 @@ export default function ReelsGrid() {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="opacity-90">
                           <path d="M8 5v14l11-7z" fill="white" stroke="none" />
                         </svg>
-                        <span className="font-heading text-xs font-bold italic text-white mt-0.5">{formatViews(reel.views)}</span>
+                        <span className="font-heading text-xs font-bold text-white mt-0.5">{formatViews(reel.views)}</span>
                       </div>
                     )}
                     {reel.like_count != null && (
@@ -155,7 +155,7 @@ export default function ReelsGrid() {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="white" className="opacity-90">
                           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                         </svg>
-                        <span className="font-heading text-xs font-bold italic text-white mt-0.5">{formatViews(reel.like_count)}</span>
+                        <span className="font-heading text-xs font-bold text-white mt-0.5">{formatViews(reel.like_count)}</span>
                       </div>
                     )}
                     {reel.comments_count != null && (
@@ -163,7 +163,7 @@ export default function ReelsGrid() {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="opacity-90">
                           <path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z" fill="none" stroke="white" strokeLinejoin="round" strokeWidth="2" />
                         </svg>
-                        <span className="font-heading text-xs font-bold italic text-white mt-0.5">{formatViews(reel.comments_count)}</span>
+                        <span className="font-heading text-xs font-bold text-white mt-0.5">{formatViews(reel.comments_count)}</span>
                       </div>
                     )}
                     {reel.shares != null && (
@@ -172,7 +172,7 @@ export default function ReelsGrid() {
                           <line x1="22" y1="2" x2="11" y2="13" />
                           <polygon points="22 2 15 22 11 13 2 9 22 2" fill="none" />
                         </svg>
-                        <span className="font-heading text-xs font-bold italic text-white mt-0.5">{formatViews(reel.shares)}</span>
+                        <span className="font-heading text-xs font-bold text-white mt-0.5">{formatViews(reel.shares)}</span>
                       </div>
                     )}
                     {reel.saved != null && (
@@ -180,7 +180,7 @@ export default function ReelsGrid() {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="opacity-90">
                           <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                         </svg>
-                        <span className="font-heading text-xs font-bold italic text-white mt-0.5">{formatViews(reel.saved)}</span>
+                        <span className="font-heading text-xs font-bold text-white mt-0.5">{formatViews(reel.saved)}</span>
                       </div>
                     )}
                   </div>

@@ -29,6 +29,37 @@
       "heightValue": "5'8\"",
       "sinceValue": "September 2016",
       "quote": "I fix up courts\nwith my camera"
+    },
+    "cv": {
+      "title": "Career",
+      "subtitle": "From advertising to the court",
+      "items": {
+        "school": {
+          "title": "Sup de Création",
+          "subtitle": "Paris — 2010-2015",
+          "description": "Master's in advertising creation, copywriting specialization"
+        },
+        "havas": {
+          "title": "Havas Paris",
+          "subtitle": "Social Media Creative — 2014-2019",
+          "description": "Creating social media content for major brands"
+        },
+        "hoopsidia": {
+          "title": "Hoopsidia",
+          "subtitle": "Channel launch — 2017",
+          "description": "Launched the basketball YouTube channel while still at Havas"
+        },
+        "fulltime": {
+          "title": "Full-time creator",
+          "subtitle": "Resigned — 2019",
+          "description": "Left his job to focus 100% on basketball content creation"
+        },
+        "hoopsmakers": {
+          "title": "Hoopsmakers",
+          "subtitle": "Co-founder — 2020",
+          "description": "Immersive sports video production: LNB, BCL, LFP, FDJ, PSG..."
+        }
+      }
     }
   },
   "reels": {
