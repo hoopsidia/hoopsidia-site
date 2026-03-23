@@ -277,15 +277,11 @@ export default function Hero() {
     const cardRect = card.getBoundingClientRect();
 
     const targetX = e.clientX - sectionRect.left - sectionRect.width / 2;
-    const targetY = e.clientY - sectionRect.top - sectionRect.height / 2;
 
     const maxX = (sectionRect.width - cardRect.width) / 2 - 16;
-    const maxY = (sectionRect.height - cardRect.height) / 2 - 40;
     const clampedX = Math.max(-maxX, Math.min(maxX, targetX));
-    const clampedY = Math.max(-maxY, Math.min(maxY, targetY));
 
     translateX.set(clampedX);
-    translateY.set(clampedY);
   };
 
   const handleMouseLeave = () => {
@@ -297,7 +293,7 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative min-h-[70vh] flex items-center justify-center bg-black text-white overflow-hidden pt-16"
+      className="relative min-h-[55vh] flex items-center justify-center bg-black text-white overflow-hidden pt-16"
       onMouseMove={isMobile ? undefined : handleMouseMove}
       onMouseLeave={isMobile ? undefined : handleMouseLeave}
     >

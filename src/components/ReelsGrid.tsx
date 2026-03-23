@@ -145,7 +145,7 @@ export default function ReelsGrid() {
               {/* Stats overlay on hover */}
               {(reel.views != null || reel.like_count != null) && (
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none flex items-center justify-center">
-                  <div className="flex flex-wrap items-center justify-center gap-3">
+                  <div className="flex flex-wrap items-center justify-center gap-2">
                     {reel.views != null && (
                       <div className="flex flex-col items-center w-10">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="white" className="opacity-90">
