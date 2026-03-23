@@ -11,7 +11,7 @@ export const CLIENTS = [
   { name: "Betclic Élite", logo: "/logos/betclic-elite.webp", hasLogo: true },
   { name: "Decathlon", logo: "/logos/decathlon.png", hasLogo: true, scale: 0.85 },
   { name: "Puma", logo: "/logos/puma.webp", hasLogo: true },
-  { name: "Visa", logo: "/logos/visa.webp", hasLogo: true },
+  { name: "Visa", logo: "/logos/visa.webp", hasLogo: true, scale: 0.8 },
   { name: "Back Market", logo: "/logos/back-market.webp", hasLogo: true },
   { name: "Caisse d'Épargne", logo: "/logos/caisse-depargne.webp", hasLogo: true },
   { name: "Suzuki", logo: "/logos/suzuki.webp", hasLogo: true },
