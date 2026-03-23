@@ -16,40 +16,6 @@ import {
 } from "recharts";
 import { PLACEHOLDER_IG_STATS } from "@/lib/constants";
 
-function TypewriterTitle({ text }: { text: string }) {
-  const ref = useRef<HTMLHeadingElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [displayedText, setDisplayedText] = useState("");
-  const [showCursor, setShowCursor] = useState(true);
-
-  useEffect(() => {
-    if (!isInView) return;
-    setDisplayedText("");
-    let i = 0;
-    const interval = setInterval(() => {
-      i++;
-      setDisplayedText(text.slice(0, i));
-      if (i >= text.length) {
-        clearInterval(interval);
-        setTimeout(() => setShowCursor(false), 1500);
-      }
-    }, 60);
-    return () => clearInterval(interval);
-  }, [isInView, text]);
-
-  return (
-    <h2
-      ref={ref}
-      className="font-heading text-3xl sm:text-4xl font-bold italic text-orange"
-    >
-      {displayedText}
-      {showCursor && isInView && (
-        <span className="animate-pulse ml-0.5 text-orange">|</span>
-      )}
-    </h2>
-  );
-}
-
 function StatCard({
   value,
   label,
@@ -103,7 +69,9 @@ export default function StatsDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Title */}
         <div className="text-center mb-16">
-          <TypewriterTitle text={t("title")} />
+          <h2 className="font-heading text-3xl sm:text-4xl font-bold italic uppercase">
+            {t("title")}
+          </h2>
           <p className="mt-3 text-white">{t("subtitle")}</p>
         </div>
 
