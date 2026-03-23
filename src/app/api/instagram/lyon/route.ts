@@ -20,7 +20,7 @@ export async function GET() {
     // then fetch full details. Alternatively, we can search through the user's media.
     // Simplest approach: fetch all user media and filter by permalink containing the shortcodes.
     const res = await fetch(
-      `https://graph.instagram.com/v21.0/me/media?fields=id,media_type,media_url,permalink,thumbnail_url,caption,video_views&limit=50&access_token=${accessToken}`,
+      `https://graph.instagram.com/v21.0/me/media?fields=id,media_type,media_url,permalink,thumbnail_url,caption,video_views,like_count,comments_count&limit=50&access_token=${accessToken}`,
       { next: { revalidate: 3600 } },
     );
     const data = await res.json();
@@ -38,6 +38,8 @@ export async function GET() {
       thumbnail_url?: string;
       caption?: string;
       video_views?: number;
+      like_count?: number;
+      comments_count?: number;
     }>;
 
     const reels = LYON_SHORTCODES.map((code) => {
@@ -50,6 +52,8 @@ export async function GET() {
         media_url: found.media_url,
         caption: found.caption,
         video_views: found.video_views ?? null,
+        like_count: found.like_count ?? null,
+        comments_count: found.comments_count ?? null,
       };
     }).filter(Boolean);
 

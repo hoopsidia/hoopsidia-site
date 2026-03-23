@@ -12,6 +12,8 @@ type Reel = {
   media_url?: string;
   caption?: string;
   video_views?: number | null;
+  like_count?: number | null;
+  comments_count?: number | null;
 };
 
 function formatViews(views: number): string {
@@ -153,15 +155,34 @@ export default function LyonCourt() {
                     <span className="text-white/20 text-[10px]">Reel</span>
                   </a>
                 )}
-                {reel.video_views != null && (
-                  <div className="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/60 to-transparent pointer-events-none">
-                    <div className="flex items-center gap-1">
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="white" className="opacity-80">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                      <span className="font-heading text-[10px] text-white/90">
-                        {formatViews(reel.video_views)}
-                      </span>
+                {/* Stats overlay on hover */}
+                {(reel.video_views != null || reel.like_count != null || reel.comments_count != null) && (
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none flex items-center justify-center">
+                    <div className="flex items-center gap-3">
+                      {reel.video_views != null && (
+                        <div className="flex flex-col items-center">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                          <span className="font-heading text-[10px] text-white mt-0.5">{formatViews(reel.video_views)}</span>
+                        </div>
+                      )}
+                      {reel.like_count != null && (
+                        <div className="flex flex-col items-center">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                          </svg>
+                          <span className="font-heading text-[10px] text-white mt-0.5">{formatViews(reel.like_count)}</span>
+                        </div>
+                      )}
+                      {reel.comments_count != null && (
+                        <div className="flex flex-col items-center">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="white" className="opacity-90">
+                            <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z" />
+                          </svg>
+                          <span className="font-heading text-[10px] text-white mt-0.5">{formatViews(reel.comments_count)}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
