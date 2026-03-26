@@ -6,13 +6,12 @@ import { useRouter, usePathname } from "@/i18n/navigation";
 
 const navItems = [
   { key: "home", href: "#hero" },
-  { key: "services", href: "#services" },
   { key: "mediaKit", href: "#stats" },
   { key: "clients", href: "#clients" },
   { key: "contact", href: "#contact" },
 ] as const;
 
-const sectionIds = ["hero", "services", "stats", "clients", "contact"];
+const sectionIds = ["hero", "stats", "clients", "contact"];
 
 export default function Header() {
   const t = useTranslations("nav");
@@ -155,12 +154,6 @@ export default function Header() {
             >
               {locale === "fr" ? "EN" : "FR"}
             </button>
-            <a
-              href="#contact"
-              className="relative z-10 hidden sm:inline-flex text-xs sm:text-sm font-bold text-black bg-orange px-4 py-1.5 rounded-full hover:bg-orange-dark transition-colors ml-2 whitespace-nowrap"
-            >
-              {t("collaborate")}
-            </a>
           </nav>
         </div>
       </div>
