@@ -1,16 +1,21 @@
 {
   "nav": {
     "home": "Home",
+    "services": "Services",
     "stats": "Stats",
     "mediaKit": "Media Kit",
     "clients": "Clients",
     "pimpMyCourt": "Pimp My Court",
-    "contact": "Contact"
+    "contact": "Contact",
+    "collaborate": "Collaborate"
   },
   "hero": {
     "baseline": "Basketball content creator",
     "subtitle": "Since 2016, I've been documenting my passion for basketball, from courtside seats at the NBA to building basketball courts.",
-    "cta": "Work with me",
+    "cta": {
+      "collaborate": "Collaborate",
+      "discover": "Discover"
+    },
     "stats": {
       "youtube": "YouTube Subscribers",
       "instagram": "Instagram Followers",
@@ -62,6 +67,26 @@
       }
     }
   },
+  "services": {
+    "title": "What I offer",
+    "subtitle": "Creative solutions for your brand in the basketball world",
+    "content": {
+      "title": "Content Creation",
+      "description": "Videos, reels, stories and custom formats for your social media. From concept to publication, I create authentic content that engages."
+    },
+    "consulting": {
+      "title": "Social Media Consulting",
+      "description": "Sports content strategy, brand support on social media. I help you speak the language of basketball."
+    },
+    "events": {
+      "title": "Events",
+      "description": "Basketball event hosting, brand activations, tournaments and immersive experiences for your clients."
+    },
+    "pmc": {
+      "title": "Pimp My Court",
+      "description": "Community basketball court renovation. A high social and media impact project for your brand."
+    }
+  },
   "reels": {
     "title": "Latest Reels",
     "subtitle": "My latest videos on Instagram @hoopsidia",
@@ -84,7 +109,9 @@
     "female": "Female",
     "ages": "Age Groups",
     "cities": "Cities",
-    "placeholder": "Demo data — Meta API connection pending"
+    "placeholder": "Demo data — Meta API connection pending",
+    "benchmark": "vs industry avg",
+    "downloadPdf": "Download Media Kit"
   },
   "clients": {
     "title": "They trusted me",
@@ -114,6 +141,36 @@
       }
     }
   },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know before collaborating",
+    "items": {
+      "q1": {
+        "question": "What types of collaborations do you offer?",
+        "answer": "I offer content creation (videos, reels, stories), sports social media consulting, basketball event hosting, and Pimp My Court projects (court renovation). Each collaboration is tailored to your specific goals."
+      },
+      "q2": {
+        "question": "How does a collaboration work?",
+        "answer": "We start with a scoping call to understand your objectives and budget. I then send a detailed creative proposal. Once approved, I produce the content and you receive a performance report after publication."
+      },
+      "q3": {
+        "question": "What platforms do you publish on?",
+        "answer": "I'm active on YouTube (113K subscribers), Instagram (71K followers) and TikTok. I can create content tailored to each platform or produce content for your own channels."
+      },
+      "q4": {
+        "question": "What's the production timeline?",
+        "answer": "Allow 2 to 4 weeks depending on project complexity. A simple product placement reel can be delivered in 1 week. A Pimp My Court project requires several months of preparation."
+      },
+      "q5": {
+        "question": "Can you create content outside of basketball?",
+        "answer": "My expertise and audience are basketball-focused, which is what makes my content powerful. However, I'm open to lifestyle, sports or streetwear brands looking to reach the basketball community."
+      },
+      "q6": {
+        "question": "Do you offer recurring partnerships?",
+        "answer": "Yes, I offer long-term partnerships with monthly or quarterly packages. This is often more effective than one-off collaborations to build a real presence with my community."
+      }
+    }
+  },
   "press": {
     "title": "Press Coverage",
     "subtitle": "They talked about Hoopsidia",
@@ -127,10 +184,27 @@
     "company": "Company (optional)",
     "subject": "Subject",
     "message": "Message",
+    "projectType": "Project Type",
+    "projectTypes": {
+      "content": "Content Creation",
+      "event": "Event",
+      "pmc": "Pimp My Court",
+      "consulting": "Consulting",
+      "other": "Other"
+    },
+    "budget": "Estimated Budget",
+    "budgets": {
+      "small": "< €2,000",
+      "medium": "€2,000 - €5,000",
+      "large": "€5,000 - €15,000",
+      "enterprise": "> €15,000"
+    },
     "send": "Send",
     "sending": "Sending...",
     "success": "Message sent successfully! I'll get back to you soon.",
-    "error": "Something went wrong. Please try again or email me directly."
+    "error": "Something went wrong. Please try again or email me directly.",
+    "orBook": "Or book a call",
+    "bookCall": "Schedule a meeting"
   },
   "footer": {
     "rights": "All rights reserved.",

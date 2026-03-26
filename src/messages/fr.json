@@ -1,16 +1,21 @@
 {
   "nav": {
     "home": "Accueil",
+    "services": "Services",
     "stats": "Stats",
     "mediaKit": "Media Kit",
     "clients": "Clients",
     "pimpMyCourt": "Pimp My Court",
-    "contact": "Contact"
+    "contact": "Contact",
+    "collaborate": "Collaborer"
   },
   "hero": {
     "baseline": "Créateur de contenu basketball",
     "subtitle": "Depuis 2016, je documente ma passion pour le basket, des sièges courtside en NBA jusqu'à la construction de terrains de basket.",
-    "cta": "Travailler avec moi",
+    "cta": {
+      "collaborate": "Collaborer",
+      "discover": "Découvrir"
+    },
     "stats": {
       "youtube": "Abonnés YouTube",
       "instagram": "Followers Instagram",
@@ -62,6 +67,26 @@
       }
     }
   },
+  "services": {
+    "title": "Ce que je propose",
+    "subtitle": "Des solutions créatives pour votre marque dans l'univers du basketball",
+    "content": {
+      "title": "Création de contenu",
+      "description": "Vidéos, reels, stories et formats sur-mesure pour vos réseaux sociaux. Du concept à la publication, je crée du contenu authentique qui engage."
+    },
+    "consulting": {
+      "title": "Consulting Social Media",
+      "description": "Stratégie de contenu sportif, accompagnement de marques sur les réseaux. Je vous aide à parler le langage du basket."
+    },
+    "events": {
+      "title": "Événementiel",
+      "description": "Animation d'événements basketball, activations de marque, tournois et expériences immersives pour vos clients."
+    },
+    "pmc": {
+      "title": "Pimp My Court",
+      "description": "Rénovation de terrains de basketball communautaires. Un projet à fort impact social et médiatique pour votre marque."
+    }
+  },
   "reels": {
     "title": "Derniers Reels",
     "subtitle": "Mes dernières vidéos sur Instagram @hoopsidia",
@@ -84,7 +109,9 @@
     "female": "Femmes",
     "ages": "Tranches d'âge",
     "cities": "Villes",
-    "placeholder": "Données de démonstration — connexion API Meta en attente"
+    "placeholder": "Données de démonstration — connexion API Meta en attente",
+    "benchmark": "vs moyenne secteur",
+    "downloadPdf": "Télécharger le Media Kit"
   },
   "clients": {
     "title": "Ils m'ont fait confiance",
@@ -114,6 +141,36 @@
       }
     }
   },
+  "faq": {
+    "title": "Questions fréquentes",
+    "subtitle": "Tout ce que vous devez savoir avant de collaborer",
+    "items": {
+      "q1": {
+        "question": "Quels types de collaborations proposez-vous ?",
+        "answer": "Je propose de la création de contenu (vidéos, reels, stories), du consulting en stratégie social media sportive, de l'animation d'événements basketball, et des projets Pimp My Court (rénovation de terrains). Chaque collaboration est sur-mesure selon vos objectifs."
+      },
+      "q2": {
+        "question": "Comment se déroule une collaboration ?",
+        "answer": "On commence par un appel de cadrage pour comprendre vos objectifs et votre budget. Je vous envoie ensuite une proposition créative détaillée. Une fois validée, je produis le contenu et vous recevez un rapport de performance après publication."
+      },
+      "q3": {
+        "question": "Sur quelles plateformes publiez-vous ?",
+        "answer": "Je suis actif sur YouTube (113K abonnés), Instagram (71K followers) et TikTok. Je peux créer du contenu adapté à chaque plateforme ou produire du contenu pour vos propres réseaux."
+      },
+      "q4": {
+        "question": "Quel est le délai de production ?",
+        "answer": "Comptez entre 2 et 4 semaines selon la complexité du projet. Un simple placement produit en reel peut être livré en 1 semaine. Un projet Pimp My Court nécessite plusieurs mois de préparation."
+      },
+      "q5": {
+        "question": "Pouvez-vous créer du contenu en dehors du basketball ?",
+        "answer": "Mon expertise et mon audience sont centrées sur le basketball, c'est ce qui fait la force de mon contenu. Cependant, je suis ouvert aux marques lifestyle, sport ou streetwear qui souhaitent toucher la communauté basket."
+      },
+      "q6": {
+        "question": "Proposez-vous des formules récurrentes ?",
+        "answer": "Oui, je propose des partenariats long terme avec des formules mensuelles ou trimestrielles. C'est souvent plus efficace qu'une collaboration ponctuelle pour construire une vraie présence auprès de ma communauté."
+      }
+    }
+  },
   "press": {
     "title": "Presse Tout Terrain",
     "subtitle": "Ils ont parlé d'Hoopsidia",
@@ -127,10 +184,27 @@
     "company": "Société (optionnel)",
     "subject": "Objet",
     "message": "Message",
+    "projectType": "Type de projet",
+    "projectTypes": {
+      "content": "Création de contenu",
+      "event": "Événementiel",
+      "pmc": "Pimp My Court",
+      "consulting": "Consulting",
+      "other": "Autre"
+    },
+    "budget": "Budget estimatif",
+    "budgets": {
+      "small": "< 2 000 €",
+      "medium": "2 000 - 5 000 €",
+      "large": "5 000 - 15 000 €",
+      "enterprise": "> 15 000 €"
+    },
     "send": "Envoyer",
     "sending": "Envoi en cours...",
     "success": "Message envoyé avec succès ! Je vous répondrai rapidement.",
-    "error": "Une erreur est survenue. Réessayez ou contactez-moi directement par email."
+    "error": "Une erreur est survenue. Réessayez ou contactez-moi directement par email.",
+    "orBook": "Ou réservez un appel",
+    "bookCall": "Prendre rendez-vous"
   },
   "footer": {
     "rights": "Tous droits réservés.",
