@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import nodemailer from "nodemailer";
 
 // Simple rate limiting: max 5 submissions per minute per IP
 const rateLimit = new Map<string, number[]>();
@@ -37,21 +38,37 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // If Resend API key is configured, send email
-    const resendKey = process.env.RESEND_API_KEY;
-    if (resendKey) {
-      const { Resend } = await import("resend");
-      const resend = new Resend(resendKey);
+    const gmailUser = process.env.GMAIL_USER;
+    const gmailPass = process.env.GMAIL_APP_PASSWORD;
 
-      await resend.emails.send({
-        from: "Hoopsidia Contact <onboarding@resend.dev>",
+    if (gmailUser && gmailPass) {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: gmailUser,
+          pass: gmailPass,
+        },
+      });
+
+      await transporter.sendMail({
+        from: `Hoopsidia Contact <${gmailUser}>`,
         to: "hoopsidia@gmail.com",
+        replyTo: email,
         subject: `[Hoopsidia.com] ${subject}`,
         text: `Nom: ${name}\nEmail: ${email}\nSociété: ${company || "N/A"}\n\n${message}`,
+        html: `
+          <h2>Nouveau message depuis hoopsidia.com</h2>
+          <p><strong>Nom:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Société:</strong> ${company || "N/A"}</p>
+          <p><strong>Objet:</strong> ${subject}</p>
+          <hr/>
+          <p>${message.replace(/\n/g, "<br/>")}</p>
+        `,
       });
     } else {
       // Log to console in development
-      console.log("Contact form submission (no RESEND_API_KEY):", {
+      console.log("Contact form submission (no GMAIL config):", {
         name,
         email,
         company,
