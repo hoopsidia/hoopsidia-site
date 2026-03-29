@@ -80,7 +80,7 @@ export default function ReelsGrid() {
     <section className="bg-black py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold italic uppercase text-white">
+          <h2 className="font-heading text-3xl sm:text-4xl font-bold italic uppercase text-blue-500">
             {t("title")}
           </h2>
           <p className="mt-3 text-white/50">{t("subtitle")}</p>
