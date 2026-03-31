@@ -29,12 +29,12 @@ function SocialIcon({ platform }: { platform: "youtube" | "instagram" | "tiktok"
 
 function getFields(t: (key: string) => string) {
   return [
-    { label: t("card.lastName"), value: "Turgot" },
-    { label: t("card.firstName"), value: "Valentin" },
-    { label: t("card.age"), value: t("card.ageValue") },
-    { label: t("card.height"), value: t("card.heightValue") },
-    { label: t("card.courts"), value: "4" },
-    { label: t("card.since"), value: t("card.sinceValue") },
+    { label: t("card.firstName"), value: "Valentin", className: "" },
+    { label: t("card.lastName"), value: "Turgot", className: "" },
+    { label: t("card.pseudo"), value: "HOOPSIDIA", className: "italic text-orange" },
+    { label: t("card.age"), value: t("card.ageValue"), className: "" },
+{ label: t("card.courts"), value: "4", className: "" },
+    { label: t("card.since"), value: t("card.sinceValue"), className: "" },
   ];
 }
 
@@ -381,7 +381,7 @@ export default function Hero() {
                   <span className="text-white/40 text-sm shrink-0">
                     {field.label}:
                   </span>
-                  <span className="font-heading text-sm font-bold text-white">
+                  <span className={`font-heading text-sm font-bold text-white ${field.className}`}>
                     {field.value}
                   </span>
                 </div>

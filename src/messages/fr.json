@@ -18,16 +18,17 @@
       "views": "Vues cumulées"
     },
     "card": {
-      "lastName": "Nom",
       "firstName": "Prénom",
+      "lastName": "Nom",
+      "pseudo": "Pseudo",
       "age": "Âge",
-      "height": "Taille",
+      "audience": "Audience",
       "courts": "Terrains construits",
-      "since": "Débuts",
+      "since": "Depuis",
       "platforms": "Plateformes",
       "ageValue": "33 ans",
       "heightValue": "1m73",
-      "sinceValue": "Septembre 2016",
+      "sinceValue": "2016",
       "quote": "Je retape des terrains\navec ma caméra"
     },
     "cv": {

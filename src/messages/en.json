@@ -18,16 +18,17 @@
       "views": "Total Views"
     },
     "card": {
-      "lastName": "Last name",
       "firstName": "First name",
+      "lastName": "Last name",
+      "pseudo": "Pseudo",
       "age": "Age",
-      "height": "Height",
+      "audience": "Audience",
       "courts": "Courts built",
       "since": "Started",
       "platforms": "Platforms",
       "ageValue": "33 y/o",
       "heightValue": "5'8\"",
-      "sinceValue": "September 2016",
+      "sinceValue": "2016",
       "quote": "I fix up courts\nwith my camera"
     },
     "cv": {
