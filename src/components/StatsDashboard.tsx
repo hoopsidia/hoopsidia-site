@@ -42,6 +42,39 @@ function StatCard({
   );
 }
 
+function GenderPanel({ gender, tMale, tFemale }: { gender: { label: string; value: number; percent: number }[]; tMale: string; tFemale: string }) {
+  const mf = gender.filter(g => g.label === "M" || g.label === "F");
+  const totalMF = mf.reduce((s, g) => s + g.value, 0);
+  const genderData = mf.map(g => ({
+    ...g,
+    percent: totalMF > 0 ? Math.round((g.value / totalMF) * 100) : g.percent,
+  }));
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center gap-2">
+      <div className="w-24 h-24 flex-shrink-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie data={genderData} dataKey="value" nameKey="label" cx="50%" cy="50%" innerRadius={25} outerRadius={45} strokeWidth={0}>
+              {genderData.map((g) => (
+                <Cell key={g.label} fill={g.label === "M" ? "#FC8D33" : "#ffffff30"} />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="space-y-1">
+        {genderData.map((g) => (
+          <div key={g.label} className="flex items-center gap-2">
+            <div className="w-2.5 h-2.5 rounded-full" style={{ background: g.label === "M" ? "#FC8D33" : "rgba(255,255,255,0.2)" }} />
+            <span className="text-xs text-white/70">{g.label === "M" ? tMale : tFemale}</span>
+            <span className="text-xs text-orange font-bold ml-auto">{g.percent}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function StatsDashboard() {
   const t = useTranslations("stats");
   const [stats, setStats] = useState(PLACEHOLDER_IG_STATS);
@@ -59,10 +92,7 @@ export default function StatsDashboard() {
       .catch(() => {});
   }, []);
 
-  const chartData = stats.followerHistory.map((d) => ({
-    date: d.date,
-    followers: d.followers,
-  }));
+  const chartData = stats.followerHistory;
 
   return (
     <section id="stats" className="bg-black text-white py-16">
@@ -114,47 +144,7 @@ export default function StatsDashboard() {
             <h3 className="font-heading text-xs font-bold text-white uppercase tracking-wider mb-3">
               {t("gender")}
             </h3>
-            {(() => {
-              const mf = stats.demographics.gender.filter(g => g.label === "M" || g.label === "F");
-              const totalMF = mf.reduce((s, g) => s + g.value, 0);
-              const genderData = mf.map(g => ({
-                ...g,
-                percent: totalMF > 0 ? Math.round((g.value / totalMF) * 100) : g.percent,
-              }));
-              return (
-                <div className="flex-1 flex flex-col items-center justify-center gap-2">
-                  <div className="w-24 h-24 flex-shrink-0">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={genderData}
-                          dataKey="value"
-                          nameKey="label"
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={25}
-                          outerRadius={45}
-                          strokeWidth={0}
-                        >
-                          {genderData.map((g) => (
-                            <Cell key={g.label} fill={g.label === "M" ? "#FC8D33" : "#ffffff30"} />
-                          ))}
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div className="space-y-1">
-                    {genderData.map((g) => (
-                      <div key={g.label} className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 rounded-full" style={{ background: g.label === "M" ? "#FC8D33" : "rgba(255,255,255,0.2)" }} />
-                        <span className="text-xs text-white/70">{g.label === "M" ? t("male") : t("female")}</span>
-                        <span className="text-xs text-orange font-bold ml-auto">{g.percent}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
+            <GenderPanel gender={stats.demographics.gender} tMale={t("male")} tFemale={t("female")} />
           </motion.div>
 
           {/* Ages */}
@@ -169,20 +159,21 @@ export default function StatsDashboard() {
               {t("ages")}
             </h3>
             <div className="flex-1 flex flex-col justify-center space-y-2">
-              {[...stats.demographics.ages].sort((a, b) => parseInt(a.label) - parseInt(b.label)).map((a) => (
-                <div key={a.label}>
-                  <div className="flex justify-between text-xs mb-0.5">
-                    <span className="text-white/70">{a.label}</span>
-                    <span className="text-orange font-bold">{a.percent}%</span>
+              {(() => {
+                const sorted = [...stats.demographics.ages].sort((a, b) => parseInt(a.label) - parseInt(b.label));
+                const maxPct = Math.max(...sorted.map(x => x.percent));
+                return sorted.map((a) => (
+                  <div key={a.label}>
+                    <div className="flex justify-between text-xs mb-0.5">
+                      <span className="text-white/70">{a.label}</span>
+                      <span className="text-orange font-bold">{a.percent}%</span>
+                    </div>
+                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full bg-orange rounded-full" style={{ width: `${(a.percent / maxPct) * 100}%` }} />
+                    </div>
                   </div>
-                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-orange rounded-full"
-                      style={{ width: `${(a.percent / Math.max(...stats.demographics.ages.map(x => x.percent))) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ));
+              })()}
             </div>
           </motion.div>
 

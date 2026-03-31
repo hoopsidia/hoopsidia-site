@@ -1,3 +1,7 @@
+export const BASE_URL = "https://hoopsidia.com";
+
+export const BRAND_ORANGE = "#FC8D33";
+
 export const HERO_STATS = {
   youtube: 113000,
   instagram: 71000,
@@ -5,7 +9,9 @@ export const HERO_STATS = {
   views: 50000000,
 };
 
-export const CLIENTS = [
+export type Client = { name: string; logo: string; hasLogo: true; scale?: number };
+
+export const CLIENTS: Client[] = [
   { name: "NBA", logo: "/logos/nba.webp", hasLogo: true },
   { name: "Euroleague", logo: "/logos/euroleague.webp", hasLogo: true },
   { name: "Betclic Élite", logo: "/logos/betclic-elite.webp", hasLogo: true },

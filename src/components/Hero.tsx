@@ -50,10 +50,12 @@ type ScoreFlash = {
   y: number;
 };
 
+const SPRING_CONFIG = { damping: 20, stiffness: 120 };
+
 let globalBallId = 0;
 function nextBallId() {
   globalBallId += 1;
-  return `ball-${globalBallId}-${Date.now()}`;
+  return `ball-${globalBallId}`;
 }
 
 function FallingBall({
@@ -94,7 +96,6 @@ function FallingBall({
           : { duration: 8 / ball.speed, ease: "linear" }
       }
       className="z-[15] pointer-events-none absolute"
-      style={{}}
     >
       <Image
         src="/images/logo-head.png"
@@ -156,11 +157,7 @@ export default function Hero() {
   }, []);
 
   const translateX = useMotionValue(0);
-  const translateY = useMotionValue(0);
-
-  const springConfig = { damping: 20, stiffness: 120 };
-  const xSpring = useSpring(translateX, springConfig);
-  const ySpring = useSpring(translateY, springConfig);
+  const xSpring = useSpring(translateX, SPRING_CONFIG);
 
   const [balls, setBalls] = useState<Ball[]>([]);
   const [score, setScore] = useState(0);
@@ -285,7 +282,6 @@ export default function Hero() {
 
   const handleMouseLeave = () => {
     translateX.set(0);
-    translateY.set(0);
   };
 
   return (
@@ -338,7 +334,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          style={isMobile ? undefined : { x: xSpring, y: ySpring }}
+          style={isMobile ? undefined : { x: xSpring }}
           className="glass rounded-2xl p-6 sm:p-8 max-w-2xl w-full border border-white/10 will-change-transform relative"
         >
           <div className="flex flex-row gap-4 sm:gap-8">

@@ -10,22 +10,17 @@ const LYON_SHORTCODES = [
 
 async function fetchInsights(mediaId: string, accessToken: string) {
   try {
-    const [viewsRes, fbViewsRes, sharesRes] = await Promise.all([
-      fetch(`https://graph.instagram.com/v21.0/${mediaId}/insights?metric=views&access_token=${accessToken}`),
-      fetch(`https://graph.instagram.com/v21.0/${mediaId}/insights?metric=facebook_views&access_token=${accessToken}`),
-      fetch(`https://graph.instagram.com/v21.0/${mediaId}/insights?metric=shares,saved&access_token=${accessToken}`),
-    ]);
-    const viewsData = await viewsRes.json();
-    const fbViewsData = await fbViewsRes.json();
-    const sharesData = await sharesRes.json();
+    const res = await fetch(
+      `https://graph.instagram.com/v21.0/${mediaId}/insights?metric=views,facebook_views,shares,saved&access_token=${accessToken}`
+    );
+    const data = await res.json();
 
-    const igViews = viewsData.data?.[0]?.values?.[0]?.value ?? 0;
-    const fbViews = fbViewsData.data?.[0]?.values?.[0]?.value ?? 0;
+    const find = (name: string) => data.data?.find((m: { name: string }) => m.name === name)?.values?.[0]?.value ?? 0;
+    const views = (find("views") + find("facebook_views")) || null;
+    const shares = find("shares") || null;
+    const saved = find("saved") || null;
 
-    const shares = sharesData.data?.find((m: { name: string }) => m.name === "shares")?.values?.[0]?.value ?? null;
-    const saved = sharesData.data?.find((m: { name: string }) => m.name === "saved")?.values?.[0]?.value ?? null;
-
-    return { views: (igViews + fbViews) || null, shares, saved };
+    return { views, shares, saved };
   } catch {
     return { views: null, shares: null, saved: null };
   }

@@ -18,6 +18,22 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// Singleton transporter — reuse SMTP connection across requests
+const gmailUser = process.env.GMAIL_USER;
+const gmailPass = process.env.GMAIL_APP_PASSWORD;
+const transporter =
+  gmailUser && gmailPass
+    ? nodemailer.createTransport({ service: "gmail", auth: { user: gmailUser, pass: gmailPass } })
+    : null;
+
 export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for") ?? "unknown";
 
@@ -38,18 +54,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const gmailUser = process.env.GMAIL_USER;
-    const gmailPass = process.env.GMAIL_APP_PASSWORD;
-
-    if (gmailUser && gmailPass) {
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: gmailUser,
-          pass: gmailPass,
-        },
-      });
-
+    if (transporter) {
       await transporter.sendMail({
         from: `Hoopsidia Contact <${gmailUser}>`,
         to: "hoopsidia@gmail.com",
@@ -58,23 +63,16 @@ export async function POST(req: NextRequest) {
         text: `Nom: ${name}\nEmail: ${email}\nSociété: ${company || "N/A"}\n\n${message}`,
         html: `
           <h2>Nouveau message depuis hoopsidia.com</h2>
-          <p><strong>Nom:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Société:</strong> ${company || "N/A"}</p>
-          <p><strong>Objet:</strong> ${subject}</p>
+          <p><strong>Nom:</strong> ${escapeHtml(name)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+          <p><strong>Société:</strong> ${escapeHtml(company || "N/A")}</p>
+          <p><strong>Objet:</strong> ${escapeHtml(subject)}</p>
           <hr/>
-          <p>${message.replace(/\n/g, "<br/>")}</p>
+          <p>${escapeHtml(message).replace(/\n/g, "<br/>")}</p>
         `,
       });
     } else {
-      // Log to console in development
-      console.log("Contact form submission (no GMAIL config):", {
-        name,
-        email,
-        company,
-        subject,
-        message,
-      });
+      console.log("Contact form submission (no GMAIL config):", { name, subject });
     }
 
     return NextResponse.json({ success: true });

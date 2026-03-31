@@ -15,36 +15,23 @@ export async function GET() {
   try {
     const baseUrl = "https://graph.instagram.com/v21.0";
 
-    // Get follower count
-    const profileRes = await fetch(
-      `${baseUrl}/me?fields=followers_count,media_count&access_token=${accessToken}`,
-      { next: { revalidate: 3600 } }
-    );
-    const profile = await profileRes.json();
+    const now = Math.floor(Date.now() / 1000);
+    const since30d = now - 30 * 24 * 60 * 60;
+    const sinceYear = now - 365 * 24 * 60 * 60;
 
-    // Get recent media for engagement calculation
-    const mediaRes = await fetch(
-      `${baseUrl}/me/media?fields=like_count,comments_count,timestamp&limit=25&access_token=${accessToken}`,
-      { next: { revalidate: 3600 } }
-    );
-    const media = await mediaRes.json();
+    const [profileRes, mediaRes, insightsRes, followerHistoryRes] = await Promise.all([
+      fetch(`${baseUrl}/me?fields=followers_count,media_count&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
+      fetch(`${baseUrl}/me/media?fields=like_count,comments_count,timestamp&limit=25&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
+      fetch(`${baseUrl}/me/insights?metric=reach,views&period=day&metric_type=total_value&since=${since30d}&until=${now}&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
+      fetch(`${baseUrl}/me/insights?metric=follower_count&period=day&since=${sinceYear}&until=${now}&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
+    ]);
 
-    // Get 30-day insights (reach, views)
-    const since = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60;
-    const until = Math.floor(Date.now() / 1000);
-    const insightsRes = await fetch(
-      `${baseUrl}/me/insights?metric=reach,views&period=day&metric_type=total_value&since=${since}&until=${until}&access_token=${accessToken}`,
-      { next: { revalidate: 3600 } }
-    );
-    const insights = await insightsRes.json();
-
-    // Get 1-year daily follower count changes for growth chart
-    const sinceYear = Math.floor(Date.now() / 1000) - 365 * 24 * 60 * 60;
-    const followerHistoryRes = await fetch(
-      `${baseUrl}/me/insights?metric=follower_count&period=day&since=${sinceYear}&until=${until}&access_token=${accessToken}`,
-      { next: { revalidate: 3600 } }
-    );
-    const followerHistoryData = await followerHistoryRes.json();
+    const [profile, media, insights, followerHistoryData] = await Promise.all([
+      profileRes.json(),
+      mediaRes.json(),
+      insightsRes.json(),
+      followerHistoryRes.json(),
+    ]);
 
     const followers = profile.followers_count ?? PLACEHOLDER_IG_STATS.followers;
 

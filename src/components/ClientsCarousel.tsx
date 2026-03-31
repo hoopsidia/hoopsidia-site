@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState, useCallback, useEffect } from "react";
-import { CLIENTS } from "@/lib/constants";
+import { useState, useCallback } from "react";
+import { CLIENTS, type Client } from "@/lib/constants";
 
 function shuffle<T>(array: T[]): T[] {
   const arr = [...array];
@@ -13,7 +13,7 @@ function shuffle<T>(array: T[]): T[] {
   return arr;
 }
 
-function ClientCard({ client }: { client: (typeof CLIENTS)[number] }) {
+function ClientCard({ client }: { client: Client }) {
   const [logoTransform, setLogoTransform] = useState("");
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -28,7 +28,7 @@ function ClientCard({ client }: { client: (typeof CLIENTS)[number] }) {
     setLogoTransform("");
   }, []);
 
-  const scale = (client as { scale?: number }).scale;
+  const scale = client.scale;
 
   return (
     <div
@@ -59,10 +59,7 @@ function ClientCard({ client }: { client: (typeof CLIENTS)[number] }) {
 
 export default function ClientsCarousel() {
   const t = useTranslations("clients");
-  const [shuffled, setShuffled] = useState(CLIENTS);
-  useEffect(() => {
-    setShuffled(shuffle(CLIENTS));
-  }, []);
+  const [shuffled] = useState(() => shuffle(CLIENTS));
 
   return (
     <section id="clients" className="bg-black py-24">

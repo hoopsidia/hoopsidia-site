@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useRef, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
 
 export default function ContactForm() {
   const t = useTranslations("contact");
