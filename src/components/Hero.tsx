@@ -44,6 +44,7 @@ type Ball = {
   x: number;
   speed: number;
   scored: boolean;
+  missed: boolean;
 };
 
 type ScoreFlash = {
@@ -52,6 +53,7 @@ type ScoreFlash = {
   y: number;
 };
 
+const MAX_MISSES = 10;
 const SPRING_CONFIG = { damping: 20, stiffness: 120 };
 
 let globalBallId = 0;
@@ -63,14 +65,17 @@ function nextBallId() {
 function FallingBall({
   ball,
   onCollision,
+  onMissed,
 }: {
   ball: Ball;
   onCollision: (id: string, el: HTMLDivElement) => void;
+  onMissed: (id: string) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const missedRef = useRef(false);
 
   useEffect(() => {
-    if (ball.scored) return;
+    if (ball.scored || ball.missed) return;
     let active = true;
     const check = () => {
       if (!active || !ref.current) return;
@@ -78,10 +83,8 @@ function FallingBall({
       if (active) requestAnimationFrame(check);
     };
     requestAnimationFrame(check);
-    return () => {
-      active = false;
-    };
-  }, [ball.id, ball.scored, onCollision]);
+    return () => { active = false; };
+  }, [ball.id, ball.scored, ball.missed, onCollision]);
 
   return (
     <motion.div
@@ -90,13 +93,23 @@ function FallingBall({
       animate={
         ball.scored
           ? { top: "+=80", opacity: 0, scale: 0.5 }
-          : { top: "100%" }
+          : ball.missed
+          ? { opacity: 0 }
+          : { top: "110%" }
       }
       transition={
         ball.scored
-          ? { duration: 1, ease: "easeIn" }
+          ? { duration: 0.6, ease: "easeIn" }
+          : ball.missed
+          ? { duration: 0.3 }
           : { duration: 8 / ball.speed, ease: "linear" }
       }
+      onAnimationComplete={() => {
+        if (!ball.scored && !ball.missed && !missedRef.current) {
+          missedRef.current = true;
+          onMissed(ball.id);
+        }
+      }}
       className="z-[15] pointer-events-none absolute"
     >
       <Image
@@ -113,9 +126,7 @@ function FallingBall({
 function BasketNet() {
   return (
     <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center z-[25]">
-      {/* Rim */}
       <div className="w-24 h-3 rounded-full border-2 border-orange bg-orange/20 shadow-[0_0_12px_rgba(252,141,51,0.3)]" />
-      {/* Net with swing animation */}
       <svg
         width="96"
         height="72"
@@ -123,7 +134,6 @@ function BasketNet() {
         className="mt-[-2px] animate-net-swing"
         style={{ transformOrigin: "top center" }}
       >
-        {/* Vertical threads */}
         <path d="M8 0 Q16 36, 28 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
         <path d="M20 0 Q26 36, 33 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
         <path d="M32 0 Q36 36, 38 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
@@ -132,7 +142,6 @@ function BasketNet() {
         <path d="M64 0 Q60 36, 58 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
         <path d="M76 0 Q70 36, 63 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
         <path d="M88 0 Q80 36, 68 68" stroke="rgba(255,255,255,0.13)" fill="none" strokeWidth="1.2" />
-        {/* Cross threads */}
         <path d="M12 10 Q48 16, 84 10" stroke="rgba(255,255,255,0.08)" fill="none" strokeWidth="0.8" />
         <path d="M16 20 Q48 26, 80 20" stroke="rgba(255,255,255,0.08)" fill="none" strokeWidth="0.8" />
         <path d="M20 30 Q48 36, 76 30" stroke="rgba(255,255,255,0.08)" fill="none" strokeWidth="0.8" />
@@ -141,6 +150,33 @@ function BasketNet() {
         <path d="M32 60 Q48 64, 64 60" stroke="rgba(255,255,255,0.08)" fill="none" strokeWidth="0.8" />
       </svg>
     </div>
+  );
+}
+
+function GameOverModal({ score }: { score: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="absolute inset-0 z-50 flex items-center justify-center"
+    >
+      <div className="glass rounded-2xl p-8 border border-white/10 text-center max-w-xs mx-4 shadow-2xl">
+        <div className="text-5xl mb-4">🏀</div>
+        <h3 className="font-heading text-2xl font-bold italic uppercase text-white mb-2">
+          Game Over
+        </h3>
+        <p className="text-white/50 text-sm mb-4">
+          Tu as raté {MAX_MISSES} ballons
+        </p>
+        <div className="text-orange font-heading text-4xl font-bold mb-5">
+          {score} pts
+        </div>
+        <p className="text-white/40 text-xs leading-relaxed">
+          Recharge la page pour une nouvelle session basket
+        </p>
+      </div>
+    </motion.div>
   );
 }
 
@@ -163,11 +199,17 @@ export default function Hero() {
 
   const [balls, setBalls] = useState<Ball[]>([]);
   const [score, setScore] = useState(0);
+  const [misses, setMisses] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
   const [flashes, setFlashes] = useState<ScoreFlash[]>([]);
   const cardPosRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
   const scoredSetRef = useRef(new Set<string>());
+  const missedSetRef = useRef(new Set<string>());
+  const missesRef = useRef(0);
+  const gameOverRef = useRef(false);
+  const elapsedRef = useRef(0); // seconds since start, for difficulty curve
 
-  // Track card position relative to section (desktop only)
+  // Track card position
   useEffect(() => {
     if (isMobile) return;
     const interval = setInterval(() => {
@@ -186,48 +228,84 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, [isMobile]);
 
-  // Spawn balls (desktop only)
+  // Spawn balls with progressive difficulty
   useEffect(() => {
     if (isMobile) return;
-    const spawnBall = () => {
+
+    const tick = 200; // ms between difficulty recalculations
+    let elapsed = 0;
+    let spawnAccum = 0;
+
+    const interval = setInterval(() => {
+      if (gameOverRef.current) return;
+
+      elapsed += tick / 1000;
+      elapsedRef.current = elapsed;
+
+      // Difficulty: every 10s, spawn interval drops and count rises
+      // interval: 2200ms → 600ms over ~60s
+      const level = Math.min(elapsed / 60, 1); // 0→1 over 60s
+      const spawnInterval = 2200 - level * 1600; // 2200ms → 600ms
+      const maxConcurrent = Math.round(1 + level * 4); // 1→5 balls at once
+
+      spawnAccum += tick;
+      if (spawnAccum < spawnInterval) return;
+      spawnAccum = 0;
+
       const section = sectionRef.current;
       if (!section) return;
       const sectionRect = section.getBoundingClientRect();
-      // Balls fall in the middle third
       const thirdWidth = sectionRect.width / 3;
-      const ballX = thirdWidth + Math.random() * (thirdWidth - 60);
-      const speed = 1.5 + Math.random() * 2;
-      setBalls((prev) => [
-        ...prev.slice(-15),
-        { id: nextBallId(), x: ballX, speed, scored: false },
-      ]);
-    };
-    const interval = setInterval(spawnBall, 2200);
+
+      const count = Math.random() < level * 0.6 ? Math.min(2, maxConcurrent) : 1;
+
+      for (let i = 0; i < count; i++) {
+        const ballX = thirdWidth + Math.random() * (thirdWidth - 60);
+        const baseSpeed = 1.5 + level * 3; // 1.5 → 4.5
+        const speed = baseSpeed + Math.random() * 1.5;
+        setBalls((prev) => [
+          ...prev.slice(-20),
+          { id: nextBallId(), x: ballX, speed, scored: false, missed: false },
+        ]);
+      }
+    }, tick);
+
     return () => clearInterval(interval);
   }, [isMobile]);
 
-  // Cleanup old balls (remove after 10 seconds)
+  // Cleanup old/dead balls
   useEffect(() => {
     const cleanup = setInterval(() => {
-      setBalls((prev) => {
-        if (prev.length > 20) return prev.slice(-15);
-        return prev;
-      });
-    }, 5000);
+      setBalls((prev) => prev.filter((b) => !b.scored && !b.missed).length > 20
+        ? prev.filter((b) => !b.scored).slice(-15)
+        : prev.filter((b) => !b.scored && !b.missed)
+      );
+    }, 3000);
     return () => clearInterval(cleanup);
   }, []);
 
-  // Remove scored balls after animation
-  useEffect(() => {
-    const cleanup = setInterval(() => {
-      setBalls((prev) => prev.filter((b) => !b.scored));
-    }, 2000);
-    return () => clearInterval(cleanup);
+  const handleBallMissed = useCallback((ballId: string) => {
+    if (missedSetRef.current.has(ballId)) return;
+    if (scoredSetRef.current.has(ballId)) return;
+    if (gameOverRef.current) return;
+
+    missedSetRef.current.add(ballId);
+    setBalls((prev) => prev.map((b) => b.id === ballId ? { ...b, missed: true } : b));
+
+    missesRef.current += 1;
+    const newMisses = missesRef.current;
+    setMisses(newMisses);
+
+    if (newMisses >= MAX_MISSES) {
+      gameOverRef.current = true;
+      setGameOver(true);
+    }
   }, []);
 
   const handleBallCollision = useCallback(
     (ballId: string, el: HTMLDivElement) => {
       if (scoredSetRef.current.has(ballId)) return;
+      if (gameOverRef.current) return;
 
       const section = sectionRef.current;
       if (!section) return;
@@ -237,7 +315,6 @@ export default function Hero() {
       const ballCenterX = ballRect.left - sectionRect.left + ballRect.width / 2;
       const ballBottom = ballRect.top - sectionRect.top + ballRect.height;
 
-      // Rim zone
       const rimLeft = card.x + card.width * 0.2;
       const rimRight = card.x + card.width * 0.8;
       const rimY = card.y;
@@ -254,10 +331,7 @@ export default function Hero() {
         );
         setScore((s) => s + 3);
         const flashId = `flash-${Date.now()}-${Math.random()}`;
-        setFlashes((prev) => [
-          ...prev,
-          { id: flashId, x: ballCenterX, y: rimY },
-        ]);
+        setFlashes((prev) => [...prev, { id: flashId, x: ballCenterX, y: rimY }]);
         setTimeout(() => {
           setFlashes((prev) => prev.filter((f) => f.id !== flashId));
         }, 1000);
@@ -267,13 +341,12 @@ export default function Hero() {
   );
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (gameOverRef.current) return;
     const section = sectionRef.current;
     const card = cardRef.current;
     if (!section || !card) return;
-
     const sectionRect = section.getBoundingClientRect();
     const cardRect = card.getBoundingClientRect();
-
     const targetX = e.clientX - sectionRect.left - sectionRect.width / 2;
     const maxX = (sectionRect.width - cardRect.width) / 2 - 16;
     translateX.set(Math.max(-maxX, Math.min(maxX, targetX)));
@@ -291,20 +364,36 @@ export default function Hero() {
       onMouseMove={isMobile ? undefined : handleMouseMove}
       onMouseLeave={isMobile ? undefined : handleMouseLeave}
     >
-      {/* Subtle background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-orange/5 via-transparent to-transparent" />
 
-      {/* Score counter (desktop only) */}
-      {!isMobile && (
-        <div className="absolute top-20 right-6 z-20 font-heading text-lg font-bold">
-          <span className="text-orange">{score}</span>
-          <span className="text-white/40 ml-1">pts</span>
+      {/* HUD (desktop only) */}
+      {!isMobile && !gameOver && (
+        <div className="absolute top-20 right-6 z-20 font-heading text-lg font-bold flex flex-col items-end gap-1">
+          <div>
+            <span className="text-orange">{score}</span>
+            <span className="text-white/40 ml-1">pts</span>
+          </div>
+          <div className="flex gap-1">
+            {Array.from({ length: MAX_MISSES }).map((_, i) => (
+              <div
+                key={i}
+                className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                  i < misses ? "bg-red-500" : "bg-white/20"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       )}
 
       {/* Falling balls */}
-      {balls.map((ball) => (
-        <FallingBall key={ball.id} ball={ball} onCollision={handleBallCollision} />
+      {!gameOver && balls.map((ball) => (
+        <FallingBall
+          key={ball.id}
+          ball={ball}
+          onCollision={handleBallCollision}
+          onMissed={handleBallMissed}
+        />
       ))}
 
       {/* Score flashes */}
@@ -324,10 +413,7 @@ export default function Hero() {
         ))}
       </AnimatePresence>
 
-      <div
-        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex items-center justify-center"
-      >
-        {/* Identity Card with hoop */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex items-center justify-center">
         <motion.div
           ref={cardRef}
           initial={{ opacity: 0, y: 40 }}
@@ -409,6 +495,9 @@ export default function Hero() {
 
           {/* Basketball net (desktop only) */}
           {!isMobile && <BasketNet />}
+
+          {/* Game Over overlay */}
+          {gameOver && <GameOverModal score={score} />}
         </motion.div>
       </div>
     </section>
