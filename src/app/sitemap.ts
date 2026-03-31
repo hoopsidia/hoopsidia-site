@@ -1,32 +1,17 @@
 import type { MetadataRoute } from "next";
+import { BASE_URL } from "@/lib/constants";
+import { routing } from "@/i18n/routing";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://hoopsidia.com";
+  const localeAlternates = Object.fromEntries(
+    routing.locales.map((l) => [l, `${BASE_URL}/${l}`])
+  );
 
-  return [
-    {
-      url: `${baseUrl}/fr`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1,
-      alternates: {
-        languages: {
-          fr: `${baseUrl}/fr`,
-          en: `${baseUrl}/en`,
-        },
-      },
-    },
-    {
-      url: `${baseUrl}/en`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-      alternates: {
-        languages: {
-          fr: `${baseUrl}/fr`,
-          en: `${baseUrl}/en`,
-        },
-      },
-    },
-  ];
+  return routing.locales.map((locale, i) => ({
+    url: `${BASE_URL}/${locale}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: i === 0 ? 1 : 0.9,
+    alternates: { languages: localeAlternates },
+  }));
 }

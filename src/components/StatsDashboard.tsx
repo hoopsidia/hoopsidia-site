@@ -14,7 +14,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { PLACEHOLDER_IG_STATS } from "@/lib/constants";
+import { PLACEHOLDER_IG_STATS, BRAND_ORANGE } from "@/lib/constants";
 
 function StatCard({
   value,
@@ -56,7 +56,7 @@ function GenderPanel({ gender, tMale, tFemale }: { gender: { label: string; valu
           <PieChart>
             <Pie data={genderData} dataKey="value" nameKey="label" cx="50%" cy="50%" innerRadius={25} outerRadius={45} strokeWidth={0}>
               {genderData.map((g) => (
-                <Cell key={g.label} fill={g.label === "M" ? "#FC8D33" : "#ffffff30"} />
+                <Cell key={g.label} fill={g.label === "M" ? BRAND_ORANGE : "#ffffff30"} />
               ))}
             </Pie>
           </PieChart>
@@ -65,7 +65,7 @@ function GenderPanel({ gender, tMale, tFemale }: { gender: { label: string; valu
       <div className="space-y-1">
         {genderData.map((g) => (
           <div key={g.label} className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: g.label === "M" ? "#FC8D33" : "rgba(255,255,255,0.2)" }} />
+            <div className="w-2.5 h-2.5 rounded-full" style={{ background: g.label === "M" ? BRAND_ORANGE : "rgba(255,255,255,0.2)" }} />
             <span className="text-xs text-white/70">{g.label === "M" ? tMale : tFemale}</span>
             <span className="text-xs text-orange font-bold ml-auto">{g.percent}%</span>
           </div>
@@ -222,8 +222,8 @@ export default function StatsDashboard() {
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="orangeGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#FC8D33" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#FC8D33" stopOpacity={0} />
+                      <stop offset="0%" stopColor={BRAND_ORANGE} stopOpacity={0.3} />
+                      <stop offset="100%" stopColor={BRAND_ORANGE} stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis
@@ -261,7 +261,7 @@ export default function StatsDashboard() {
                   <Area
                     type="monotone"
                     dataKey="followers"
-                    stroke="#FC8D33"
+                    stroke={BRAND_ORANGE}
                     strokeWidth={2}
                     fill="url(#orangeGrad)"
                   />

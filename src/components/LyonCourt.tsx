@@ -5,25 +5,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, useInView } from "framer-motion";
 import CountUpStat from "./CountUpStat";
 import Image from "next/image";
-
-type Reel = {
-  id: string;
-  permalink: string;
-  thumbnail_url?: string;
-  media_url?: string;
-  caption?: string;
-  views?: number | null;
-  like_count?: number | null;
-  comments_count?: number | null;
-  shares?: number | null;
-  saved?: number | null;
-};
-
-function formatViews(views: number): string {
-  if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
-  if (views >= 1_000) return `${(views / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
-  return views.toString();
-}
+import type { Reel } from "@/types/reel";
 
 function SoundIcon({ muted }: { muted: boolean }) {
   if (muted) {
@@ -87,7 +69,7 @@ export default function LyonCourt() {
         >
           {/* Logo PMC à gauche */}
           <div className="flex-shrink-0 flex flex-col items-center gap-2 w-20 sm:w-28">
-            <div className="relative w-20 h-20 sm:w-28 sm:h-28">
+            <div className="relative w-full aspect-square">
               <Image
                 src="/images/logo-pmc.png"
                 alt="Pimp My Court"
@@ -134,7 +116,7 @@ export default function LyonCourt() {
                         toggleMute(reel.id);
                       }}
                       className="absolute top-1.5 right-1.5 z-10 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center hover:bg-black/70 transition-colors"
-                      aria-label={mutedMap[reel.id] === false ? "Couper le son" : "Activer le son"}
+                      aria-label={mutedMap[reel.id] === false ? t("muteSoundLabel") : t("unmuteSoundLabel")}
                     >
                       <SoundIcon muted={mutedMap[reel.id] !== false} />
                     </button>
@@ -158,7 +140,7 @@ export default function LyonCourt() {
                       <rect x="2" y="2" width="20" height="20" rx="4" />
                       <path d="M10 8l6 4-6 4V8z" fill="currentColor" />
                     </svg>
-                    <span className="text-white/20 text-[10px]">Reel</span>
+                    <span className="text-white/20 text-[10px]">{t("reelLabel")}</span>
                   </a>
                 )}
                 {/* Stats overlay on hover */}
@@ -215,7 +197,7 @@ export default function LyonCourt() {
 
         {isPlaceholder && (
           <p className="text-center text-white/20 text-xs mt-4">
-            Connexion API Meta en attente
+            {t("placeholder")}
           </p>
         )}
       </div>

@@ -3,25 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useRef, useCallback } from "react";
 import CountUpStat from "./CountUpStat";
-
-type Reel = {
-  id: string;
-  permalink: string;
-  thumbnail_url?: string;
-  media_url?: string;
-  caption?: string;
-  views?: number | null;
-  like_count?: number | null;
-  comments_count?: number | null;
-  shares?: number | null;
-  saved?: number | null;
-};
-
-function formatViews(views: number): string {
-  if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
-  if (views >= 1_000) return `${(views / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
-  return views.toString();
-}
+import type { Reel } from "@/types/reel";
 
 function SoundIcon({ muted }: { muted: boolean }) {
   if (muted) {

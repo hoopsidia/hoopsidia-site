@@ -4,6 +4,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import JsonLd from "@/components/JsonLd";
+import { BASE_URL } from "@/lib/constants";
 import "../globals.css";
 
 const seoData: Record<string, { title: string; description: string; locale: string }> = {
@@ -28,7 +29,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const seo = seoData[locale] || seoData.fr;
-  const altLocale = locale === "fr" ? "en" : "fr";
+  const altLocale = routing.locales.find((l) => l !== locale) ?? "en";
+  const localeAlternates = Object.fromEntries(routing.locales.map((l) => [l, `${BASE_URL}/${l}`]));
 
   return {
     title: {
@@ -36,13 +38,10 @@ export async function generateMetadata({
       template: "%s | Hoopsidia",
     },
     description: seo.description,
-    metadataBase: new URL("https://hoopsidia.com"),
+    metadataBase: new URL(BASE_URL),
     alternates: {
-      canonical: `https://hoopsidia.com/${locale}`,
-      languages: {
-        fr: "https://hoopsidia.com/fr",
-        en: "https://hoopsidia.com/en",
-      },
+      canonical: `${BASE_URL}/${locale}`,
+      languages: localeAlternates,
     },
     openGraph: {
       type: "website",
@@ -51,7 +50,7 @@ export async function generateMetadata({
       siteName: "Hoopsidia",
       title: seo.title,
       description: seo.description,
-      url: `https://hoopsidia.com/${locale}`,
+      url: `${BASE_URL}/${locale}`,
       images: [
         {
           url: "/images/og-image.png",

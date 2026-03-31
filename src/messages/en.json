@@ -70,7 +70,11 @@
   },
   "lyon": {
     "title": "Season 4",
-    "subtitle": "Lyon, France"
+    "subtitle": "Lyon, France",
+    "placeholder": "Meta API connection pending",
+    "reelLabel": "Reel",
+    "muteSoundLabel": "Mute",
+    "unmuteSoundLabel": "Unmute"
   },
   "stats": {
     "title": "Instagram Performance",
