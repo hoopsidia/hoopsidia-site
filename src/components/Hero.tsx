@@ -32,7 +32,6 @@ function getFields(t: (key: string) => string) {
     { label: t("card.firstName"), value: "Valentin", className: "" },
     { label: t("card.lastName"), value: "Turgot", className: "" },
     { label: t("card.pseudo"), value: "HOOPSIDIA", className: "italic text-orange" },
-    { label: t("card.age"), value: t("card.ageValue"), className: "" },
 { label: t("card.courts"), value: "4", className: "" },
     { label: t("card.since"), value: t("card.sinceValue"), className: "" },
   ];
