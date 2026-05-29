@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getAccessToken } from "@/lib/igToken";
 
 // Manual view overrides for reels where API doesn't report sponsored views
 const VIEW_OVERRIDES: Record<string, number> = {
@@ -30,7 +31,7 @@ async function fetchInsights(mediaId: string, accessToken: string) {
 }
 
 export async function GET() {
-  const accessToken = process.env.META_ACCESS_TOKEN;
+  const accessToken = await getAccessToken();
   const userId = process.env.META_IG_USER_ID;
 
   if (!accessToken || !userId) {

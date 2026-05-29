@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { PLACEHOLDER_IG_STATS } from "@/lib/constants";
+import { getAccessToken } from "@/lib/igToken";
 
 export async function GET() {
-  const accessToken = process.env.META_ACCESS_TOKEN;
+  const accessToken = await getAccessToken();
 
   // If no token configured, return placeholder data
   if (!accessToken) {

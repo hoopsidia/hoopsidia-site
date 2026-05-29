@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getAccessToken } from "@/lib/igToken";
 
 // The 4 Lyon court reel shortcodes (in order)
 const LYON_SHORTCODES = [
@@ -27,7 +28,7 @@ async function fetchInsights(mediaId: string, accessToken: string) {
 }
 
 export async function GET() {
-  const accessToken = process.env.META_ACCESS_TOKEN;
+  const accessToken = await getAccessToken();
 
   if (!accessToken) {
     return NextResponse.json({ reels: [], isPlaceholder: true });
