@@ -62,7 +62,7 @@ export default function LyonCourt() {
     <section className="bg-black py-24" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center mb-12">
-          <div className="relative w-28 sm:w-36 aspect-square">
+          <div className="relative w-44 sm:w-56 aspect-square">
             <Image
               src="/images/logo-pmc.png"
               alt={t("title")}
@@ -70,7 +70,7 @@ export default function LyonCourt() {
               className="object-contain"
             />
           </div>
-          <p className="mt-3 text-white/50">{t("subtitle")}</p>
+          <p className="-mt-8 sm:-mt-10 text-white/50">{t("subtitle")}</p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
