@@ -70,7 +70,7 @@ export default function LyonCourt() {
               className="object-contain"
             />
           </div>
-          <p className="-mt-8 sm:-mt-10 text-white/50">{t("subtitle")}</p>
+          <p className="-mt-14 sm:-mt-16 text-white/50">{t("subtitle")}</p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
