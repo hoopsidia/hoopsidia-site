@@ -1,34 +1,11 @@
 import { NextResponse } from "next/server";
 import { getAccessToken } from "@/lib/igToken";
+import { fetchReelInsights } from "@/lib/igInsights";
 
 // Manual view overrides for reels where API doesn't report sponsored views
 const VIEW_OVERRIDES: Record<string, number> = {
   "18311093566267140": 500000, // Maillot reel with sponso
 };
-
-async function fetchInsights(mediaId: string, accessToken: string) {
-  try {
-    const res = await fetch(
-      `https://graph.instagram.com/v21.0/${mediaId}/insights?metric=views,facebook_views,shares,saved&access_token=${accessToken}`
-    );
-    const data = await res.json();
-
-    const find = (name: string) => data.data?.find((m: { name: string }) => m.name === name)?.values?.[0]?.value ?? 0;
-    const igViews = find("views");
-    const fbViews = find("facebook_views");
-    const apiViews = igViews + fbViews;
-
-    const override = VIEW_OVERRIDES[mediaId];
-    const views = override && override > apiViews ? override : apiViews;
-
-    const shares = find("shares") || null;
-    const saved = find("saved") || null;
-
-    return { views: views || null, shares, saved };
-  } catch {
-    return { views: VIEW_OVERRIDES[mediaId] ?? null, shares: null, saved: null };
-  }
-}
 
 export async function GET() {
   const accessToken = await getAccessToken();
@@ -64,7 +41,7 @@ export async function GET() {
     // Fetch insights for each reel in parallel
     const reels = await Promise.all(
       baseReels.map(async (reel: { id: string; permalink: string; thumbnail_url?: string; media_url?: string; caption?: string; like_count: number | null; comments_count: number | null }) => {
-        const insights = await fetchInsights(reel.id, accessToken);
+        const insights = await fetchReelInsights(reel.id, accessToken, VIEW_OVERRIDES[reel.id]);
         return { ...reel, ...insights };
       })
     );

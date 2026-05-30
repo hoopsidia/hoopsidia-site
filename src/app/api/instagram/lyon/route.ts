@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAccessToken } from "@/lib/igToken";
+import { fetchReelInsights } from "@/lib/igInsights";
 
 // The 4 Lyon court reel shortcodes (in order)
 const LYON_SHORTCODES = [
@@ -8,24 +9,6 @@ const LYON_SHORTCODES = [
   "DJCwQ-_sIJQ",
   "DJPpxc1s88J",
 ];
-
-async function fetchInsights(mediaId: string, accessToken: string) {
-  try {
-    const res = await fetch(
-      `https://graph.instagram.com/v21.0/${mediaId}/insights?metric=views,facebook_views,shares,saved&access_token=${accessToken}`
-    );
-    const data = await res.json();
-
-    const find = (name: string) => data.data?.find((m: { name: string }) => m.name === name)?.values?.[0]?.value ?? 0;
-    const views = (find("views") + find("facebook_views")) || null;
-    const shares = find("shares") || null;
-    const saved = find("saved") || null;
-
-    return { views, shares, saved };
-  } catch {
-    return { views: null, shares: null, saved: null };
-  }
-}
 
 export async function GET() {
   const accessToken = await getAccessToken();
@@ -72,7 +55,7 @@ export async function GET() {
 
     const reels = await Promise.all(
       baseReels.map(async (reel) => {
-        const insights = await fetchInsights(reel.id, accessToken);
+        const insights = await fetchReelInsights(reel.id, accessToken);
         return { ...reel, ...insights };
       })
     );
