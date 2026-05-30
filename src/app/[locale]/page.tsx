@@ -15,8 +15,8 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <Hero />
-        <ReelsGrid />
         <LyonCourt />
+        <ReelsGrid />
         <StatsDashboard />
         <ClientsCarousel />
         {/* <CvTimeline /> */}

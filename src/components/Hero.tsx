@@ -53,7 +53,6 @@ type ScoreFlash = {
   y: number;
 };
 
-const MAX_MISSES = 10;
 const SPRING_CONFIG = { damping: 20, stiffness: 120 };
 
 let globalBallId = 0;
@@ -153,33 +152,6 @@ function BasketNet() {
   );
 }
 
-function GameOverModal({ score }: { score: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.85 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      className="absolute inset-0 z-50 flex items-center justify-center"
-    >
-      <div className="glass rounded-2xl p-8 border border-white/10 text-center max-w-xs mx-4 shadow-2xl">
-        <div className="text-5xl mb-4">🏀</div>
-        <h3 className="font-heading text-2xl font-bold italic uppercase text-white mb-2">
-          Game Over
-        </h3>
-        <p className="text-white/50 text-sm mb-4">
-          Tu as raté {MAX_MISSES} ballons
-        </p>
-        <div className="text-orange font-heading text-4xl font-bold mb-5">
-          {score} pts
-        </div>
-        <p className="text-white/40 text-xs leading-relaxed">
-          Recharge la page pour une nouvelle session basket
-        </p>
-      </div>
-    </motion.div>
-  );
-}
-
 export default function Hero() {
   const t = useTranslations("hero");
   const cardRef = useRef<HTMLDivElement>(null);
@@ -199,14 +171,10 @@ export default function Hero() {
 
   const [balls, setBalls] = useState<Ball[]>([]);
   const [score, setScore] = useState(0);
-  const [misses, setMisses] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
   const [flashes, setFlashes] = useState<ScoreFlash[]>([]);
   const cardPosRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
   const scoredSetRef = useRef(new Set<string>());
   const missedSetRef = useRef(new Set<string>());
-  const missesRef = useRef(0);
-  const gameOverRef = useRef(false);
   const elapsedRef = useRef(0); // seconds since start, for difficulty curve
 
   // Track card position
@@ -237,8 +205,6 @@ export default function Hero() {
     let spawnAccum = 0;
 
     const interval = setInterval(() => {
-      if (gameOverRef.current) return;
-
       elapsed += tick / 1000;
       elapsedRef.current = elapsed;
 
@@ -287,25 +253,14 @@ export default function Hero() {
   const handleBallMissed = useCallback((ballId: string) => {
     if (missedSetRef.current.has(ballId)) return;
     if (scoredSetRef.current.has(ballId)) return;
-    if (gameOverRef.current) return;
 
     missedSetRef.current.add(ballId);
     setBalls((prev) => prev.map((b) => b.id === ballId ? { ...b, missed: true } : b));
-
-    missesRef.current += 1;
-    const newMisses = missesRef.current;
-    setMisses(newMisses);
-
-    if (newMisses >= MAX_MISSES) {
-      gameOverRef.current = true;
-      setGameOver(true);
-    }
   }, []);
 
   const handleBallCollision = useCallback(
     (ballId: string, el: HTMLDivElement) => {
       if (scoredSetRef.current.has(ballId)) return;
-      if (gameOverRef.current) return;
 
       const section = sectionRef.current;
       if (!section) return;
@@ -341,7 +296,6 @@ export default function Hero() {
   );
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (gameOverRef.current) return;
     const section = sectionRef.current;
     const card = cardRef.current;
     if (!section || !card) return;
@@ -367,27 +321,17 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-b from-orange/5 via-transparent to-transparent" />
 
       {/* HUD (desktop only) */}
-      {!isMobile && !gameOver && (
+      {!isMobile && (
         <div className="absolute top-20 right-6 z-20 font-heading text-lg font-bold flex flex-col items-end gap-1">
           <div>
             <span className="text-orange">{score}</span>
             <span className="text-white/40 ml-1">pts</span>
           </div>
-          <div className="flex gap-1">
-            {Array.from({ length: MAX_MISSES }).map((_, i) => (
-              <div
-                key={i}
-                className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                  i < misses ? "bg-red-500" : "bg-white/20"
-                }`}
-              />
-            ))}
-          </div>
         </div>
       )}
 
       {/* Falling balls */}
-      {!gameOver && balls.map((ball) => (
+      {balls.map((ball) => (
         <FallingBall
           key={ball.id}
           ball={ball}
@@ -495,9 +439,6 @@ export default function Hero() {
 
           {/* Basketball net (desktop only) */}
           {!isMobile && <BasketNet />}
-
-          {/* Game Over overlay */}
-          {gameOver && <GameOverModal score={score} />}
         </motion.div>
       </div>
     </section>
