@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, useInView } from "framer-motion";
 import CountUpStat from "./CountUpStat";
+import Image from "next/image";
 import type { Reel } from "@/types/reel";
 
 function SoundIcon({ muted }: { muted: boolean }) {
@@ -60,10 +61,15 @@ export default function LyonCourt() {
   return (
     <section className="bg-black py-24" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold italic uppercase text-white">
-            {t("title")}
-          </h2>
+        <div className="flex flex-col items-center mb-12">
+          <div className="relative w-28 sm:w-36 aspect-square">
+            <Image
+              src="/images/logo-pmc.png"
+              alt={t("title")}
+              fill
+              className="object-contain"
+            />
+          </div>
           <p className="mt-3 text-white/50">{t("subtitle")}</p>
         </div>
 
