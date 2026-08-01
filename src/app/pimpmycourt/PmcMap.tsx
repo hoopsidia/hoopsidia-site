@@ -45,7 +45,13 @@ function pointMarkerEl(etat: Etat): HTMLElement {
   return el;
 }
 
-export default function PmcMap({ onStats }: { onStats?: (s: Stats) => void }) {
+export default function PmcMap({
+  onStats,
+  onMapReady,
+}: {
+  onStats?: (s: Stats) => void;
+  onMapReady?: (map: MlMap) => void;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
 
@@ -71,6 +77,7 @@ export default function PmcMap({ onStats }: { onStats?: (s: Stats) => void }) {
       attributionControl: { compact: true },
     });
     mapRef.current = map;
+    onMapReady?.(map);
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
 
     const index = new Supercluster<PointProps, ClusterProps>({
@@ -139,7 +146,7 @@ export default function PmcMap({ onStats }: { onStats?: (s: Stats) => void }) {
       map.remove();
       mapRef.current = null;
     };
-  }, [onStats]);
+  }, [onStats, onMapReady]);
 
   // h-full (not absolute inset-0): MapLibre forces position:relative on its
   // container, which would void absolute positioning and collapse the height.
