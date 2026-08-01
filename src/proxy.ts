@@ -8,5 +8,7 @@ export function proxy(request: import("next/server").NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|.*\\..*).*)"],
+  // Exclude api, _next, static files, and the /pimpmycourt subtree (its own
+  // locale-less product route) from next-intl locale handling.
+  matcher: ["/((?!api|_next|pimpmycourt|.*\\..*).*)"],
 };
