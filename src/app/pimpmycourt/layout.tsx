@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { BASE_URL } from "@/lib/constants";
 import "../globals.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 // "Pimp My Court — La carte des filets" product, served at /pimpmycourt with no
 // locale prefix. It lives as a sibling of the [locale] segment and is excluded
