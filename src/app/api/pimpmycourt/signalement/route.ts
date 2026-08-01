@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/pmc/supabaseAdmin";
 import { isInFrance, reverseGeocode } from "@/lib/pmc/geo";
+import { sendSignalementRecu } from "@/lib/pmc/email";
+import { rateLimitOk, clientIp, ipHash } from "@/lib/pmc/rateLimit";
 
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
 
@@ -19,6 +21,11 @@ export async function POST(request: Request) {
   // Honeypot — a real user never fills this hidden field.
   if (form.get("website")) {
     return NextResponse.json({ ok: true, id: null }); // silently drop
+  }
+
+  // IP rate limit: max 5 signalements / hour (§10).
+  if (!(await rateLimitOk(`pmc:sig:${ipHash(clientIp(request))}`, 5, 3600))) {
+    return NextResponse.json({ error: "trop de signalements, réessaie plus tard" }, { status: 429 });
   }
 
   const lat = Number(form.get("latitude"));
@@ -87,6 +94,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // TODO (§9): send "signalement enregistré" email via Resend.
+  await sendSignalementRecu(email);
   return NextResponse.json({ ok: true, id: data.id });
 }

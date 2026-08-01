@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import Link from "next/link";
 import type { Map as MlMap } from "maplibre-gl";
 import { ETAT_COLOR } from "@/lib/pmc/types";
 import PmcMap from "./PmcMap";
@@ -46,6 +47,11 @@ export default function MapShell() {
             <span className="text-orange">{stats ? stats.total : "—"} terrains signalés</span>
             <span className="text-white/30">·</span>
             <span style={{ color: ETAT_COLOR.remplace }}>{stats ? stats.remplaces : "—"} filets remplacés</span>
+          </div>
+          <div className="mt-2">
+            <Link href="/pimpmycourt/donnees" className="pointer-events-auto text-[11px] text-white/50 hover:text-white underline">
+              Données personnelles
+            </Link>
           </div>
         </div>
       </div>

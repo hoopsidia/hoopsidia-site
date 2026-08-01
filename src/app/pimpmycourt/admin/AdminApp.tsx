@@ -236,26 +236,84 @@ function Moderation({ authHeaders }: { authHeaders: Auth }) {
   );
 }
 
+type Kit = {
+  id: string; prenom: string | null; nom: string | null; email: string | null;
+  age: number | null; trepied: string | null; modele_telephone: string | null;
+  autorisation_validee: boolean; statut_demande: string; cout_kit: number | null;
+};
+
 function Kits({ authHeaders }: { authHeaders: Auth }) {
-  const [kits, setKits] = useState<Record<string, unknown>[]>([]);
+  const [kits, setKits] = useState<Kit[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tick, setTick] = useState(0);
+
   useEffect(() => {
+    let active = true;
     fetch("/api/pimpmycourt/admin/kits", { headers: authHeaders() })
       .then((r) => r.json())
-      .then((d) => { setKits(d.kits ?? []); setLoading(false); });
-  }, [authHeaders]);
+      .then((d) => { if (active) { setKits(d.kits ?? []); setLoading(false); } });
+    return () => { active = false; };
+  }, [authHeaders, tick]);
+
+  async function act(id: string, action: string) {
+    const res = await fetch("/api/pimpmycourt/admin/kit-action", {
+      method: "POST",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ id, action }),
+    });
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      alert(d.error ?? "erreur");
+      return;
+    }
+    setTick((n) => n + 1);
+  }
 
   if (loading) return <p className="text-white/40 text-center py-10">Chargement…</p>;
   if (!kits.length) return <p className="text-white/40 text-center py-10">Aucune demande de kit pour l&apos;instant.</p>;
+
   return (
-    <ul className="space-y-2">
-      {kits.map((k) => (
-        <li key={String(k.id)} className="rounded-lg border border-white/10 p-3 text-sm">
-          <div className="font-bold">{String(k.prenom ?? "")} {String(k.nom ?? "")}</div>
-          <div className="text-white/50 text-xs">{String(k.email ?? "")} · {String(k.statut_demande ?? "")}</div>
-        </li>
-      ))}
+    <ul className="space-y-3">
+      {kits.map((k) => {
+        const minor = typeof k.age === "number" && k.age > 0 && k.age < 18;
+        return (
+          <li key={k.id} className="rounded-lg border border-white/10 p-3 text-sm">
+            <div className="flex items-center justify-between">
+              <div className="font-bold">{k.prenom ?? ""} {k.nom ?? ""}</div>
+              <span className="text-xs text-orange">{k.statut_demande}</span>
+            </div>
+            <div className="text-white/50 text-xs">{k.email}</div>
+            <div className="text-white/40 text-xs mt-1">
+              {k.age != null ? `${k.age} ans` : "âge ?"} · trépied: {k.trepied ?? "?"} · {k.modele_telephone ?? "tél ?"}
+              {k.cout_kit != null ? ` · ${k.cout_kit} €` : ""}
+            </div>
+            {minor && (
+              <div className={`text-xs mt-1 font-bold ${k.autorisation_validee ? "text-[#2FA84F]" : "text-[#E4572E]"}`}>
+                Mineur — autorisation {k.autorisation_validee ? "validée" : "à valider (envoi bloqué)"}
+              </div>
+            )}
+            <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
+              {minor && !k.autorisation_validee && (
+                <ActionBtn onClick={() => act(k.id, "validate_parental")}>Valider autorisation</ActionBtn>
+              )}
+              <ActionBtn onClick={() => act(k.id, "approve")}>Approuver</ActionBtn>
+              <ActionBtn onClick={() => act(k.id, "ship")}>Expédié</ActionBtn>
+              <ActionBtn onClick={() => act(k.id, "delivered")}>Livré</ActionBtn>
+              <ActionBtn onClick={() => act(k.id, "rushes")}>Rushes reçus</ActionBtn>
+              <ActionBtn onClick={() => act(k.id, "reject")}>Rejeter</ActionBtn>
+            </div>
+          </li>
+        );
+      })}
     </ul>
+  );
+}
+
+function ActionBtn({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button onClick={onClick} className="rounded-full border border-white/20 px-3 py-1 hover:bg-white/10 transition-colors">
+      {children}
+    </button>
   );
 }
 

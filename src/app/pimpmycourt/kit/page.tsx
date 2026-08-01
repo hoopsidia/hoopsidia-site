@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { BASE_URL } from "@/lib/constants";
-import Scaffold from "../_components/Scaffold";
+import KitForm from "./KitForm";
 
 export const metadata: Metadata = {
   title: "Demander un kit",
@@ -10,13 +10,11 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function KitPage() {
-  return (
-    <Scaffold
-      step="Étape 7"
-      eyebrow="Demande de kit"
-      title="Demander un kit"
-      intro="Envois limités, sélectionnés selon les priorités du projet et l'ordre des demandes. Aucun engagement de livraison. En échange du matériel, tu filmes la pose selon le protocole."
-    />
-  );
+export default async function KitPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ terrain?: string }>;
+}) {
+  const { terrain } = await searchParams;
+  return <KitForm terrainId={terrain ?? null} />;
 }
