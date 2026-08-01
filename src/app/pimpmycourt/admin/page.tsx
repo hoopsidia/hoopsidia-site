@@ -1,20 +1,14 @@
 import type { Metadata } from "next";
-import Scaffold from "../_components/Scaffold";
+import AdminApp from "./AdminApp";
 
-// Back-office — mobile-first moderation queue. Protected by Supabase Auth
-// (added with the data layer). Never indexed.
+// Back-office — mobile-first moderation. Protected client-side by magic-link
+// auth (restricted to the admin email); every admin API route re-verifies the
+// caller server-side. Never indexed.
 export const metadata: Metadata = {
   title: "Back-office",
   robots: { index: false, follow: false },
 };
 
 export default function AdminPage() {
-  return (
-    <Scaffold
-      step="Étape 5"
-      eyebrow="Back-office"
-      title="Modération"
-      intro="Conçu pour le téléphone : un signalement par écran, trois actions (Valider · Doublon · Rejeter), file de demandes de kit, import et export CSV. Accès protégé, non indexé."
-    />
-  );
+  return <AdminApp />;
 }
