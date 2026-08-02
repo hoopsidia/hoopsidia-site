@@ -19,6 +19,7 @@ export default function SignalementSheet({
 }) {
   const [phase, setPhase] = useState<Phase>("form");
   const [photo, setPhoto] = useState<File | null>(null);
+  const [nbPaniers, setNbPaniers] = useState("");
   const [email, setEmail] = useState("");
   const [instagram, setInstagram] = useState("");
   const [prenom, setPrenom] = useState("");
@@ -29,7 +30,8 @@ export default function SignalementSheet({
   const [duplicate, setDuplicate] = useState<Duplicate>(null);
   const websiteRef = useRef<HTMLInputElement>(null); // honeypot
 
-  const canSubmit = photo && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) && consent;
+  const canSubmit =
+    /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) && consent && Number(nbPaniers) >= 1;
 
   async function handleSubmit() {
     setError(null);
@@ -64,6 +66,7 @@ export default function SignalementSheet({
     fd.set("prenom", prenom);
     fd.set("commentaire", commentaire);
     fd.set("consent", consent ? "1" : "");
+    fd.set("nb_paniers", nbPaniers);
     fd.set("website", websiteRef.current?.value ?? "");
     if (photo) fd.set("photo", photo);
     try {
@@ -150,12 +153,25 @@ export default function SignalementSheet({
         {(phase === "form" || phase === "sending") && (
           <div className="space-y-4">
             <p className="text-xs text-white/50">
-              Déplace la carte pour placer le repère central sur le terrain, puis ajoute une photo.
+              Déplace la carte pour placer le repère central sur le terrain (ou cherche une adresse).
             </p>
 
-            {/* Photo */}
+            {/* Nombre de paniers — requis */}
             <label className="block">
-              <span className="text-sm text-white/70">Photo du terrain *</span>
+              <span className="text-sm text-white/70">Combien de paniers ont besoin de filets ? *</span>
+              <input
+                type="number"
+                min="1"
+                value={nbPaniers}
+                onChange={(e) => setNbPaniers(e.target.value)}
+                placeholder="ex. 2"
+                className="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-orange"
+              />
+            </label>
+
+            {/* Photo (facultatif) */}
+            <label className="block">
+              <span className="text-sm text-white/70">Photo du terrain <span className="text-white/40">(facultatif)</span></span>
               <input
                 type="file"
                 accept="image/*"

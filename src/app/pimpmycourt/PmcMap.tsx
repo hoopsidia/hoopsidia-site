@@ -63,14 +63,23 @@ export default function PmcMap({
       style: {
         version: 8,
         sources: {
-          osm: {
+          // Satellite imagery + a transparent labels/boundaries overlay = hybrid.
+          sat: {
             type: "raster",
-            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
             tileSize: 256,
-            attribution: "© OpenStreetMap",
+            attribution: "© Esri, Maxar, Earthstar Geographics",
+          },
+          labels: {
+            type: "raster",
+            tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"],
+            tileSize: 256,
           },
         },
-        layers: [{ id: "osm", type: "raster", source: "osm" }],
+        layers: [
+          { id: "sat", type: "raster", source: "sat" },
+          { id: "labels", type: "raster", source: "labels" },
+        ],
       },
       center: FRANCE_CENTER,
       zoom: 5,

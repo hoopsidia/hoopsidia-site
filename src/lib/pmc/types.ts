@@ -8,11 +8,12 @@ export type TerrainPublic = {
   ville: string | null;
   code_postal: string | null;
   departement: string | null;
-  photo_avant_url: string;
+  photo_avant_url: string | null;
   photo_apres_url: string | null;
   categorie: string;
   etat: Etat;
   nb_confirmations: number;
+  nb_paniers: number | null;
   prenom: string | null;
   commentaire: string | null;
   created_at: string;

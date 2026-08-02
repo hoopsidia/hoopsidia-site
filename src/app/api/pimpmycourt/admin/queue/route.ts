@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("terrains")
-    .select("id, latitude, longitude, ville, departement, statut, photo_avant_url, nb_confirmations, contact_email, contact_instagram, prenom, commentaire, created_at")
+    .select("id, latitude, longitude, ville, departement, statut, photo_avant_url, nb_confirmations, nb_paniers, contact_email, contact_instagram, prenom, commentaire, created_at")
     .order("nb_confirmations", { ascending: false })
     .order("created_at", { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

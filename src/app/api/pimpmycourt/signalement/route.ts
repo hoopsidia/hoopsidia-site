@@ -43,10 +43,13 @@ export async function POST(request: Request) {
   if (!consent) {
     return NextResponse.json({ error: "consentement requis" }, { status: 400 });
   }
-  if (!(photo instanceof File) || photo.size === 0) {
-    return NextResponse.json({ error: "photo obligatoire" }, { status: 400 });
+  const nbPaniers = Number(form.get("nb_paniers"));
+  if (!Number.isInteger(nbPaniers) || nbPaniers < 1) {
+    return NextResponse.json({ error: "nombre de paniers requis" }, { status: 400 });
   }
-  if (!photo.type.startsWith("image/") || photo.size > MAX_PHOTO_BYTES) {
+  // Photo is optional; validate only if one was provided.
+  const hasPhoto = photo instanceof File && photo.size > 0;
+  if (hasPhoto && (!photo.type.startsWith("image/") || photo.size > MAX_PHOTO_BYTES)) {
     return NextResponse.json({ error: "photo invalide (image, 8 Mo max)" }, { status: 400 });
   }
 
@@ -56,18 +59,21 @@ export async function POST(request: Request) {
 
   const supabase = getSupabaseAdmin();
 
-  // Upload photo
-  const ext = photo.type.split("/")[1]?.replace("jpeg", "jpg") ?? "jpg";
-  const path = `avant/${crypto.randomUUID()}.${ext}`;
-  const bytes = new Uint8Array(await photo.arrayBuffer());
-  const up = await supabase.storage.from("terrains").upload(path, bytes, {
-    contentType: photo.type,
-    upsert: false,
-  });
-  if (up.error) {
-    return NextResponse.json({ error: "échec de l'upload photo" }, { status: 500 });
+  // Upload photo only if one was provided.
+  let photo_avant_url: string | null = null;
+  if (hasPhoto) {
+    const file = photo as File;
+    const ext = file.type.split("/")[1]?.replace("jpeg", "jpg") ?? "jpg";
+    const path = `avant/${crypto.randomUUID()}.${ext}`;
+    const up = await supabase.storage.from("terrains").upload(path, new Uint8Array(await file.arrayBuffer()), {
+      contentType: file.type,
+      upsert: false,
+    });
+    if (up.error) {
+      return NextResponse.json({ error: "échec de l'upload photo" }, { status: 500 });
+    }
+    photo_avant_url = supabase.storage.from("terrains").getPublicUrl(path).data.publicUrl;
   }
-  const photo_avant_url = supabase.storage.from("terrains").getPublicUrl(path).data.publicUrl;
 
   const geo = await reverseGeocode(lat, lng);
 
@@ -80,6 +86,7 @@ export async function POST(request: Request) {
       code_postal: geo.code_postal,
       departement: geo.departement,
       photo_avant_url,
+      nb_paniers: nbPaniers,
       statut: "signale",
       source: "formulaire",
       contact_email: email,

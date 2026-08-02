@@ -63,17 +63,21 @@ export default async function TerrainPage({
           {t.ville ?? "Terrain"} <span className="text-white/40 text-lg">{t.departement}</span>
         </h1>
         <p className="mt-1 text-sm text-white/50">
-          Signalé le {date} · {t.nb_confirmations} confirmation{t.nb_confirmations > 1 ? "s" : ""}
+          Signalé le {date} · {t.nb_paniers != null ? `${t.nb_paniers} panier${t.nb_paniers > 1 ? "s" : ""} · ` : ""}
+          {t.nb_confirmations} confirmation{t.nb_confirmations > 1 ? "s" : ""}
           {t.prenom ? ` · par ${t.prenom}` : ""}
         </p>
 
         {/* Photos avant / après */}
-        <div className={`mt-6 grid gap-3 ${t.photo_apres_url ? "sm:grid-cols-2" : ""}`}>
+        {(t.photo_avant_url || t.photo_apres_url) && (
+        <div className={`mt-6 grid gap-3 ${t.photo_avant_url && t.photo_apres_url ? "sm:grid-cols-2" : ""}`}>
+          {t.photo_avant_url && (
           <figure>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={t.photo_avant_url} alt={`Terrain avant — ${t.ville ?? ""}`} className="w-full aspect-[4/3] object-cover rounded-xl bg-white/5" />
             <figcaption className="mt-1 text-xs text-white/40 uppercase font-heading font-bold">Avant</figcaption>
           </figure>
+          )}
           {t.photo_apres_url && (
             <figure>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -82,6 +86,7 @@ export default async function TerrainPage({
             </figure>
           )}
         </div>
+        )}
 
         {t.commentaire && <p className="mt-4 text-white/70 italic">“{t.commentaire}”</p>}
 

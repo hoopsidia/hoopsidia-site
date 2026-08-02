@@ -9,8 +9,9 @@ type QueueItem = {
   id: string;
   ville: string | null;
   departement: string | null;
-  photo_avant_url: string;
+  photo_avant_url: string | null;
   nb_confirmations: number;
+  nb_paniers: number | null;
   contact_email: string | null;
   prenom: string | null;
   commentaire: string | null;
@@ -206,13 +207,18 @@ function Moderation({ authHeaders }: { authHeaders: Auth }) {
   return (
     <div>
       <p className="text-xs text-white/40 mb-2">{queue.length - i} en attente</p>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={current.photo_avant_url} alt="" className="w-full aspect-[4/3] object-cover rounded-xl bg-white/5" />
+      {current.photo_avant_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={current.photo_avant_url} alt="" className="w-full aspect-[4/3] object-cover rounded-xl bg-white/5" />
+      ) : (
+        <div className="w-full aspect-[4/3] rounded-xl bg-white/5 flex items-center justify-center text-white/30 text-sm">Sans photo</div>
+      )}
       <div className="mt-3">
         <div className="font-heading text-xl font-bold">
           {current.ville ?? "Ville inconnue"} <span className="text-white/40 text-sm">{current.departement}</span>
         </div>
         <div className="text-sm text-white/50">
+          {current.nb_paniers != null ? `${current.nb_paniers} panier${current.nb_paniers > 1 ? "s" : ""} · ` : ""}
           {current.nb_confirmations} confirmation{current.nb_confirmations > 1 ? "s" : ""}
           {current.prenom ? ` · ${current.prenom}` : ""}
         </div>

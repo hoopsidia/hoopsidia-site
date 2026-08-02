@@ -6,6 +6,7 @@ import type { Map as MlMap } from "maplibre-gl";
 import { ETAT_COLOR } from "@/lib/pmc/types";
 import PmcMap from "./PmcMap";
 import SignalementSheet from "./SignalementSheet";
+import AddressSearch from "./AddressSearch";
 
 // Full-screen map shell for /pimpmycourt (§5). Reporting is a bottom sheet; the
 // map stays pannable above it and a crosshair marks the chosen position.
@@ -21,6 +22,10 @@ export default function MapShell() {
   const getCenter = useCallback(() => {
     const c = mapRef.current?.getCenter();
     return { lat: c?.lat ?? 46.6, lng: c?.lng ?? 2.4 };
+  }, []);
+
+  const flyTo = useCallback((lng: number, lat: number) => {
+    mapRef.current?.flyTo({ center: [lng, lat], zoom: 17 });
   }, []);
 
   const locateMe = useCallback(() => {
@@ -52,6 +57,9 @@ export default function MapShell() {
             <Link href="/pimpmycourt/donnees" className="pointer-events-auto text-[11px] text-white/50 hover:text-white underline">
               Données personnelles
             </Link>
+          </div>
+          <div className="mt-3">
+            <AddressSearch onSelect={flyTo} />
           </div>
         </div>
       </div>
