@@ -8,9 +8,15 @@ import PmcMap from "./PmcMap";
 import SignalementSheet from "./SignalementSheet";
 import AddressSearch from "./AddressSearch";
 
-// Map shell for /pimpmycourt (§5): a rounded map card under the solid black
-// header. A centre crosshair is always shown so you can place the point by
+// Full-screen map with all navigation grouped into a single black card pinned
+// top-left (§5). A centre crosshair is always shown so you place the point by
 // panning; reporting opens a bottom sheet.
+const NAV = [
+  { href: "/pimpmycourt", label: "La carte", active: true },
+  { href: "/pimpmycourt/tournage", label: "Protocole" },
+  { href: "/pimpmycourt/kit", label: "Demander un kit" },
+];
+
 export default function MapShell() {
   const [stats, setStats] = useState<{ total: number; remplaces: number } | null>(null);
   const [reporting, setReporting] = useState(false);
@@ -37,45 +43,73 @@ export default function MapShell() {
   }, []);
 
   return (
-    <main className="h-[calc(100dvh-3.5rem)] w-full bg-black text-white p-3 sm:p-4">
-      <div className="relative h-full w-full overflow-hidden rounded-2xl bg-[#0d0d0d] border border-white/10">
+    <main className="relative h-[100dvh] w-full overflow-hidden bg-[#0d0d0d] text-white">
       <PmcMap onStats={setStats} onMapReady={handleMapReady} />
 
-      {/* Editorial framing (top overlay) */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 p-4 sm:p-6">
-        <div className="max-w-md">
-          <h1 className="font-heading text-2xl sm:text-3xl font-bold italic uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-            La carte des filets
-          </h1>
-          <p className="mt-1 text-sm text-white/90 max-w-xs drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-            Signale un terrain, on t&apos;envoie de quoi le remettre en état.
-          </p>
-          <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-black/70 backdrop-blur px-3 py-1.5 text-xs font-heading font-bold">
-            <span className="text-orange">{stats ? stats.total : "—"} terrains signalés</span>
-            <span className="text-white/30">·</span>
-            <span style={{ color: ETAT_COLOR.remplace }}>{stats ? stats.remplaces : "—"} filets remplacés</span>
-          </div>
-          <div className="mt-2">
-            <Link href="/pimpmycourt/donnees" className="pointer-events-auto text-[11px] text-white/50 hover:text-white underline">
-              Données personnelles
+      {/* Nav card — all navigation, pinned top-left */}
+      <div className="absolute top-3 left-3 z-30 w-[calc(100%-1.5rem)] max-w-xs rounded-2xl bg-black/95 border border-white/10 shadow-2xl p-4">
+        {/* Brand → main site */}
+        <Link href="/" className="flex items-baseline gap-2">
+          <span className="font-heading text-lg font-bold italic">
+            <span className="text-orange">HOOPS</span>
+            <span className="text-white">IDIA</span>
+          </span>
+          <span className="text-[10px] font-heading font-bold uppercase tracking-wide text-orange/80">
+            Pimp My Court
+          </span>
+        </Link>
+
+        {/* Menu */}
+        <nav className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm font-heading font-bold">
+          {NAV.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className={l.active ? "text-orange" : "text-white/70 hover:text-white transition-colors"}
+            >
+              {l.label}
             </Link>
-          </div>
-          <div className="mt-3">
-            <AddressSearch onSelect={flyTo} />
+          ))}
+        </nav>
+
+        <div className="my-3 h-px bg-white/10" />
+
+        {/* Title + intro */}
+        <h1 className="font-heading text-xl font-bold italic uppercase leading-tight">
+          La carte des filets
+        </h1>
+        <p className="mt-1 text-xs text-white/60">
+          Signale un terrain, on t&apos;envoie de quoi le remettre en état.
+        </p>
+
+        {/* Live counter */}
+        <div className="mt-3 flex items-center gap-2 text-xs font-heading font-bold">
+          <span className="text-orange">{stats ? stats.total : "—"} signalés</span>
+          <span className="text-white/30">·</span>
+          <span style={{ color: ETAT_COLOR.remplace }}>{stats ? stats.remplaces : "—"} remplacés</span>
+        </div>
+
+        {/* Search */}
+        <div className="mt-3">
+          <AddressSearch onSelect={flyTo} />
+        </div>
+
+        {/* Legend + data link */}
+        <div className="mt-3 flex items-center justify-between text-[11px]">
+          <div className="flex items-center gap-3 text-white/60">
+            <span className="inline-flex items-center gap-1">
+              <span className="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-white/70" style={{ background: ETAT_COLOR.a_remplacer }} />
+              À remplacer
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="inline-block h-2.5 w-2.5 rotate-45 ring-1 ring-white/70" style={{ background: ETAT_COLOR.remplace }} />
+              Remplacé
+            </span>
           </div>
         </div>
-      </div>
-
-      {/* Legend */}
-      <div className="pointer-events-none absolute left-4 bottom-28 z-10 flex flex-col gap-1.5 text-xs bg-black/50 backdrop-blur rounded-lg p-2">
-        <span className="inline-flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-full ring-2 ring-white/80" style={{ background: ETAT_COLOR.a_remplacer }} />
-          À remplacer
-        </span>
-        <span className="inline-flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rotate-45 ring-2 ring-white/80" style={{ background: ETAT_COLOR.remplace }} />
-          Remplacé
-        </span>
+        <Link href="/pimpmycourt/donnees" className="mt-2 block text-[11px] text-white/40 hover:text-white underline">
+          Données personnelles
+        </Link>
       </div>
 
       {/* Centre crosshair — always visible, marks the point to report */}
@@ -118,7 +152,6 @@ export default function MapShell() {
       )}
 
       {reporting && <SignalementSheet getCenter={getCenter} onClose={() => setReporting(false)} />}
-      </div>
     </main>
   );
 }

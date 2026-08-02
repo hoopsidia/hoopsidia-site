@@ -17,7 +17,9 @@ const LINKS = [
 export default function PmcHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  if (pathname?.startsWith("/pimpmycourt/admin")) return null;
+  // The map page carries its own top-left nav card; the back-office has its own
+  // header. Everywhere else uses this full-width bar.
+  if (pathname === "/pimpmycourt" || pathname?.startsWith("/pimpmycourt/admin")) return null;
 
   return (
     <header className="sticky top-0 inset-x-0 z-40 bg-black border-b border-white/10">
