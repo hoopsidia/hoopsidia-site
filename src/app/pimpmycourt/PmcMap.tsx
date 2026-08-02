@@ -8,7 +8,8 @@ import { supabaseBrowser } from "@/lib/pmc/supabase";
 import { ETAT_COLOR, type Etat, type TerrainMarker, type TerrainPublic } from "@/lib/pmc/types";
 
 type Stats = { total: number; remplaces: number };
-type PointProps = TerrainMarker;
+// Coordinates come from the feature geometry, not the stored properties.
+type PointProps = Omit<TerrainMarker, "latitude" | "longitude">;
 type ClusterProps = { remplace: number };
 
 const FRANCE_CENTER: [number, number] = [2.4, 46.6];
@@ -66,16 +67,19 @@ export default function PmcMap({
         version: 8,
         sources: {
           // Satellite imagery + a transparent labels/boundaries overlay = hybrid.
+          // maxzoom 19: Esri imagery is generally unavailable past this globally.
           sat: {
             type: "raster",
             tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
             tileSize: 256,
+            maxzoom: 19,
             attribution: "© Esri, Maxar, Earthstar Geographics",
           },
           labels: {
             type: "raster",
             tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"],
             tileSize: 256,
+            maxzoom: 19,
           },
         },
         layers: [
@@ -85,6 +89,7 @@ export default function PmcMap({
       },
       center: FRANCE_CENTER,
       zoom: 5,
+      maxZoom: 19, // stop where satellite imagery runs out
       attributionControl: { compact: true },
     });
     mapRef.current = map;
@@ -130,6 +135,8 @@ export default function PmcMap({
           el.addEventListener("click", () => {
             onSelectTerrain?.({
               id: p.id,
+              latitude: lat,
+              longitude: lng,
               ville: p.ville,
               departement: p.departement,
               photo_avant_url: p.photo_avant_url,

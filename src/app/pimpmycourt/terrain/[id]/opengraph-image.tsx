@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getTerrainPublic } from "@/lib/pmc/supabasePublic";
 import { ETAT_COLOR } from "@/lib/pmc/types";
+import { satelliteImageUrl } from "@/lib/pmc/satellite";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -17,8 +18,8 @@ export default async function Image({ params }: { params: { id: string } }) {
   return new ImageResponse(
     (
       <div style={{ display: "flex", width: "100%", height: "100%", background: "#0d0d0d", position: "relative" }}>
-        {t?.photo_avant_url && (
-          <img src={t.photo_avant_url} alt="" width={1200} height={630} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.55 }} />
+        {t && (
+          <img src={satelliteImageUrl(t.latitude, t.longitude, 1200, 630)} alt="" width={1200} height={630} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }} />
         )}
         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 64, background: "linear-gradient(180deg, rgba(13,13,13,0.2), rgba(13,13,13,0.9))" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>

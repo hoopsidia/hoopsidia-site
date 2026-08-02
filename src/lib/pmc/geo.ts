@@ -20,6 +20,7 @@ export type ReverseGeo = {
   ville: string | null;
   code_postal: string | null;
   departement: string | null;
+  adresse: string | null;
 };
 
 // Reverse geocode via the free French government API (api-adresse.data.gouv.fr).
@@ -33,14 +34,15 @@ export async function reverseGeocode(lat: number, lng: number): Promise<ReverseG
     );
     const data = await res.json();
     const p = data?.features?.[0]?.properties;
-    if (!p) return { ville: null, code_postal: null, departement: null };
+    if (!p) return { ville: null, code_postal: null, departement: null, adresse: null };
     return {
       ville: p.city ?? null,
       code_postal: p.postcode ?? null,
       departement: typeof p.context === "string" ? p.context.split(",")[0].trim() : null,
+      adresse: p.label ?? null,
     };
   } catch {
-    return { ville: null, code_postal: null, departement: null };
+    return { ville: null, code_postal: null, departement: null, adresse: null };
   }
 }
 

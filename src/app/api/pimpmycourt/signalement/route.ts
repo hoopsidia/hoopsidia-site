@@ -4,12 +4,10 @@ import { isInFrance, reverseGeocode } from "@/lib/pmc/geo";
 import { sendSignalementRecu } from "@/lib/pmc/email";
 import { rateLimitOk, clientIp, ipHash } from "@/lib/pmc/rateLimit";
 
-const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
-
 // Creates a terrain signalement (status `signale`, not yet publicly visible).
-// Photo is uploaded to Storage; ville/departement are filled by reverse
-// geocoding. Basic anti-abuse: honeypot + French-territory bounds + photo
-// validation (IP rate limiting comes with §10).
+// No photo: the visual preview is a satellite view generated from the
+// coordinates. ville/departement are filled by reverse geocoding. Anti-abuse:
+// honeypot + IP rate limit + French-territory bounds.
 export async function POST(request: Request) {
   let form: FormData;
   try {
@@ -32,7 +30,6 @@ export async function POST(request: Request) {
   const lng = Number(form.get("longitude"));
   const email = String(form.get("email") ?? "").trim();
   const consent = form.get("consent");
-  const photo = form.get("photo");
 
   if (!Number.isFinite(lat) || !Number.isFinite(lng) || !isInFrance(lat, lng)) {
     return NextResponse.json({ error: "position hors de France" }, { status: 400 });
@@ -47,34 +44,12 @@ export async function POST(request: Request) {
   if (!Number.isInteger(nbPaniers) || nbPaniers < 1) {
     return NextResponse.json({ error: "nombre de paniers requis" }, { status: 400 });
   }
-  // Photo is optional; validate only if one was provided.
-  const hasPhoto = photo instanceof File && photo.size > 0;
-  if (hasPhoto && (!photo.type.startsWith("image/") || photo.size > MAX_PHOTO_BYTES)) {
-    return NextResponse.json({ error: "photo invalide (image, 8 Mo max)" }, { status: 400 });
-  }
 
   const commentaire = String(form.get("commentaire") ?? "").trim().slice(0, 300) || null;
   const prenom = String(form.get("prenom") ?? "").trim() || null;
   const instagram = String(form.get("contact_instagram") ?? "").trim() || null;
 
   const supabase = getSupabaseAdmin();
-
-  // Upload photo only if one was provided.
-  let photo_avant_url: string | null = null;
-  if (hasPhoto) {
-    const file = photo as File;
-    const ext = file.type.split("/")[1]?.replace("jpeg", "jpg") ?? "jpg";
-    const path = `avant/${crypto.randomUUID()}.${ext}`;
-    const up = await supabase.storage.from("terrains").upload(path, new Uint8Array(await file.arrayBuffer()), {
-      contentType: file.type,
-      upsert: false,
-    });
-    if (up.error) {
-      return NextResponse.json({ error: "échec de l'upload photo" }, { status: 500 });
-    }
-    photo_avant_url = supabase.storage.from("terrains").getPublicUrl(path).data.publicUrl;
-  }
-
   const geo = await reverseGeocode(lat, lng);
 
   const { data, error } = await supabase
@@ -85,7 +60,6 @@ export async function POST(request: Request) {
       ville: geo.ville,
       code_postal: geo.code_postal,
       departement: geo.departement,
-      photo_avant_url,
       nb_paniers: nbPaniers,
       statut: "signale",
       source: "formulaire",

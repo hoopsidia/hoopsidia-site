@@ -23,6 +23,8 @@ export type TerrainPublic = {
 // without an extra fetch when a marker is tapped.
 export type TerrainMarker = {
   id: string;
+  latitude: number;
+  longitude: number;
   ville: string | null;
   departement: string | null;
   photo_avant_url: string | null;

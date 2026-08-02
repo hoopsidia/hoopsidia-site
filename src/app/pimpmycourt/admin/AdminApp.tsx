@@ -4,12 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getSupabaseAuth } from "@/lib/pmc/supabaseAuthClient";
 import { ADMIN_EMAIL } from "@/lib/pmc/admin";
+import { satelliteImageUrl } from "@/lib/pmc/satellite";
 
 type QueueItem = {
   id: string;
+  latitude: number;
+  longitude: number;
   ville: string | null;
   departement: string | null;
-  photo_avant_url: string | null;
   nb_confirmations: number;
   nb_paniers: number | null;
   contact_email: string | null;
@@ -207,12 +209,8 @@ function Moderation({ authHeaders }: { authHeaders: Auth }) {
   return (
     <div>
       <p className="text-xs text-white/40 mb-2">{queue.length - i} en attente</p>
-      {current.photo_avant_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={current.photo_avant_url} alt="" className="w-full aspect-[4/3] object-cover rounded-xl bg-white/5" />
-      ) : (
-        <div className="w-full aspect-[4/3] rounded-xl bg-white/5 flex items-center justify-center text-white/30 text-sm">Sans photo</div>
-      )}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={satelliteImageUrl(current.latitude, current.longitude, 640, 480)} alt="Vue satellite" className="w-full aspect-[4/3] object-cover rounded-xl bg-white/5" />
       <div className="mt-3">
         <div className="font-heading text-xl font-bold">
           {current.ville ?? "Ville inconnue"} <span className="text-white/40 text-sm">{current.departement}</span>

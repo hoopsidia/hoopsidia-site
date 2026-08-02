@@ -18,7 +18,6 @@ export default function SignalementSheet({
   onClose: () => void;
 }) {
   const [phase, setPhase] = useState<Phase>("form");
-  const [photo, setPhoto] = useState<File | null>(null);
   const [nbPaniers, setNbPaniers] = useState("");
   const [email, setEmail] = useState("");
   const [instagram, setInstagram] = useState("");
@@ -68,7 +67,6 @@ export default function SignalementSheet({
     fd.set("consent", consent ? "1" : "");
     fd.set("nb_paniers", nbPaniers);
     fd.set("website", websiteRef.current?.value ?? "");
-    if (photo) fd.set("photo", photo);
     try {
       const res = await fetch("/api/pimpmycourt/signalement", { method: "POST", body: fd });
       const data = await res.json();
@@ -167,19 +165,6 @@ export default function SignalementSheet({
                 placeholder="ex. 2"
                 className="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-orange"
               />
-            </label>
-
-            {/* Photo (facultatif) */}
-            <label className="block">
-              <span className="text-sm text-white/70">Photo du terrain <span className="text-white/40">(facultatif)</span></span>
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-                className="mt-1 block w-full text-sm text-white/70 file:mr-3 file:rounded-full file:border-0 file:bg-orange file:px-4 file:py-2 file:text-black file:font-bold"
-              />
-              {photo && <span className="text-xs text-white/40">{photo.name}</span>}
             </label>
 
             {/* Email + instagram */}
