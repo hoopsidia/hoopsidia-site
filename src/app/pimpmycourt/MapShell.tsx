@@ -39,8 +39,8 @@ export default function MapShell() {
     <main className="relative h-[100dvh] w-full overflow-hidden bg-[#0d0d0d] text-white">
       <PmcMap onStats={setStats} onMapReady={handleMapReady} />
 
-      {/* Editorial framing (top overlay) */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 p-4 sm:p-6">
+      {/* Editorial framing (top overlay) — offset below the fixed header */}
+      <div className="pointer-events-none absolute inset-x-0 top-14 z-10 p-4 sm:p-6">
         <div className="max-w-md">
           <h1 className="font-heading text-2xl sm:text-3xl font-bold italic uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
             La carte des filets

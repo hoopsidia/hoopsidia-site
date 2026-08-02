@@ -36,7 +36,7 @@ export default function TournagePage() {
   return (
     // High contrast for outdoor / full-sun reading.
     <main className="min-h-[100dvh] bg-black text-white">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-20 pb-10 sm:pt-24 sm:pb-16">
         <Link
           href="/pimpmycourt"
           className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-orange transition-colors"

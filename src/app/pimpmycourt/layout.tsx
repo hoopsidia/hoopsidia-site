@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { BASE_URL } from "@/lib/constants";
+import PmcHeader from "./PmcHeader";
 import "../globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -32,6 +33,7 @@ export default function PimpMyCourtLayout({
   return (
     <html lang="fr" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <PmcHeader />
         {children}
       </body>
     </html>

@@ -131,3 +131,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
+
+/* Keep MapLibre's top controls clear of the fixed Pimp My Court header. */
+.maplibregl-ctrl-top-right {
+  margin-top: 3.5rem;
+}
