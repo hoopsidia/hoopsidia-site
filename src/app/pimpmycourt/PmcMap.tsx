@@ -5,10 +5,10 @@ import * as maplibregl from "maplibre-gl";
 import type { Map as MlMap, Marker } from "maplibre-gl";
 import Supercluster from "supercluster";
 import { supabaseBrowser } from "@/lib/pmc/supabase";
-import { ETAT_COLOR, type Etat, type TerrainPublic } from "@/lib/pmc/types";
+import { ETAT_COLOR, type Etat, type TerrainMarker, type TerrainPublic } from "@/lib/pmc/types";
 
 type Stats = { total: number; remplaces: number };
-type PointProps = { id: string; etat: Etat };
+type PointProps = TerrainMarker;
 type ClusterProps = { remplace: number };
 
 const FRANCE_CENTER: [number, number] = [2.4, 46.6];
@@ -48,9 +48,11 @@ function pointMarkerEl(etat: Etat): HTMLElement {
 export default function PmcMap({
   onStats,
   onMapReady,
+  onSelectTerrain,
 }: {
   onStats?: (s: Stats) => void;
   onMapReady?: (map: MlMap) => void;
+  onSelectTerrain?: (t: TerrainMarker) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
@@ -87,7 +89,7 @@ export default function PmcMap({
     });
     mapRef.current = map;
     onMapReady?.(map);
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+    // No default controls — MapShell renders custom Google-style controls.
 
     const index = new Supercluster<PointProps, ClusterProps>({
       radius: 55,
@@ -126,7 +128,15 @@ export default function PmcMap({
         } else {
           el = pointMarkerEl(p.etat);
           el.addEventListener("click", () => {
-            window.location.href = `/pimpmycourt/terrain/${p.id}`;
+            onSelectTerrain?.({
+              id: p.id,
+              ville: p.ville,
+              departement: p.departement,
+              photo_avant_url: p.photo_avant_url,
+              etat: p.etat,
+              nb_confirmations: p.nb_confirmations,
+              nb_paniers: p.nb_paniers,
+            });
           });
         }
         markers.push(new maplibregl.Marker({ element: el }).setLngLat([lng, lat]).addTo(map));
@@ -143,7 +153,15 @@ export default function PmcMap({
         rows.map((r) => ({
           type: "Feature" as const,
           geometry: { type: "Point" as const, coordinates: [r.longitude, r.latitude] },
-          properties: { id: r.id, etat: r.etat },
+          properties: {
+            id: r.id,
+            ville: r.ville,
+            departement: r.departement,
+            photo_avant_url: r.photo_avant_url,
+            etat: r.etat,
+            nb_confirmations: r.nb_confirmations,
+            nb_paniers: r.nb_paniers,
+          },
         })),
       );
       render();
@@ -155,7 +173,7 @@ export default function PmcMap({
       map.remove();
       mapRef.current = null;
     };
-  }, [onStats, onMapReady]);
+  }, [onStats, onMapReady, onSelectTerrain]);
 
   // h-full (not absolute inset-0): MapLibre forces position:relative on its
   // container, which would void absolute positioning and collapse the height.
@@ -166,7 +184,7 @@ async function fetchTerrains(): Promise<TerrainPublic[]> {
   if (!supabaseBrowser) return [];
   const { data, error } = await supabaseBrowser
     .from("terrains_public")
-    .select("id,latitude,longitude,ville,departement,photo_avant_url,etat,nb_confirmations");
+    .select("id,latitude,longitude,ville,departement,photo_avant_url,etat,nb_confirmations,nb_paniers");
   if (error) {
     console.error("terrains_public fetch error:", error.message);
     return [];

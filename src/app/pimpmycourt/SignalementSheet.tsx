@@ -11,10 +11,10 @@ type Phase = "form" | "duplicate" | "sending" | "done";
 // crosshair overlay); the map stays pannable above the sheet. Friction-minimal:
 // photo + email required, everything else optional behind a toggle.
 export default function SignalementSheet({
-  getCenter,
+  position,
   onClose,
 }: {
-  getCenter: () => Pos;
+  position: Pos;
   onClose: () => void;
 }) {
   const [phase, setPhase] = useState<Phase>("form");
@@ -35,7 +35,7 @@ export default function SignalementSheet({
 
   async function handleSubmit() {
     setError(null);
-    const pos = getCenter();
+    const pos = position;
     // Duplicate check first
     try {
       const res = await fetch("/api/pimpmycourt/nearby", {
@@ -142,7 +142,7 @@ export default function SignalementSheet({
               Oui, je confirme
             </button>
             <button
-              onClick={() => create(getCenter())}
+              onClick={() => create(position)}
               className="w-full rounded-full glass-subtle py-2.5 text-sm font-heading font-bold hover:bg-white/10"
             >
               Ce n&apos;est pas le même terrain
@@ -153,7 +153,7 @@ export default function SignalementSheet({
         {(phase === "form" || phase === "sending") && (
           <div className="space-y-4">
             <p className="text-xs text-white/50">
-              Déplace la carte pour placer le repère central sur le terrain (ou cherche une adresse).
+              Position enregistrée. Indique le nombre de paniers et tes infos.
             </p>
 
             {/* Nombre de paniers — requis */}
