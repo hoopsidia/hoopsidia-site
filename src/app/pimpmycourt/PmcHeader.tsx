@@ -20,7 +20,7 @@ export default function PmcHeader() {
   if (pathname?.startsWith("/pimpmycourt/admin")) return null;
 
   return (
-    <header className="fixed top-0 inset-x-0 z-40 bg-black/50 backdrop-blur border-b border-white/10">
+    <header className="sticky top-0 inset-x-0 z-40 bg-black border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
         {/* Brand — links back to hoopsidia.com */}
         <Link href="/" className="flex items-baseline gap-2 shrink-0">

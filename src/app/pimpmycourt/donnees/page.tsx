@@ -23,7 +23,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function DonneesPage() {
   return (
     <main className="min-h-[100dvh] bg-black text-white">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-20 pb-10">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
         <Link href="/pimpmycourt" className="text-sm text-white/50 hover:text-orange">← La carte des filets</Link>
         <h1 className="mt-4 font-heading text-3xl font-bold italic uppercase">Tes données</h1>
         <p className="mt-2 text-white/60 text-sm">

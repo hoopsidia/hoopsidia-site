@@ -60,7 +60,7 @@ export default function KitForm({ terrainId }: { terrainId: string | null }) {
 
   return (
     <main className="min-h-[100dvh] bg-black text-white">
-      <form onSubmit={onSubmit} className="max-w-lg mx-auto px-4 sm:px-6 pt-20 pb-10 space-y-6">
+      <form onSubmit={onSubmit} className="max-w-lg mx-auto px-4 sm:px-6 py-10 space-y-6">
         <div>
           <Link href="/pimpmycourt" className="text-sm text-white/50 hover:text-orange">← La carte des filets</Link>
           <h1 className="mt-4 font-heading text-3xl font-bold italic uppercase">Demander un kit</h1>

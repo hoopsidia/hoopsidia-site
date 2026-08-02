@@ -8,8 +8,9 @@ import PmcMap from "./PmcMap";
 import SignalementSheet from "./SignalementSheet";
 import AddressSearch from "./AddressSearch";
 
-// Full-screen map shell for /pimpmycourt (§5). Reporting is a bottom sheet; the
-// map stays pannable above it and a crosshair marks the chosen position.
+// Map shell for /pimpmycourt (§5): a rounded map card under the solid black
+// header. A centre crosshair is always shown so you can place the point by
+// panning; reporting opens a bottom sheet.
 export default function MapShell() {
   const [stats, setStats] = useState<{ total: number; remplaces: number } | null>(null);
   const [reporting, setReporting] = useState(false);
@@ -36,11 +37,12 @@ export default function MapShell() {
   }, []);
 
   return (
-    <main className="relative h-[100dvh] w-full overflow-hidden bg-[#0d0d0d] text-white">
+    <main className="h-[calc(100dvh-3.5rem)] w-full bg-black text-white p-3 sm:p-4">
+      <div className="relative h-full w-full overflow-hidden rounded-2xl bg-[#0d0d0d] border border-white/10">
       <PmcMap onStats={setStats} onMapReady={handleMapReady} />
 
-      {/* Editorial framing (top overlay) — offset below the fixed header */}
-      <div className="pointer-events-none absolute inset-x-0 top-14 z-10 p-4 sm:p-6">
+      {/* Editorial framing (top overlay) */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 p-4 sm:p-6">
         <div className="max-w-md">
           <h1 className="font-heading text-2xl sm:text-3xl font-bold italic uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
             La carte des filets
@@ -76,22 +78,20 @@ export default function MapShell() {
         </span>
       </div>
 
-      {/* Center crosshair while reporting (marks the position) */}
-      {reporting && (
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center" aria-hidden>
-          <div className="-translate-y-3">
-            <svg width="40" height="52" viewBox="0 0 40 52">
-              <path
-                d="M20 0C9 0 0 9 0 20c0 14 20 32 20 32s20-18 20-32C40 9 31 0 20 0z"
-                fill={ETAT_COLOR.a_remplacer}
-                stroke="#fff"
-                strokeWidth="2"
-              />
-              <circle cx="20" cy="20" r="6" fill="#fff" />
-            </svg>
-          </div>
+      {/* Centre crosshair — always visible, marks the point to report */}
+      <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center" aria-hidden>
+        <div className="-translate-y-3 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]">
+          <svg width="40" height="52" viewBox="0 0 40 52">
+            <path
+              d="M20 0C9 0 0 9 0 20c0 14 20 32 20 32s20-18 20-32C40 9 31 0 20 0z"
+              fill={ETAT_COLOR.a_remplacer}
+              stroke="#fff"
+              strokeWidth="2"
+            />
+            <circle cx="20" cy="20" r="6" fill="#fff" />
+          </svg>
         </div>
-      )}
+      </div>
 
       {/* Thumb-zone actions (hidden while the sheet is open) */}
       {!reporting && (
@@ -118,6 +118,7 @@ export default function MapShell() {
       )}
 
       {reporting && <SignalementSheet getCenter={getCenter} onClose={() => setReporting(false)} />}
+      </div>
     </main>
   );
 }

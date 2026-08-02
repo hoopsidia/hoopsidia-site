@@ -2,11 +2,12 @@
 
 import { useRef, useState } from "react";
 
-type Suggestion = { label: string; lng: number; lat: number };
+type Suggestion = { name: string; detail: string; lng: number; lat: number };
 
-// Address / place search via the French government geocoder
-// (api-adresse.data.gouv.fr). Picking a result flies the map there so the
-// centre crosshair lands on the terrain.
+// Place / address search via Nominatim (OpenStreetMap) — like Google Maps, it
+// finds named places and POIs (stades, gymnases, parcs…), not only postal
+// addresses. Picking a result flies the map there so the centre crosshair lands
+// on the terrain. France-biased.
 export default function AddressSearch({ onSelect }: { onSelect: (lng: number, lat: number) => void }) {
   const [q, setQ] = useState("");
   const [items, setItems] = useState<Suggestion[]>([]);
@@ -22,25 +23,30 @@ export default function AddressSearch({ onSelect }: { onSelect: (lng: number, la
     timer.current = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(value)}&limit=5`,
+          `https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=fr&limit=6&q=${encodeURIComponent(value)}`,
+          { headers: { "Accept-Language": "fr" } },
         );
         const data = await res.json();
         setItems(
-          (data.features ?? []).map((f: { properties: { label: string }; geometry: { coordinates: [number, number] } }) => ({
-            label: f.properties.label,
-            lng: f.geometry.coordinates[0],
-            lat: f.geometry.coordinates[1],
-          })),
+          (Array.isArray(data) ? data : []).map((d: { display_name: string; name?: string; lat: string; lon: string }) => {
+            const parts = d.display_name.split(",");
+            return {
+              name: d.name || parts[0].trim(),
+              detail: (d.name ? parts : parts.slice(1)).join(",").trim(),
+              lng: parseFloat(d.lon),
+              lat: parseFloat(d.lat),
+            };
+          }),
         );
       } catch {
         setItems([]);
       }
-    }, 300);
+    }, 500);
   }
 
   function pick(s: Suggestion) {
     onSelect(s.lng, s.lat);
-    setQ(s.label);
+    setQ(s.name);
     setItems([]);
   }
 
@@ -53,19 +59,20 @@ export default function AddressSearch({ onSelect }: { onSelect: (lng: number, la
         <input
           value={q}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Chercher une adresse, une ville…"
+          placeholder="Chercher un lieu, une adresse, un terrain…"
           className="w-full bg-transparent text-sm text-white placeholder:text-white/40 outline-none"
         />
       </div>
       {items.length > 0 && (
-        <ul className="absolute left-0 right-0 mt-1 rounded-xl bg-[#0d0d0d] border border-white/10 overflow-hidden shadow-lg">
+        <ul className="absolute left-0 right-0 mt-1 rounded-xl bg-[#0d0d0d] border border-white/10 overflow-hidden shadow-lg max-h-72 overflow-y-auto">
           {items.map((s, i) => (
             <li key={i}>
               <button
                 onClick={() => pick(s)}
-                className="w-full text-left px-3 py-2 text-sm text-white/80 hover:bg-white/10"
+                className="w-full text-left px-3 py-2 hover:bg-white/10"
               >
-                {s.label}
+                <div className="text-sm text-white font-medium truncate">{s.name}</div>
+                {s.detail && <div className="text-xs text-white/40 truncate">{s.detail}</div>}
               </button>
             </li>
           ))}
