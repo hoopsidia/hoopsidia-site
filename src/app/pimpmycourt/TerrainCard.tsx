@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ETAT_COLOR, type TerrainMarker } from "@/lib/pmc/types";
-import { satelliteImageUrl, googleDirectionsUrl } from "@/lib/pmc/satellite";
+import { satelliteImageUrl, googleDirectionsUrl, googleMapsUrl } from "@/lib/pmc/satellite";
 
 // Google-Maps-style place card: satellite preview of the exact spot, the exact
 // address (reverse-geocoded), status, and actions (directions, share, confirm).
@@ -57,9 +57,9 @@ export default function TerrainCard({ terrain, onClose }: { terrain: TerrainMark
         </div>
 
         <div className="p-3">
-          <div className="font-heading font-bold text-white leading-tight">
+          <Link href={`/pimpmycourt/terrain/${terrain.id}`} className="font-heading font-bold text-white leading-tight hover:text-orange transition-colors">
             {terrain.nom_terrain ?? "Terrain de basket"} <span className="text-white/40 text-sm">{terrain.departement}</span>
-          </div>
+          </Link>
           <p className="text-xs text-white/50 mt-0.5">{address ?? `${terrain.ville ?? ""}`}</p>
           <div className="mt-1 text-xs text-white/40">
             {terrain.nb_filets_a_remplacer != null ? `${terrain.nb_filets_a_remplacer} filet${terrain.nb_filets_a_remplacer > 1 ? "s" : ""} à remplacer · ` : ""}
@@ -74,11 +74,32 @@ export default function TerrainCard({ terrain, onClose }: { terrain: TerrainMark
               <button onClick={confirm} className="rounded-lg bg-orange text-black px-4 font-heading font-bold text-sm">OK</button>
             </div>
           ) : (
-            <div className="mt-3 grid grid-cols-4 gap-1.5 text-[11px] font-heading font-bold">
-              <a href={googleDirectionsUrl(terrain.latitude, terrain.longitude)} target="_blank" rel="noopener noreferrer" className="rounded-full bg-white/10 text-white text-center py-2 hover:bg-white/20">Itinéraire</a>
-              <Link href={`/pimpmycourt/terrain/${terrain.id}`} className="rounded-full bg-white/10 text-white text-center py-2 hover:bg-white/20">Fiche</Link>
-              <button onClick={share} className="rounded-full bg-white/10 text-white py-2 hover:bg-white/20">Partager</button>
-              <button onClick={() => setConfirming(true)} className="rounded-full bg-orange text-black py-2 hover:bg-orange-light">Confirmer</button>
+            /* Google-Maps-style action row */
+            <div className="mt-3 grid grid-cols-4 gap-1">
+              <a href={googleDirectionsUrl(terrain.latitude, terrain.longitude)} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 text-[10px] font-heading font-bold text-white">
+                <span className="h-11 w-11 rounded-full bg-orange text-black flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21.71 11.29l-9-9a1 1 0 0 0-1.42 0l-9 9a1 1 0 0 0 0 1.42l9 9a1 1 0 0 0 1.42 0l9-9a1 1 0 0 0 0-1.42zM14 14.5V12h-4v2H8v-3a1 1 0 0 1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg>
+                </span>
+                S&apos;y rendre
+              </a>
+              <a href={googleMapsUrl(terrain.latitude, terrain.longitude)} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 text-[10px] font-heading font-bold text-white/80">
+                <span className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </span>
+                Maps
+              </a>
+              <button onClick={share} className="flex flex-col items-center gap-1 text-[10px] font-heading font-bold text-white/80">
+                <span className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5 8.6 10.5"/></svg>
+                </span>
+                Partager
+              </button>
+              <button onClick={() => setConfirming(true)} className="flex flex-col items-center gap-1 text-[10px] font-heading font-bold text-white/80">
+                <span className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+                Confirmer
+              </button>
             </div>
           )}
         </div>

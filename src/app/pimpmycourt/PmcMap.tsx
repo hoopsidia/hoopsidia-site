@@ -14,6 +14,11 @@ type ClusterProps = { remplace: number };
 
 const FRANCE_CENTER: [number, number] = [2.4, 46.6];
 
+// White glyphs for the markers: a basketball for courts still needing a net,
+// a check for courts already done.
+const BASKET_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><path d="M5.6 5.6c3.2 3.2 3.2 9.6 0 12.8M18.4 5.6c-3.2 3.2-3.2 9.6 0 12.8"/></svg>`;
+const CHECK_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+
 // Clustering runs on the main thread (Supercluster) rather than via MapLibre's
 // GeoJSON source, whose worker doesn't load under the Next.js bundler. This is
 // robust and gives full control over the signature bicolor cluster ring.
@@ -25,7 +30,7 @@ function ringMarkerEl(remplace: number, total: number): HTMLElement {
   const size = 40 + Math.min(total, 200) / 200 * 26; // 40–66px by weight
   el.style.cssText = `width:${size}px;height:${size}px;border-radius:50%;cursor:pointer;
     background:conic-gradient(${ETAT_COLOR.remplace} 0 ${deg}deg, ${ETAT_COLOR.a_remplacer} ${deg}deg 360deg);
-    display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.4);`;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px rgba(255,255,255,.6), 0 2px 8px rgba(0,0,0,.45);`;
   const inner = document.createElement("div");
   const inSize = size - 12;
   inner.style.cssText = `width:${inSize}px;height:${inSize}px;border-radius:50%;background:#0d0d0d;color:#fff;
@@ -38,11 +43,16 @@ function ringMarkerEl(remplace: number, total: number): HTMLElement {
 function pointMarkerEl(etat: Etat): HTMLElement {
   const el = document.createElement("div");
   const color = ETAT_COLOR[etat];
-  // Shape encodes state too (not hue-only): circle = à remplacer, diamond = remplacé.
-  const radius = etat === "remplace" ? "3px" : "50%";
-  const rotate = etat === "remplace" ? "rotate(45deg)" : "none";
-  el.style.cssText = `width:16px;height:16px;background:${color};border:2px solid #fff;
-    border-radius:${radius};transform:${rotate};cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.5);`;
+  const remplace = etat === "remplace";
+  const icon = encodeURIComponent(remplace ? CHECK_SVG : BASKET_SVG);
+  // State encoded three ways (not hue-only): colour, outer shape (circle vs
+  // rounded square) and icon (basketball vs check). Icon as a background SVG.
+  el.style.cssText = `width:28px;height:28px;background-color:${color};border:2px solid #fff;
+    border-radius:${remplace ? "8px" : "50%"};box-shadow:0 2px 6px rgba(0,0,0,.55);cursor:pointer;
+    background-image:url("data:image/svg+xml,${icon}");background-repeat:no-repeat;
+    background-position:center;background-size:16px 16px;transition:transform .12s;`;
+  el.addEventListener("mouseenter", () => { el.style.transform = "scale(1.15)"; });
+  el.addEventListener("mouseleave", () => { el.style.transform = "scale(1)"; });
   return el;
 }
 

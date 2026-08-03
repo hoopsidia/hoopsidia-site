@@ -91,11 +91,11 @@ export default function MapShell() {
       {/* Legend (bottom-left map key) */}
       <div className="pointer-events-none absolute left-3 bottom-3 z-10 flex flex-col gap-1 text-[11px] bg-black/60 backdrop-blur rounded-lg p-2">
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-full ring-1 ring-white/70" style={{ background: ETAT_COLOR.a_remplacer }} />
+          <span className="inline-block h-3 w-3 rounded-full ring-1 ring-white/80" style={{ background: ETAT_COLOR.a_remplacer }} />
           À remplacer
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rotate-45 ring-1 ring-white/70" style={{ background: ETAT_COLOR.remplace }} />
+          <span className="inline-block h-3 w-3 rounded-[3px] ring-1 ring-white/80" style={{ background: ETAT_COLOR.remplace }} />
           Remplacé
         </span>
       </div>
