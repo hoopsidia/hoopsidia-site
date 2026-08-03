@@ -12,8 +12,14 @@ export async function GET(request: Request) {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("terrains")
-    .select("id, latitude, longitude, ville, departement, statut, etat, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at")
+    .select("id, latitude, longitude, ville, departement, statut, photo_apres_url, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at")
     .order("created_at", { ascending: false });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ terrains: data ?? [] });
+  // `etat` isn't a stored column — it's derived (an after-photo means the net
+  // has been replaced), mirroring the terrains_public view.
+  const terrains = (data ?? []).map(({ photo_apres_url, ...t }) => ({
+    ...t,
+    etat: photo_apres_url ? "remplace" : "a_remplacer",
+  }));
+  return NextResponse.json({ terrains });
 }
