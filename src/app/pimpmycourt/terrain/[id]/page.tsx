@@ -5,8 +5,9 @@ import { BASE_URL } from "@/lib/constants";
 import { getTerrainPublic } from "@/lib/pmc/supabasePublic";
 import { reverseGeocode } from "@/lib/pmc/geo";
 import { ETAT_COLOR } from "@/lib/pmc/types";
-import { satelliteImageUrl, googleDirectionsUrl, googleMapsUrl } from "@/lib/pmc/satellite";
+import { googleDirectionsUrl, googleMapsUrl } from "@/lib/pmc/satellite";
 import ShareButton from "./ShareButton";
+import TerrainMiniMap from "./TerrainMiniMap";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -45,11 +46,10 @@ export default async function TerrainPage({ params }: { params: Promise<{ id: st
 
         {/* Google-Maps-style location card */}
         <div className="mt-5 rounded-2xl border border-white/10 overflow-hidden bg-white/[0.03]">
-          {/* Satellite hero from coordinates */}
-          <div className="relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={satelliteImageUrl(t.latitude, t.longitude, 900, 500)} alt="Vue satellite du terrain" className="w-full aspect-[9/5] object-cover bg-white/5" />
-            <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-heading font-bold" style={{ background: "rgba(0,0,0,.7)", color }}>
+          {/* Interactive satellite mini-map centred on the court */}
+          <div className="relative aspect-[9/5] bg-white/5">
+            <TerrainMiniMap lat={t.latitude} lng={t.longitude} etat={t.etat} />
+            <span className="pointer-events-none absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-heading font-bold" style={{ background: "rgba(0,0,0,.7)", color }}>
               <span className="inline-block h-2 w-2 rounded-full" style={{ background: color }} />
               {remplace ? "Filet remplacé" : "À remplacer"}
             </span>
