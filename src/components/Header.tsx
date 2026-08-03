@@ -148,9 +148,16 @@ export default function Header() {
                 {t(item.key)}
               </a>
             ))}
+            {/* Direct link to the Pimp My Court map product (locale-less route) */}
+            <a
+              href="/pimpmycourt"
+              className="relative z-10 text-xs sm:text-sm font-semibold text-black bg-orange px-2.5 sm:px-4 py-1.5 rounded-full hover:bg-orange-light transition-colors ml-2 sm:ml-4 whitespace-nowrap"
+            >
+              {t("signaler")}
+            </a>
             <button
               onClick={switchLocale}
-              className="relative z-10 text-xs sm:text-sm font-medium text-orange border border-orange/30 px-2.5 sm:px-3 py-1 rounded-full hover:bg-orange/10 transition-colors ml-2 sm:ml-4 whitespace-nowrap"
+              className="relative z-10 text-xs sm:text-sm font-medium text-orange border border-orange/30 px-2.5 sm:px-3 py-1 rounded-full hover:bg-orange/10 transition-colors ml-2 whitespace-nowrap"
             >
               {locale === "fr" ? "EN" : "FR"}
             </button>
