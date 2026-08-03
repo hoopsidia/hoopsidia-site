@@ -14,6 +14,8 @@ export type TerrainPublic = {
   etat: Etat;
   nb_confirmations: number;
   nb_paniers: number | null;
+  nb_filets_a_remplacer: number | null;
+  nom_terrain: string | null;
   prenom: string | null;
   commentaire: string | null;
   created_at: string;
@@ -31,6 +33,8 @@ export type TerrainMarker = {
   etat: Etat;
   nb_confirmations: number;
   nb_paniers: number | null;
+  nb_filets_a_remplacer: number | null;
+  nom_terrain: string | null;
 };
 
 // Status color couple (§12) — distinct from brand orange, legible over an OSM

@@ -14,7 +14,13 @@ type QueueItem = {
   departement: string | null;
   nb_confirmations: number;
   nb_paniers: number | null;
+  nb_filets_a_remplacer: number | null;
+  nom_terrain: string | null;
+  nom: string | null;
+  age: number | null;
   contact_email: string | null;
+  contact_instagram: string | null;
+  contact_tiktok: string | null;
   prenom: string | null;
   commentaire: string | null;
   merge_candidate: { id: string; ville: string | null; statut: string; distance: number } | null;
@@ -213,15 +219,21 @@ function Moderation({ authHeaders }: { authHeaders: Auth }) {
       <img src={satelliteImageUrl(current.latitude, current.longitude, 640, 480)} alt="Vue satellite" className="w-full aspect-[4/3] object-cover rounded-xl bg-white/5" />
       <div className="mt-3">
         <div className="font-heading text-xl font-bold">
-          {current.ville ?? "Ville inconnue"} <span className="text-white/40 text-sm">{current.departement}</span>
+          {current.nom_terrain ?? current.ville ?? "Terrain"} <span className="text-white/40 text-sm">{current.ville} {current.departement}</span>
         </div>
         <div className="text-sm text-white/50">
-          {current.nb_paniers != null ? `${current.nb_paniers} panier${current.nb_paniers > 1 ? "s" : ""} · ` : ""}
+          {current.nb_filets_a_remplacer != null ? `${current.nb_filets_a_remplacer} filet(s) à remplacer · ` : ""}
+          {current.nb_paniers != null ? `${current.nb_paniers} panier(s) · ` : ""}
           {current.nb_confirmations} confirmation{current.nb_confirmations > 1 ? "s" : ""}
-          {current.prenom ? ` · ${current.prenom}` : ""}
         </div>
-        {current.commentaire && <p className="text-sm text-white/60 mt-1 italic">“{current.commentaire}”</p>}
-        {current.contact_email && <p className="text-xs text-white/30 mt-1">{current.contact_email}</p>}
+        <div className="text-xs text-white/30 mt-1 space-y-0.5">
+          {(current.prenom || current.nom || current.age != null) && (
+            <p>{[current.prenom, current.nom].filter(Boolean).join(" ")}{current.age != null ? ` · ${current.age} ans` : ""}</p>
+          )}
+          {current.contact_email && <p>✉ {current.contact_email}</p>}
+          {current.contact_instagram && <p>IG {current.contact_instagram}</p>}
+          {current.contact_tiktok && <p>TikTok {current.contact_tiktok}</p>}
+        </div>
       </div>
 
       {current.merge_candidate && (

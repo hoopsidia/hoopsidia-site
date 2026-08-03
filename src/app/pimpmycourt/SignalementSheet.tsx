@@ -7,6 +7,8 @@ type Pos = { lat: number; lng: number };
 type Duplicate = { id: string; ville: string | null; nb_confirmations: number } | null;
 type Phase = "form" | "duplicate" | "sending" | "done";
 
+const INPUT = "w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:border-orange";
+
 // Bottom sheet for reporting a court (§5). Position = current map centre (the
 // crosshair overlay); the map stays pannable above the sheet. Friction-minimal:
 // photo + email required, everything else optional behind a toggle.
@@ -18,19 +20,23 @@ export default function SignalementSheet({
   onClose: () => void;
 }) {
   const [phase, setPhase] = useState<Phase>("form");
+  const [nomTerrain, setNomTerrain] = useState("");
   const [nbPaniers, setNbPaniers] = useState("");
+  const [nbFilets, setNbFilets] = useState("");
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [prenom, setPrenom] = useState("");
+  const [nom, setNom] = useState("");
+  const [age, setAge] = useState("");
   const [email, setEmail] = useState("");
   const [instagram, setInstagram] = useState("");
-  const [prenom, setPrenom] = useState("");
-  const [commentaire, setCommentaire] = useState("");
+  const [tiktok, setTiktok] = useState("");
   const [consent, setConsent] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [duplicate, setDuplicate] = useState<Duplicate>(null);
   const websiteRef = useRef<HTMLInputElement>(null); // honeypot
 
   const canSubmit =
-    /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) && consent && Number(nbPaniers) >= 1;
+    /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) && consent && Number(nbPaniers) >= 1 && Number(nbFilets) >= 1;
 
   async function handleSubmit() {
     setError(null);
@@ -60,13 +66,18 @@ export default function SignalementSheet({
     const fd = new FormData();
     fd.set("latitude", String(pos.lat));
     fd.set("longitude", String(pos.lng));
+    fd.set("nom_terrain", nomTerrain);
+    fd.set("nb_paniers", nbPaniers);
+    fd.set("nb_filets", nbFilets);
+    fd.set("prenom", prenom);
+    fd.set("nom", nom);
+    fd.set("age", age);
     fd.set("email", email);
     fd.set("contact_instagram", instagram);
-    fd.set("prenom", prenom);
-    fd.set("commentaire", commentaire);
+    fd.set("contact_tiktok", tiktok);
     fd.set("consent", consent ? "1" : "");
-    fd.set("nb_paniers", nbPaniers);
     fd.set("website", websiteRef.current?.value ?? "");
+    if (photo) fd.set("photo", photo);
     try {
       const res = await fetch("/api/pimpmycourt/signalement", { method: "POST", body: fd });
       const data = await res.json();
@@ -150,66 +161,42 @@ export default function SignalementSheet({
 
         {(phase === "form" || phase === "sending") && (
           <div className="space-y-4">
-            <p className="text-xs text-white/50">
-              Position enregistrée. Indique le nombre de paniers et tes infos.
-            </p>
-
-            {/* Nombre de paniers — requis */}
-            <label className="block">
-              <span className="text-sm text-white/70">Combien de paniers ont besoin de filets ? *</span>
-              <input
-                type="number"
-                min="1"
-                value={nbPaniers}
-                onChange={(e) => setNbPaniers(e.target.value)}
-                placeholder="ex. 2"
-                className="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-orange"
-              />
-            </label>
-
-            {/* Email + instagram */}
-            <label className="block">
-              <span className="text-sm text-white/70">Email *</span>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="ton@email.fr"
-                className="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-orange"
-              />
-            </label>
+            <p className="text-xs text-white/50">Position enregistrée. Décris le terrain et laisse tes infos.</p>
 
             {/* Honeypot (hidden) */}
             <input ref={websiteRef} type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
-            {!showDetails && (
-              <button onClick={() => setShowDetails(true)} className="text-sm text-orange hover:underline">
-                + Ajouter des détails (optionnel)
-              </button>
-            )}
-            {showDetails && (
-              <div className="space-y-3">
-                <input
-                  value={instagram}
-                  onChange={(e) => setInstagram(e.target.value)}
-                  placeholder="@ton_instagram (optionnel)"
-                  className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-orange"
-                />
-                <input
-                  value={prenom}
-                  onChange={(e) => setPrenom(e.target.value)}
-                  placeholder="Prénom (optionnel)"
-                  className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-orange"
-                />
-                <textarea
-                  value={commentaire}
-                  onChange={(e) => setCommentaire(e.target.value.slice(0, 300))}
-                  placeholder="Commentaire (optionnel, 300 car. max)"
-                  rows={2}
-                  className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-orange"
-                />
+            {/* Le terrain */}
+            <div className="space-y-3">
+              <div className="text-xs font-heading font-bold uppercase text-orange">Le terrain</div>
+              <input value={nomTerrain} onChange={(e) => setNomTerrain(e.target.value)} placeholder="Nom du terrain (ex. Playground de la Croix-Rousse)" className={INPUT} />
+              <div className="grid grid-cols-2 gap-3">
+                <input type="number" min="1" value={nbPaniers} onChange={(e) => setNbPaniers(e.target.value)} placeholder="Paniers au total *" className={INPUT} />
+                <input type="number" min="1" value={nbFilets} onChange={(e) => setNbFilets(e.target.value)} placeholder="Filets à remplacer *" className={INPUT} />
               </div>
-            )}
+              <label className="block text-sm text-white/70">
+                Photo <span className="text-white/40">(facultative)</span>
+                <input type="file" accept="image/*" capture="environment" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} className="mt-1 block w-full text-sm text-white/70 file:mr-3 file:rounded-full file:border-0 file:bg-orange file:px-4 file:py-2 file:text-black file:font-bold" />
+                {photo && <span className="text-xs text-white/40">{photo.name}</span>}
+              </label>
+            </div>
+
+            {/* Toi */}
+            <div className="space-y-3">
+              <div className="text-xs font-heading font-bold uppercase text-orange">Toi</div>
+              <div className="grid grid-cols-2 gap-3">
+                <input value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Prénom" className={INPUT} />
+                <input value={nom} onChange={(e) => setNom(e.target.value)} placeholder="Nom" className={INPUT} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <input type="number" min="1" value={age} onChange={(e) => setAge(e.target.value)} placeholder="Âge" className={INPUT} />
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Mail *" className={INPUT} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="Instagram" className={INPUT} />
+                <input value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="TikTok" className={INPUT} />
+              </div>
+            </div>
 
             {/* Consent */}
             <label className="flex items-start gap-2 text-xs text-white/60">

@@ -143,6 +143,8 @@ export default function PmcMap({
               etat: p.etat,
               nb_confirmations: p.nb_confirmations,
               nb_paniers: p.nb_paniers,
+              nb_filets_a_remplacer: p.nb_filets_a_remplacer,
+              nom_terrain: p.nom_terrain,
             });
           });
         }
@@ -168,6 +170,8 @@ export default function PmcMap({
             etat: r.etat,
             nb_confirmations: r.nb_confirmations,
             nb_paniers: r.nb_paniers,
+            nb_filets_a_remplacer: r.nb_filets_a_remplacer,
+            nom_terrain: r.nom_terrain,
           },
         })),
       );
@@ -189,12 +193,17 @@ export default function PmcMap({
 
 async function fetchTerrains(): Promise<TerrainPublic[]> {
   if (!supabaseBrowser) return [];
-  const { data, error } = await supabaseBrowser
-    .from("terrains_public")
-    .select("id,latitude,longitude,ville,departement,photo_avant_url,etat,nb_confirmations,nb_paniers");
-  if (error) {
-    console.error("terrains_public fetch error:", error.message);
-    return [];
+  const full = "id,latitude,longitude,ville,departement,photo_avant_url,etat,nb_confirmations,nb_paniers,nb_filets_a_remplacer,nom_terrain";
+  const base = "id,latitude,longitude,ville,departement,photo_avant_url,etat,nb_confirmations,nb_paniers";
+  let res = await supabaseBrowser.from("terrains_public").select(full);
+  if (res.error) {
+    // Pre-migration fallback: the new columns don't exist yet.
+    res = await supabaseBrowser.from("terrains_public").select(base);
+    if (res.error) {
+      console.error("terrains_public fetch error:", res.error.message);
+      return [];
+    }
+    return (res.data ?? []).map((r) => ({ ...r, nb_filets_a_remplacer: null, nom_terrain: null })) as TerrainPublic[];
   }
-  return (data ?? []) as TerrainPublic[];
+  return (res.data ?? []) as TerrainPublic[];
 }

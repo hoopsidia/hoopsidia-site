@@ -58,11 +58,11 @@ export default function TerrainCard({ terrain, onClose }: { terrain: TerrainMark
 
         <div className="p-3">
           <div className="font-heading font-bold text-white leading-tight">
-            Terrain de basket <span className="text-white/40 text-sm">{terrain.departement}</span>
+            {terrain.nom_terrain ?? "Terrain de basket"} <span className="text-white/40 text-sm">{terrain.departement}</span>
           </div>
           <p className="text-xs text-white/50 mt-0.5">{address ?? `${terrain.ville ?? ""}`}</p>
           <div className="mt-1 text-xs text-white/40">
-            {terrain.nb_paniers != null ? `${terrain.nb_paniers} panier${terrain.nb_paniers > 1 ? "s" : ""} · ` : ""}
+            {terrain.nb_filets_a_remplacer != null ? `${terrain.nb_filets_a_remplacer} filet${terrain.nb_filets_a_remplacer > 1 ? "s" : ""} à remplacer · ` : ""}
             {terrain.nb_confirmations} confirmation{terrain.nb_confirmations > 1 ? "s" : ""}
           </div>
 

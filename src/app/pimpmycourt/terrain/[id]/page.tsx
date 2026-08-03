@@ -57,13 +57,14 @@ export default async function TerrainPage({ params }: { params: Promise<{ id: st
 
           <div className="p-5">
             <h1 className="font-heading text-2xl font-bold italic uppercase leading-tight">
-              Terrain de basket
+              {t.nom_terrain ?? "Terrain de basket"}
             </h1>
             <p className="mt-1 text-sm text-white/60">{address}</p>
             <p className="mt-1 text-xs text-white/30 font-mono">{t.latitude.toFixed(5)}, {t.longitude.toFixed(5)}</p>
 
             <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/60">
-              {t.nb_paniers != null && <span>{t.nb_paniers} panier{t.nb_paniers > 1 ? "s" : ""} à équiper</span>}
+              {t.nb_filets_a_remplacer != null && <span>{t.nb_filets_a_remplacer} filet{t.nb_filets_a_remplacer > 1 ? "s" : ""} à remplacer</span>}
+              {t.nb_paniers != null && <span>{t.nb_paniers} panier{t.nb_paniers > 1 ? "s" : ""} au total</span>}
               <span>{t.nb_confirmations} confirmation{t.nb_confirmations > 1 ? "s" : ""}</span>
             </div>
             <p className="mt-1 text-xs text-white/40">Signalé le {date}{t.prenom ? ` · par ${t.prenom}` : ""}</p>

@@ -4,9 +4,11 @@ import { isInFrance, reverseGeocode } from "@/lib/pmc/geo";
 import { sendSignalementRecu } from "@/lib/pmc/email";
 import { rateLimitOk, clientIp, ipHash } from "@/lib/pmc/rateLimit";
 
+const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
+
 // Creates a terrain signalement (status `signale`, not yet publicly visible).
-// No photo: the visual preview is a satellite view generated from the
-// coordinates. ville/departement are filled by reverse geocoding. Anti-abuse:
+// ville/departement are filled by reverse geocoding; the map/card preview is a
+// satellite view (an optional user photo can be attached too). Anti-abuse:
 // honeypot + IP rate limit + French-territory bounds.
 export async function POST(request: Request) {
   let form: FormData;
@@ -44,12 +46,30 @@ export async function POST(request: Request) {
   if (!Number.isInteger(nbPaniers) || nbPaniers < 1) {
     return NextResponse.json({ error: "nombre de paniers requis" }, { status: 400 });
   }
+  const nbFilets = Number(form.get("nb_filets"));
+  if (!Number.isInteger(nbFilets) || nbFilets < 1) {
+    return NextResponse.json({ error: "nombre de filets requis" }, { status: 400 });
+  }
 
-  const commentaire = String(form.get("commentaire") ?? "").trim().slice(0, 300) || null;
-  const prenom = String(form.get("prenom") ?? "").trim() || null;
-  const instagram = String(form.get("contact_instagram") ?? "").trim() || null;
+  const str = (k: string) => String(form.get(k) ?? "").trim() || null;
+  const ageNum = Number(form.get("age"));
+  const age = Number.isInteger(ageNum) && ageNum > 0 ? ageNum : null;
 
   const supabase = getSupabaseAdmin();
+
+  // Optional photo → Storage.
+  let photo_avant_url: string | null = null;
+  const photo = form.get("photo");
+  if (photo instanceof File && photo.size > 0) {
+    if (!photo.type.startsWith("image/") || photo.size > MAX_PHOTO_BYTES) {
+      return NextResponse.json({ error: "photo invalide (image, 8 Mo max)" }, { status: 400 });
+    }
+    const ext = photo.type.split("/")[1]?.replace("jpeg", "jpg") ?? "jpg";
+    const path = `avant/${crypto.randomUUID()}.${ext}`;
+    const up = await supabase.storage.from("terrains").upload(path, new Uint8Array(await photo.arrayBuffer()), { contentType: photo.type });
+    if (!up.error) photo_avant_url = supabase.storage.from("terrains").getPublicUrl(path).data.publicUrl;
+  }
+
   const geo = await reverseGeocode(lat, lng);
 
   const { data, error } = await supabase
@@ -60,13 +80,18 @@ export async function POST(request: Request) {
       ville: geo.ville,
       code_postal: geo.code_postal,
       departement: geo.departement,
+      nom_terrain: str("nom_terrain"),
       nb_paniers: nbPaniers,
+      nb_filets_a_remplacer: nbFilets,
+      photo_avant_url,
       statut: "signale",
       source: "formulaire",
       contact_email: email,
-      contact_instagram: instagram,
-      prenom,
-      commentaire,
+      contact_instagram: str("contact_instagram"),
+      contact_tiktok: str("contact_tiktok"),
+      prenom: str("prenom"),
+      nom: str("nom"),
+      age,
     })
     .select("id")
     .single();
