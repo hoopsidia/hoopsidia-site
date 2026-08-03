@@ -176,6 +176,7 @@ function Moderation({ authHeaders }: { authHeaders: Auth }) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [i, setI] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -183,6 +184,7 @@ function Moderation({ authHeaders }: { authHeaders: Auth }) {
       .then((r) => r.json())
       .then((d) => {
         if (!active) return;
+        setError(d.error ?? null);
         setQueue(d.queue ?? []);
         setI(0);
         setLoading(false);
@@ -194,7 +196,7 @@ function Moderation({ authHeaders }: { authHeaders: Auth }) {
     setLoading(true);
     fetch("/api/pimpmycourt/admin/queue", { headers: authHeaders() })
       .then((r) => r.json())
-      .then((d) => { setQueue(d.queue ?? []); setI(0); setLoading(false); });
+      .then((d) => { setError(d.error ?? null); setQueue(d.queue ?? []); setI(0); setLoading(false); });
   };
 
   const current = queue[i];
@@ -220,6 +222,15 @@ function Moderation({ authHeaders }: { authHeaders: Auth }) {
   }
 
   if (loading) return <p className="text-white/40 text-center py-10">Chargement…</p>;
+  if (error) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-red-400 font-heading font-bold">Erreur de chargement</p>
+        <p className="text-white/50 text-sm mt-1">{error}</p>
+        <button onClick={load} className="mt-3 text-orange text-sm hover:underline">Réessayer</button>
+      </div>
+    );
+  }
   if (!current) {
     return (
       <div className="text-center py-10">
