@@ -40,17 +40,24 @@ function pointMarkerEl(etat: Etat): HTMLElement {
   // Teardrop pin (red = à remplacer, green = remplacé) with the white Hoopsidia
   // head inside. Anchored by its tip (see marker creation).
   const pin = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 52'><path d='M20 0C9 0 0 9 0 20c0 14 20 32 20 32s20-18 20-32C40 9 31 0 20 0z' fill='${color}' stroke='white' stroke-width='2.5'/></svg>`;
+  // IMPORTANT: MapLibre applies its own positioning transform (translate) to the
+  // element passed to `new Marker({ element })`. So the hover scale must live on
+  // an INNER wrapper — mutating the root's transform would wipe MapLibre's
+  // translate and snap the marker to the map's top-left corner.
   const el = document.createElement("div");
-  el.style.cssText = `width:26px;height:34px;cursor:pointer;position:relative;transform-origin:center bottom;
+  el.style.cssText = "width:26px;height:34px;cursor:pointer;";
+  const inner = document.createElement("div");
+  inner.style.cssText = `width:100%;height:100%;position:relative;transform-origin:center bottom;transition:transform .12s;
     background-image:url("data:image/svg+xml,${encodeURIComponent(pin)}");background-size:contain;
-    background-repeat:no-repeat;background-position:center;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));transition:transform .12s;`;
+    background-repeat:no-repeat;background-position:center;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));`;
   const head = document.createElement("img");
   head.src = "/images/logo-head.png";
   head.alt = "";
   head.style.cssText = "position:absolute;top:5px;left:50%;transform:translateX(-50%);width:15px;height:15px;filter:brightness(0) invert(1);";
-  el.appendChild(head);
-  el.addEventListener("mouseenter", () => { el.style.transform = "scale(1.12)"; });
-  el.addEventListener("mouseleave", () => { el.style.transform = "scale(1)"; });
+  inner.appendChild(head);
+  el.appendChild(inner);
+  el.addEventListener("mouseenter", () => { inner.style.transform = "scale(1.12)"; });
+  el.addEventListener("mouseleave", () => { inner.style.transform = "scale(1)"; });
   return el;
 }
 
