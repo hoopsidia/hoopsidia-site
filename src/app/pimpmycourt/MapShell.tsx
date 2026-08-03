@@ -39,8 +39,12 @@ export default function MapShell() {
   const [placing, setPlacing] = useState(false);
   const [placedPos, setPlacedPos] = useState<Pos | null>(null);
   const [reporting, setReporting] = useState(false);
-  const [selected, setSelected] = useState<TerrainMarker | null>(null);
+  const [selected, setSelected] = useState<TerrainMarker | null>(null); // pinned (clicked)
+  const [hovered, setHovered] = useState<TerrainMarker | null>(null); // transient (hover)
   const mapRef = useRef<MlMap | null>(null);
+
+  // The place card shows the pinned terrain, or the hovered one as a preview.
+  const card = selected ?? hovered;
 
   const handleMapReady = useCallback((map: MlMap) => { mapRef.current = map; }, []);
   const flyTo = useCallback((lng: number, lat: number) => {
@@ -50,6 +54,7 @@ export default function MapShell() {
     setPlacing(false);
     setSelected(t);
   }, []);
+  const closeCard = useCallback(() => { setSelected(null); setHovered(null); }, []);
 
   const locateMe = () => {
     if (!navigator.geolocation) return;
@@ -68,7 +73,7 @@ export default function MapShell() {
 
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden bg-[#0d0d0d] text-white">
-      <PmcMap onStats={setStats} onMapReady={handleMapReady} onSelectTerrain={onSelectTerrain} />
+      <PmcMap onStats={setStats} onMapReady={handleMapReady} onSelectTerrain={onSelectTerrain} onHoverTerrain={setHovered} />
 
       {/* Search pill + hamburger (top) */}
       <div className="absolute top-3 left-3 right-3 sm:right-auto sm:w-96 z-30">
@@ -151,7 +156,7 @@ export default function MapShell() {
       )}
 
       {/* Primary action (browse mode) */}
-      {!placing && !reporting && !selected && (
+      {!placing && !reporting && !card && (
         <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <button
             onClick={startPlacing}
@@ -163,8 +168,12 @@ export default function MapShell() {
         </div>
       )}
 
-      {/* Selected marker card */}
-      {selected && !reporting && <TerrainCard terrain={selected} onClose={() => setSelected(null)} />}
+      {/* Place card — pinned (click) or transient preview (hover) */}
+      {card && !reporting && !placing && (
+        <div onMouseEnter={() => setHovered(card)} onMouseLeave={() => { if (!selected) setHovered(null); }}>
+          <TerrainCard terrain={card} onClose={closeCard} />
+        </div>
+      )}
 
       {/* Reporting sheet (after confirming placement) */}
       {reporting && placedPos && (

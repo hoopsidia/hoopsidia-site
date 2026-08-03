@@ -45,7 +45,7 @@ function pointMarkerEl(etat: Etat): HTMLElement {
   // an INNER wrapper — mutating the root's transform would wipe MapLibre's
   // translate and snap the marker to the map's top-left corner.
   const el = document.createElement("div");
-  el.style.cssText = "width:26px;height:34px;cursor:pointer;";
+  el.style.cssText = "width:20px;height:26px;cursor:pointer;";
   const inner = document.createElement("div");
   inner.style.cssText = `width:100%;height:100%;position:relative;transform-origin:center bottom;transition:transform .12s;
     background-image:url("data:image/svg+xml,${encodeURIComponent(pin)}");background-size:contain;
@@ -53,10 +53,11 @@ function pointMarkerEl(etat: Etat): HTMLElement {
   const head = document.createElement("img");
   head.src = "/images/logo-head.png";
   head.alt = "";
-  head.style.cssText = "position:absolute;top:5px;left:50%;transform:translateX(-50%);width:15px;height:15px;filter:brightness(0) invert(1);";
+  head.style.cssText = "position:absolute;top:3px;left:50%;transform:translateX(-50%);width:11px;height:11px;filter:brightness(0) invert(1);";
   inner.appendChild(head);
   el.appendChild(inner);
-  el.addEventListener("mouseenter", () => { inner.style.transform = "scale(1.12)"; });
+  // Grow on hover (scale the inner wrapper, never the MapLibre-positioned root).
+  el.addEventListener("mouseenter", () => { inner.style.transform = "scale(1.45)"; });
   el.addEventListener("mouseleave", () => { inner.style.transform = "scale(1)"; });
   return el;
 }
@@ -65,10 +66,12 @@ export default function PmcMap({
   onStats,
   onMapReady,
   onSelectTerrain,
+  onHoverTerrain,
 }: {
   onStats?: (s: Stats) => void;
   onMapReady?: (map: MlMap) => void;
   onSelectTerrain?: (t: TerrainMarker) => void;
+  onHoverTerrain?: (t: TerrainMarker | null) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
@@ -147,21 +150,23 @@ export default function PmcMap({
           });
         } else {
           el = pointMarkerEl(p.etat);
-          el.addEventListener("click", () => {
-            onSelectTerrain?.({
-              id: p.id,
-              latitude: lat,
-              longitude: lng,
-              ville: p.ville,
-              departement: p.departement,
-              photo_avant_url: p.photo_avant_url,
-              etat: p.etat,
-              nb_confirmations: p.nb_confirmations,
-              nb_paniers: p.nb_paniers,
-              nb_filets_a_remplacer: p.nb_filets_a_remplacer,
-              nom_terrain: p.nom_terrain,
-            });
-          });
+          const payload: TerrainMarker = {
+            id: p.id,
+            latitude: lat,
+            longitude: lng,
+            ville: p.ville,
+            departement: p.departement,
+            photo_avant_url: p.photo_avant_url,
+            etat: p.etat,
+            nb_confirmations: p.nb_confirmations,
+            nb_paniers: p.nb_paniers,
+            nb_filets_a_remplacer: p.nb_filets_a_remplacer,
+            nom_terrain: p.nom_terrain,
+          };
+          // Hover → transient preview card; click → pin it (see MapShell).
+          el.addEventListener("mouseenter", () => onHoverTerrain?.(payload));
+          el.addEventListener("mouseleave", () => onHoverTerrain?.(null));
+          el.addEventListener("click", () => onSelectTerrain?.(payload));
         }
         markers.push(new maplibregl.Marker({ element: el, anchor: p.cluster ? "center" : "bottom" }).setLngLat([lng, lat]).addTo(map));
       }
@@ -199,7 +204,7 @@ export default function PmcMap({
       map.remove();
       mapRef.current = null;
     };
-  }, [onStats, onMapReady, onSelectTerrain]);
+  }, [onStats, onMapReady, onSelectTerrain, onHoverTerrain]);
 
   // h-full (not absolute inset-0): MapLibre forces position:relative on its
   // container, which would void absolute positioning and collapse the height.
