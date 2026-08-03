@@ -30,6 +30,7 @@ export default function SignalementSheet({
   const [email, setEmail] = useState("");
   const [instagram, setInstagram] = useState("");
   const [tiktok, setTiktok] = useState("");
+  const [message, setMessage] = useState("");
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [duplicate, setDuplicate] = useState<Duplicate>(null);
@@ -75,6 +76,7 @@ export default function SignalementSheet({
     fd.set("email", email);
     fd.set("contact_instagram", instagram);
     fd.set("contact_tiktok", tiktok);
+    fd.set("commentaire", message);
     fd.set("consent", consent ? "1" : "");
     fd.set("website", websiteRef.current?.value ?? "");
     if (photo) fd.set("photo", photo);
@@ -196,6 +198,13 @@ export default function SignalementSheet({
                 <input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="Instagram" className={INPUT} />
                 <input value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="TikTok" className={INPUT} />
               </div>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={3}
+                placeholder="Un message à faire passer à Hoopsidia ? (facultatif)"
+                className={`${INPUT} resize-none`}
+              />
             </div>
 
             {/* Consent */}

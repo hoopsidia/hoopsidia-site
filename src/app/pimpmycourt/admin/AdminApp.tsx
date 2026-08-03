@@ -475,6 +475,7 @@ type AdminTerrain = {
   departement: string | null;
   statut: string;
   etat: "a_remplacer" | "remplace";
+  date_remplacement: string | null;
   nb_confirmations: number;
   nb_paniers: number | null;
   nb_filets_a_remplacer: number | null;
@@ -539,6 +540,20 @@ function Terrains({ terrains, loading, error, reload, authHeaders }: {
     reload();
   }
 
+  async function markReplaced(id: string, date: string | null) {
+    const res = await fetch("/api/pimpmycourt/admin/remplace", {
+      method: "POST",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ id, date }),
+    });
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      alert(d.error ?? "erreur");
+      return;
+    }
+    reload();
+  }
+
   if (loading) return <p className="text-white/40 text-center py-10">Chargement…</p>;
   if (error) {
     return (
@@ -575,38 +590,45 @@ function Terrains({ terrains, loading, error, reload, authHeaders }: {
             const sel = selected.has(t.id);
             const meta = STATUT_META[t.statut] ?? { label: t.statut, color: "#8A8A8A" };
             return (
-              <li key={t.id}>
-                <button
-                  onClick={() => toggle(t.id)}
-                  className={`w-full flex items-center gap-3 rounded-xl border p-2 text-left transition-colors ${sel ? "border-orange bg-orange/10" : "border-white/10 hover:bg-white/5"}`}
-                >
-                  <span className="relative shrink-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={satelliteImageUrl(t.latitude, t.longitude, 128, 128)} alt="" className="h-14 w-14 rounded-lg object-cover bg-white/5" />
-                    <span className="absolute -top-1 -left-1 h-3 w-3 rounded-full ring-2 ring-black" style={{ background: ETAT_COLOR[t.etat] }} />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-heading font-bold text-sm truncate">
-                      {t.nom_terrain ?? t.ville ?? "Terrain"}
+              <li key={t.id} className={`rounded-xl border p-2 transition-colors ${sel ? "border-orange bg-orange/10" : "border-white/10"}`}>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => toggle(t.id)} className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                    <span className="relative shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={satelliteImageUrl(t.latitude, t.longitude, 128, 128)} alt="" className="h-14 w-14 rounded-lg object-cover bg-white/5" />
+                      <span className="absolute -top-1 -left-1 h-3 w-3 rounded-full ring-2 ring-black" style={{ background: ETAT_COLOR[t.etat] }} />
                     </span>
-                    <span className="block text-xs text-white/40 truncate">{[t.ville, t.departement].filter(Boolean).join(" · ")}</span>
-                    <span className="mt-1 flex items-center gap-2 text-[11px]">
-                      <span className="rounded px-1.5 py-0.5 font-bold" style={{ background: `${meta.color}22`, color: meta.color }}>{meta.label}</span>
-                      <span className="text-white/40">{t.nb_confirmations} conf.</span>
-                      {t.nb_filets_a_remplacer != null && <span className="text-white/40">{t.nb_filets_a_remplacer} filet(s)</span>}
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-heading font-bold text-sm truncate">
+                        {t.nom_terrain ?? t.ville ?? "Terrain"}
+                      </span>
+                      <span className="block text-xs text-white/40 truncate">{[t.ville, t.departement].filter(Boolean).join(" · ")}</span>
+                      <span className="mt-1 flex items-center gap-2 text-[11px]">
+                        <span className="rounded px-1.5 py-0.5 font-bold" style={{ background: `${meta.color}22`, color: meta.color }}>{meta.label}</span>
+                        <span className="text-white/40">{t.nb_confirmations} conf.</span>
+                        {t.nb_filets_a_remplacer != null && <span className="text-white/40">{t.nb_filets_a_remplacer} filet(s)</span>}
+                      </span>
                     </span>
-                  </span>
-                  <span
-                    role="link"
-                    tabIndex={0}
-                    onClick={(e) => { e.stopPropagation(); window.open(`/pimpmycourt/terrain/${t.id}`, "_blank", "noopener"); }}
-                    className="shrink-0 self-start text-white/30 hover:text-orange text-xs px-1"
-                    aria-label="Ouvrir la fiche"
-                  >
-                    ↗
-                  </span>
-                  <span className={`shrink-0 h-5 w-5 rounded-md border flex items-center justify-center text-[11px] ${sel ? "bg-orange border-orange text-black" : "border-white/25 text-transparent"}`}>✓</span>
-                </button>
+                  </button>
+                  <a href={`/pimpmycourt/terrain/${t.id}`} target="_blank" rel="noopener noreferrer" className="shrink-0 text-white/30 hover:text-orange text-sm px-1" aria-label="Ouvrir la fiche">↗</a>
+                  <button onClick={() => toggle(t.id)} aria-label="Sélectionner" className={`shrink-0 h-5 w-5 rounded-md border flex items-center justify-center text-[11px] ${sel ? "bg-orange border-orange text-black" : "border-white/25 text-transparent"}`}>✓</button>
+                </div>
+
+                {/* Replacement (only for validated terrains — visible publicly) */}
+                {t.statut === "verifie" && (
+                  <div className="mt-2 pt-2 border-t border-white/10 text-xs">
+                    {t.etat === "remplace" ? (
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold" style={{ color: ETAT_COLOR.remplace }}>
+                          ✓ Remplacé{t.date_remplacement ? ` le ${formatDate(t.date_remplacement)}` : ""}
+                        </span>
+                        <button onClick={() => markReplaced(t.id, null)} className="text-white/40 hover:text-white underline">annuler</button>
+                      </div>
+                    ) : (
+                      <ReplaceControl onMark={(date) => markReplaced(t.id, date)} />
+                    )}
+                  </div>
+                )}
               </li>
             );
           })}
@@ -636,6 +658,31 @@ function Terrains({ terrains, loading, error, reload, authHeaders }: {
       )}
     </div>
   );
+}
+
+function ReplaceControl({ onMark }: { onMark: (date: string) => void }) {
+  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  return (
+    <div className="flex items-center gap-2 flex-wrap">
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+        className="rounded bg-white/5 border border-white/10 px-2 py-1 text-white text-xs [color-scheme:dark]"
+      />
+      <button onClick={() => onMark(date)} className="rounded-full text-white px-3 py-1 font-bold" style={{ background: "#2FA84F" }}>
+        Marquer remplacé
+      </button>
+    </div>
+  );
+}
+
+function formatDate(d: string): string {
+  try {
+    return new Date(d).toLocaleDateString("fr-FR");
+  } catch {
+    return d;
+  }
 }
 
 type Kit = {

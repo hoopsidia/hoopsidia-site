@@ -12,6 +12,7 @@ export type TerrainPublic = {
   photo_apres_url: string | null;
   categorie: string;
   etat: Etat;
+  date_remplacement: string | null;
   nb_confirmations: number;
   nb_paniers: number | null;
   nb_filets_a_remplacer: number | null;
@@ -31,6 +32,7 @@ export type TerrainMarker = {
   departement: string | null;
   photo_avant_url: string | null;
   etat: Etat;
+  date_remplacement: string | null;
   nb_confirmations: number;
   nb_paniers: number | null;
   nb_filets_a_remplacer: number | null;
@@ -40,6 +42,6 @@ export type TerrainMarker = {
 // Status color couple (§12) — distinct from brand orange, legible over an OSM
 // light basemap. Distinction is not hue-only: markers also differ by shape.
 export const ETAT_COLOR: Record<Etat, string> = {
-  a_remplacer: "#DC2626", // red
+  a_remplacer: "#FC8D33", // brand orange
   remplace: "#2FA84F", // green
 };

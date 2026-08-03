@@ -81,7 +81,7 @@ export default function AdminMap({ terrains }: { terrains: AdminMapTerrain[] }) 
         const el = document.createElement("div");
         el.style.cssText = `width:14px;height:14px;border-radius:50%;cursor:pointer;
           background:${STATUT_COLOR[t.statut] ?? "#8A8A8A"};box-shadow:0 0 0 2px rgba(255,255,255,.85),0 1px 3px rgba(0,0,0,.5);`;
-        const popup = new maplibregl.Popup({ offset: 12, closeButton: false }).setText(
+        const popup = new maplibregl.Popup({ offset: 12, closeButton: false, className: "pmc-popup" }).setText(
           `${t.nom_terrain ?? t.ville ?? "Terrain"} — ${t.statut}`,
         );
         const marker = new maplibregl.Marker({ element: el })

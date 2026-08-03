@@ -63,7 +63,13 @@ export default async function TerrainPage({ params }: { params: Promise<{ id: st
             <p className="mt-1 text-xs text-white/30 font-mono">{t.latitude.toFixed(5)}, {t.longitude.toFixed(5)}</p>
 
             <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/60">
-              {t.nb_filets_a_remplacer != null && <span>{t.nb_filets_a_remplacer} filet{t.nb_filets_a_remplacer > 1 ? "s" : ""} à remplacer</span>}
+              {remplace ? (
+                <span className="font-bold" style={{ color }}>
+                  Filet remplacé{t.date_remplacement ? ` le ${new Date(t.date_remplacement).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}` : ""}
+                </span>
+              ) : (
+                t.nb_filets_a_remplacer != null && <span>{t.nb_filets_a_remplacer} filet{t.nb_filets_a_remplacer > 1 ? "s" : ""} à remplacer</span>
+              )}
               {t.nb_paniers != null && <span>{t.nb_paniers} panier{t.nb_paniers > 1 ? "s" : ""} au total</span>}
               <span>{t.nb_confirmations} confirmation{t.nb_confirmations > 1 ? "s" : ""}</span>
             </div>

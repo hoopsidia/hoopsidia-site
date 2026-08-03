@@ -131,3 +131,33 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
+
+/* Dark MapLibre popup (admin map). The default popup is white; on the dark
+   theme its inherited white text would be invisible on white. */
+.pmc-popup .maplibregl-popup-content {
+  background: #0d0d0d;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+.pmc-popup .maplibregl-popup-tip {
+  border-top-color: #0d0d0d;
+  border-bottom-color: #0d0d0d;
+}
+
+/* Keep the required tile attribution present but visually discreet. */
+.maplibregl-ctrl-attribution {
+  opacity: 0.28;
+  font-size: 9px;
+  background: transparent !important;
+}
+.maplibregl-ctrl-attribution a {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+.maplibregl-ctrl-attribution:hover {
+  opacity: 0.8;
+}

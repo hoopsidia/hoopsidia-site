@@ -61,10 +61,17 @@ export default function TerrainCard({ terrain, onClose }: { terrain: TerrainMark
             {terrain.nom_terrain ?? "Terrain de basket"} <span className="text-white/40 text-sm">{terrain.departement}</span>
           </Link>
           <p className="text-xs text-white/50 mt-0.5">{address ?? `${terrain.ville ?? ""}`}</p>
-          <div className="mt-1 text-xs text-white/40">
-            {terrain.nb_filets_a_remplacer != null ? `${terrain.nb_filets_a_remplacer} filet${terrain.nb_filets_a_remplacer > 1 ? "s" : ""} à remplacer · ` : ""}
-            {terrain.nb_confirmations} confirmation{terrain.nb_confirmations > 1 ? "s" : ""}
-          </div>
+          {remplace ? (
+            <div className="mt-1 text-xs font-bold" style={{ color }}>
+              Filet remplacé{terrain.date_remplacement ? ` le ${new Date(terrain.date_remplacement).toLocaleDateString("fr-FR")}` : ""}
+              <span className="text-white/40 font-normal"> · {terrain.nb_confirmations} confirmation{terrain.nb_confirmations > 1 ? "s" : ""}</span>
+            </div>
+          ) : (
+            <div className="mt-1 text-xs text-white/40">
+              {terrain.nb_filets_a_remplacer != null ? `${terrain.nb_filets_a_remplacer} filet${terrain.nb_filets_a_remplacer > 1 ? "s" : ""} à remplacer · ` : ""}
+              {terrain.nb_confirmations} confirmation{terrain.nb_confirmations > 1 ? "s" : ""}
+            </div>
+          )}
 
           {confirmed ? (
             <p className="mt-3 text-sm text-white/70">Merci, confirmation enregistrée ✓</p>

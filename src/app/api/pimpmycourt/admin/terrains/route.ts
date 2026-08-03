@@ -10,16 +10,33 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "non autorisé" }, { status: 403 });
   }
   const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from("terrains")
-    .select("id, latitude, longitude, ville, departement, statut, photo_apres_url, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at")
-    .order("created_at", { ascending: false });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  // `etat` isn't a stored column — it's derived (an after-photo means the net
-  // has been replaced), mirroring the terrains_public view.
-  const terrains = (data ?? []).map(({ photo_apres_url, ...t }) => ({
-    ...t,
-    etat: photo_apres_url ? "remplace" : "a_remplacer",
-  }));
+  const withDate = "id, latitude, longitude, ville, departement, statut, photo_apres_url, date_remplacement, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at";
+  const noDate = "id, latitude, longitude, ville, departement, statut, photo_apres_url, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at";
+
+  type Row = {
+    id: string; latitude: number; longitude: number;
+    ville: string | null; departement: string | null; statut: string;
+    photo_apres_url: string | null; date_remplacement?: string | null;
+    nb_confirmations: number; nb_paniers: number | null; nb_filets_a_remplacer: number | null;
+    nom_terrain: string | null; created_at: string;
+  };
+
+  let rows: Row[];
+  const primary = await supabase.from("terrains").select(withDate).order("created_at", { ascending: false });
+  if (primary.error) {
+    // Pre-migration fallback: date_remplacement column not created yet.
+    const fb = await supabase.from("terrains").select(noDate).order("created_at", { ascending: false });
+    if (fb.error) return NextResponse.json({ error: fb.error.message }, { status: 500 });
+    rows = (fb.data ?? []) as unknown as Row[];
+  } else {
+    rows = (primary.data ?? []) as unknown as Row[];
+  }
+
+  // `etat` isn't a stored column — it's derived: a replacement date (or a
+  // before/after photo) means the net has been replaced.
+  const terrains = rows.map(({ photo_apres_url, date_remplacement, ...rest }) => {
+    const dr = date_remplacement ?? null;
+    return { ...rest, date_remplacement: dr, etat: dr || photo_apres_url ? "remplace" : "a_remplacer" };
+  });
   return NextResponse.json({ terrains });
 }

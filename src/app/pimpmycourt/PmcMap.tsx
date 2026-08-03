@@ -37,27 +37,27 @@ function ringMarkerEl(remplace: number, total: number): HTMLElement {
 
 function pointMarkerEl(etat: Etat): HTMLElement {
   const color = ETAT_COLOR[etat];
-  // Teardrop pin (red = à remplacer, green = remplacé) with the white Hoopsidia
-  // head inside. Anchored by its tip (see marker creation).
-  const pin = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 52'><path d='M20 0C9 0 0 9 0 20c0 14 20 32 20 32s20-18 20-32C40 9 31 0 20 0z' fill='${color}' stroke='white' stroke-width='2.5'/></svg>`;
+  // Round marker (orange = à remplacer, green = remplacé) with the white
+  // Hoopsidia head centred inside. Anchored by its centre (see marker creation).
   // IMPORTANT: MapLibre applies its own positioning transform (translate) to the
   // element passed to `new Marker({ element })`. So the hover scale must live on
   // an INNER wrapper — mutating the root's transform would wipe MapLibre's
   // translate and snap the marker to the map's top-left corner.
   const el = document.createElement("div");
-  el.style.cssText = "width:20px;height:26px;cursor:pointer;";
+  el.style.cssText = "width:24px;height:24px;cursor:pointer;";
   const inner = document.createElement("div");
-  inner.style.cssText = `width:100%;height:100%;position:relative;transform-origin:center bottom;transition:transform .12s;
-    background-image:url("data:image/svg+xml,${encodeURIComponent(pin)}");background-size:contain;
-    background-repeat:no-repeat;background-position:center;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));`;
+  inner.style.cssText = `width:100%;height:100%;border-radius:50%;background:${color};
+    border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.5);
+    display:flex;align-items:center;justify-content:center;
+    transform-origin:center center;transition:transform .12s;`;
   const head = document.createElement("img");
   head.src = "/images/logo-head.png";
   head.alt = "";
-  head.style.cssText = "position:absolute;top:3px;left:50%;transform:translateX(-50%);width:11px;height:11px;filter:brightness(0) invert(1);";
+  head.style.cssText = "width:14px;height:14px;filter:brightness(0) invert(1);";
   inner.appendChild(head);
   el.appendChild(inner);
   // Grow on hover (scale the inner wrapper, never the MapLibre-positioned root).
-  el.addEventListener("mouseenter", () => { inner.style.transform = "scale(1.45)"; });
+  el.addEventListener("mouseenter", () => { inner.style.transform = "scale(1.35)"; });
   el.addEventListener("mouseleave", () => { inner.style.transform = "scale(1)"; });
   return el;
 }
@@ -158,6 +158,7 @@ export default function PmcMap({
             departement: p.departement,
             photo_avant_url: p.photo_avant_url,
             etat: p.etat,
+            date_remplacement: p.date_remplacement,
             nb_confirmations: p.nb_confirmations,
             nb_paniers: p.nb_paniers,
             nb_filets_a_remplacer: p.nb_filets_a_remplacer,
@@ -168,7 +169,7 @@ export default function PmcMap({
           el.addEventListener("mouseleave", () => onHoverTerrain?.(null));
           el.addEventListener("click", () => onSelectTerrain?.(payload));
         }
-        markers.push(new maplibregl.Marker({ element: el, anchor: p.cluster ? "center" : "bottom" }).setLngLat([lng, lat]).addTo(map));
+        markers.push(new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([lng, lat]).addTo(map));
       }
     };
 
@@ -188,6 +189,7 @@ export default function PmcMap({
             departement: r.departement,
             photo_avant_url: r.photo_avant_url,
             etat: r.etat,
+            date_remplacement: r.date_remplacement,
             nb_confirmations: r.nb_confirmations,
             nb_paniers: r.nb_paniers,
             nb_filets_a_remplacer: r.nb_filets_a_remplacer,
@@ -213,7 +215,7 @@ export default function PmcMap({
 
 async function fetchTerrains(): Promise<TerrainPublic[]> {
   if (!supabaseBrowser) return [];
-  const full = "id,latitude,longitude,ville,departement,photo_avant_url,etat,nb_confirmations,nb_paniers,nb_filets_a_remplacer,nom_terrain";
+  const full = "id,latitude,longitude,ville,departement,photo_avant_url,etat,date_remplacement,nb_confirmations,nb_paniers,nb_filets_a_remplacer,nom_terrain";
   const base = "id,latitude,longitude,ville,departement,photo_avant_url,etat,nb_confirmations,nb_paniers";
   let res = await supabaseBrowser.from("terrains_public").select(full);
   if (res.error) {
@@ -223,7 +225,7 @@ async function fetchTerrains(): Promise<TerrainPublic[]> {
       console.error("terrains_public fetch error:", res.error.message);
       return [];
     }
-    return (res.data ?? []).map((r) => ({ ...r, nb_filets_a_remplacer: null, nom_terrain: null })) as TerrainPublic[];
+    return (res.data ?? []).map((r) => ({ ...r, nb_filets_a_remplacer: null, nom_terrain: null, date_remplacement: null })) as TerrainPublic[];
   }
   return (res.data ?? []) as TerrainPublic[];
 }

@@ -23,8 +23,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, id: null }); // silently drop
   }
 
-  // IP rate limit: max 5 signalements / hour (§10).
-  if (!(await rateLimitOk(`pmc:sig:${ipHash(clientIp(request))}`, 5, 3600))) {
+  // IP rate limit: generous anti-abuse cap of 500 signalements / hour.
+  if (!(await rateLimitOk(`pmc:sig:${ipHash(clientIp(request))}`, 500, 3600))) {
     return NextResponse.json({ error: "trop de signalements, réessaie plus tard" }, { status: 429 });
   }
 
@@ -92,6 +92,7 @@ export async function POST(request: Request) {
       prenom: str("prenom"),
       nom: str("nom"),
       age,
+      commentaire: str("commentaire"),
     })
     .select("id")
     .single();
