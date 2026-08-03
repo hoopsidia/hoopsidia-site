@@ -33,11 +33,28 @@ export default function AdminApp() {
 
   useEffect(() => {
     if (!supabase) return;
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+      setSession(s);
       setReady(true);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    // A directly-generated magic link returns the session in the URL hash
+    // (implicit flow); the email flow returns a ?code (PKCE) handled by
+    // detectSessionInUrl. Establish the session either way.
+    const hash = typeof window !== "undefined" ? window.location.hash.replace(/^#/, "") : "";
+    const p = new URLSearchParams(hash);
+    const at = p.get("access_token");
+    const rt = p.get("refresh_token");
+    if (at && rt) {
+      supabase.auth.setSession({ access_token: at, refresh_token: rt }).then(() => {
+        window.history.replaceState(null, "", window.location.pathname);
+        setReady(true);
+      });
+    } else {
+      supabase.auth.getSession().then(({ data }) => {
+        setSession(data.session);
+        setReady(true);
+      });
+    }
     return () => sub.subscription.unsubscribe();
   }, [supabase]);
 
