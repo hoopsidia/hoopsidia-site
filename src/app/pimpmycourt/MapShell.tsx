@@ -43,7 +43,6 @@ function CtrlBtn({ onClick, label, children }: { onClick: () => void; label: str
 }
 
 export default function MapShell() {
-  const [stats, setStats] = useState<{ total: number; remplaces: number } | null>(null);
   const [drawer, setDrawer] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [placedPos, setPlacedPos] = useState<Pos | null>(null);
@@ -82,7 +81,7 @@ export default function MapShell() {
 
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden bg-[#0d0d0d] text-white">
-      <PmcMap onStats={setStats} onMapReady={handleMapReady} onSelectTerrain={onSelectTerrain} onHoverTerrain={setHovered} />
+      <PmcMap onMapReady={handleMapReady} onSelectTerrain={onSelectTerrain} onHoverTerrain={setHovered} />
 
       {/* Search pill + hamburger (top) */}
       <div className="absolute top-3 left-3 right-3 sm:right-auto sm:w-96 z-30">
@@ -94,23 +93,17 @@ export default function MapShell() {
             </button>
           }
         />
-        {/* Counter chip (story-screenshot element) */}
-        <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-black/80 backdrop-blur px-3 py-1.5 text-xs font-heading font-bold">
-          <span className="text-orange">{stats ? stats.total : "—"} signalés</span>
-          <span className="text-white/30">·</span>
-          <span style={{ color: ETAT_COLOR.remplace }}>{stats ? stats.remplaces : "—"} remplacés</span>
-        </div>
       </div>
 
       {/* Legend (bottom-left map key) — head-in-dot to match the markers */}
       <div className="pointer-events-none absolute left-3 bottom-3 z-10 flex flex-col gap-1.5 text-[11px] bg-black/60 backdrop-blur rounded-lg p-2">
         <span className="inline-flex items-center gap-1.5">
           <LegendDot etat="a_remplacer" />
-          À remplacer
+          Signalés
         </span>
         <span className="inline-flex items-center gap-1.5">
           <LegendDot etat="remplace" />
-          Remplacé
+          Remplacés
         </span>
       </div>
 
