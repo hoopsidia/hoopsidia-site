@@ -3,7 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import type { Map as MlMap } from "maplibre-gl";
-import { ETAT_COLOR, type TerrainMarker } from "@/lib/pmc/types";
+import { ETAT_COLOR, type Etat, type TerrainMarker } from "@/lib/pmc/types";
 import PmcMap from "./PmcMap";
 import SignalementSheet from "./SignalementSheet";
 import AddressSearch from "./AddressSearch";
@@ -20,6 +20,15 @@ const NAV = [
   { href: "/pimpmycourt/kit", label: "Demander un kit" },
   { href: "/pimpmycourt/donnees", label: "Données personnelles" },
 ];
+
+function LegendDot({ etat }: { etat: Etat }) {
+  return (
+    <span className="relative inline-flex h-4 w-4 items-center justify-center rounded-full border border-white/80" style={{ background: ETAT_COLOR[etat] }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/logo-head.png" alt="" className="h-2.5 w-2.5" style={{ filter: "brightness(0) invert(1)" }} />
+    </span>
+  );
+}
 
 function CtrlBtn({ onClick, label, children }: { onClick: () => void; label: string; children: React.ReactNode }) {
   return (
@@ -93,14 +102,14 @@ export default function MapShell() {
         </div>
       </div>
 
-      {/* Legend (bottom-left map key) */}
-      <div className="pointer-events-none absolute left-3 bottom-3 z-10 flex flex-col gap-1 text-[11px] bg-black/60 backdrop-blur rounded-lg p-2">
+      {/* Legend (bottom-left map key) — head-in-dot to match the markers */}
+      <div className="pointer-events-none absolute left-3 bottom-3 z-10 flex flex-col gap-1.5 text-[11px] bg-black/60 backdrop-blur rounded-lg p-2">
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-full ring-1 ring-white/80" style={{ background: ETAT_COLOR.a_remplacer }} />
+          <LegendDot etat="a_remplacer" />
           À remplacer
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-full ring-1 ring-white/80" style={{ background: ETAT_COLOR.remplace }} />
+          <LegendDot etat="remplace" />
           Remplacé
         </span>
       </div>
