@@ -95,7 +95,7 @@ export default function MapShell() {
           À remplacer
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-[3px] ring-1 ring-white/80" style={{ background: ETAT_COLOR.remplace }} />
+          <span className="inline-block h-3 w-3 rounded-full ring-1 ring-white/80" style={{ background: ETAT_COLOR.remplace }} />
           Remplacé
         </span>
       </div>
@@ -117,15 +117,15 @@ export default function MapShell() {
           Hoopsidia head inside */}
       {placing && (
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center" aria-hidden>
-          <div className="relative -translate-y-7 drop-shadow-[0_3px_6px_rgba(0,0,0,0.6)]" style={{ width: 46, height: 58 }}>
-            <svg viewBox="0 0 40 52" width="46" height="58" className="absolute inset-0">
+          <div className="relative -translate-y-5 drop-shadow-[0_2px_5px_rgba(0,0,0,0.6)]" style={{ width: 30, height: 39 }}>
+            <svg viewBox="0 0 40 52" width="30" height="39" className="absolute inset-0">
               <path d="M20 0C9 0 0 9 0 20c0 14 20 32 20 32s20-18 20-32C40 9 31 0 20 0z" fill="#0d0d0d" stroke="#fff" strokeWidth="2.5" />
             </svg>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/logo-head.png"
               alt=""
-              style={{ position: "absolute", top: 9, left: "50%", transform: "translateX(-50%)", width: 28, height: 28, filter: "brightness(0) invert(1)" }}
+              style={{ position: "absolute", top: 5, left: "50%", transform: "translateX(-50%)", width: 18, height: 18, filter: "brightness(0) invert(1)" }}
             />
           </div>
         </div>

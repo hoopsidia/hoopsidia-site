@@ -14,11 +14,6 @@ type ClusterProps = { remplace: number };
 
 const FRANCE_CENTER: [number, number] = [2.4, 46.6];
 
-// White glyphs for the markers: a basketball for courts still needing a net,
-// a check for courts already done.
-const BASKET_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><path d="M5.6 5.6c3.2 3.2 3.2 9.6 0 12.8M18.4 5.6c-3.2 3.2-3.2 9.6 0 12.8"/></svg>`;
-const CHECK_SVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
-
 // Clustering runs on the main thread (Supercluster) rather than via MapLibre's
 // GeoJSON source, whose worker doesn't load under the Next.js bundler. This is
 // robust and gives full control over the signature bicolor cluster ring.
@@ -41,17 +36,20 @@ function ringMarkerEl(remplace: number, total: number): HTMLElement {
 }
 
 function pointMarkerEl(etat: Etat): HTMLElement {
-  const el = document.createElement("div");
   const color = ETAT_COLOR[etat];
-  const remplace = etat === "remplace";
-  const icon = encodeURIComponent(remplace ? CHECK_SVG : BASKET_SVG);
-  // State encoded three ways (not hue-only): colour, outer shape (circle vs
-  // rounded square) and icon (basketball vs check). Icon as a background SVG.
-  el.style.cssText = `width:28px;height:28px;background-color:${color};border:2px solid #fff;
-    border-radius:${remplace ? "8px" : "50%"};box-shadow:0 2px 6px rgba(0,0,0,.55);cursor:pointer;
-    background-image:url("data:image/svg+xml,${icon}");background-repeat:no-repeat;
-    background-position:center;background-size:16px 16px;transition:transform .12s;`;
-  el.addEventListener("mouseenter", () => { el.style.transform = "scale(1.15)"; });
+  // Teardrop pin (red = à remplacer, green = remplacé) with the white Hoopsidia
+  // head inside. Anchored by its tip (see marker creation).
+  const pin = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 52'><path d='M20 0C9 0 0 9 0 20c0 14 20 32 20 32s20-18 20-32C40 9 31 0 20 0z' fill='${color}' stroke='white' stroke-width='2.5'/></svg>`;
+  const el = document.createElement("div");
+  el.style.cssText = `width:26px;height:34px;cursor:pointer;position:relative;transform-origin:center bottom;
+    background-image:url("data:image/svg+xml,${encodeURIComponent(pin)}");background-size:contain;
+    background-repeat:no-repeat;background-position:center;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));transition:transform .12s;`;
+  const head = document.createElement("img");
+  head.src = "/images/logo-head.png";
+  head.alt = "";
+  head.style.cssText = "position:absolute;top:5px;left:50%;transform:translateX(-50%);width:15px;height:15px;filter:brightness(0) invert(1);";
+  el.appendChild(head);
+  el.addEventListener("mouseenter", () => { el.style.transform = "scale(1.12)"; });
   el.addEventListener("mouseleave", () => { el.style.transform = "scale(1)"; });
   return el;
 }
@@ -158,7 +156,7 @@ export default function PmcMap({
             });
           });
         }
-        markers.push(new maplibregl.Marker({ element: el }).setLngLat([lng, lat]).addTo(map));
+        markers.push(new maplibregl.Marker({ element: el, anchor: p.cluster ? "center" : "bottom" }).setLngLat([lng, lat]).addTo(map));
       }
     };
 
