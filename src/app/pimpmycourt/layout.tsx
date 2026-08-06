@@ -17,11 +17,34 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/favicon-pmc.svg", type: "image/svg+xml" },
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon.png", sizes: "1024x1024", type: "image/png" },
     ],
     apple: "/apple-icon.png",
   },
+  keywords: [
+    "Pimp My Court",
+    "Hoopsidia",
+    "carte des filets",
+    "filet de basket",
+    "filet de basket manquant",
+    "réparer un filet de basket",
+    "panier de basket",
+    "terrain de basket",
+    "terrain de basketball",
+    "playground basket",
+    "playground streetball",
+    "streetball",
+    "city stade",
+    "basket extérieur",
+    "half court",
+    "signaler un terrain de basket",
+    "carte des terrains de basket",
+    "basket France",
+    "playground France",
+    "terrain de basket près de chez moi",
+  ],
 };
 
 export default function PimpMyCourtLayout({

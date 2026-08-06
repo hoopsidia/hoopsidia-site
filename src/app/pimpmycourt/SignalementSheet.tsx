@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { satelliteImageUrl } from "@/lib/pmc/satellite";
 
 type Pos = { lat: number; lng: number };
 type Duplicate = { id: string; ville: string | null; nb_confirmations: number } | null;
@@ -33,7 +34,18 @@ export default function SignalementSheet({
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [duplicate, setDuplicate] = useState<Duplicate>(null);
+  const [address, setAddress] = useState<string | null>(null);
   const websiteRef = useRef<HTMLInputElement>(null); // honeypot
+
+  // Reverse-geocode the chosen position for the address shown at the top.
+  useEffect(() => {
+    let active = true;
+    fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${position.lng}&lat=${position.lat}`)
+      .then((r) => r.json())
+      .then((d) => { if (active) setAddress(d?.features?.[0]?.properties?.label ?? null); })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [position.lat, position.lng]);
 
   const canSubmit =
     /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) && consent && Number(nbPaniers) >= 1 && Number(nbFilets) >= 1;
@@ -153,7 +165,15 @@ export default function SignalementSheet({
 
         {(phase === "form" || phase === "sending") && (
           <div className="space-y-4">
-            <p className="text-xs text-white/50">Position enregistrée. Décris le terrain et laisse tes infos.</p>
+            {/* Aerial view + address of the chosen position */}
+            <div className="rounded-xl overflow-hidden border border-white/10">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={satelliteImageUrl(position.lat, position.lng, 640, 260)} alt="Vue aérienne du terrain" className="w-full h-32 object-cover bg-white/5" />
+              <div className="flex items-start gap-1.5 px-3 py-2 bg-white/[0.03]">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-orange shrink-0 mt-0.5"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                <span className="text-xs text-white/70">{address ?? "Localisation en cours…"}</span>
+              </div>
+            </div>
 
             {/* Honeypot (hidden) */}
             <input ref={websiteRef} type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />

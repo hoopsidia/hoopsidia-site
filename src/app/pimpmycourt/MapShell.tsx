@@ -58,6 +58,13 @@ export default function MapShell() {
   }, [mapObj, card]);
   const cardPos = card && mapObj ? mapObj.project([card.longitude, card.latitude]) : null;
 
+  // A hover preview card auto-dismisses after 1.5 s (a clicked/pinned card stays).
+  useEffect(() => {
+    if (!hovered || selected) return;
+    const t = setTimeout(() => setHovered(null), 1500);
+    return () => clearTimeout(t);
+  }, [hovered, selected]);
+
   // Count the visit once per page load (fire-and-forget).
   useEffect(() => {
     fetch("/api/pimpmycourt/visit", { method: "POST" }).catch(() => {});
@@ -148,17 +155,17 @@ export default function MapShell() {
 
       {/* Search pill + PIMP MY COURT logo (top) — above the placement banner so
           mobile search results are never hidden */}
-      <div className="absolute top-3 left-3 right-3 sm:right-auto z-40 flex items-center gap-2">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/logo-pmc.png"
-          alt="Pimp My Court"
-          className="pointer-events-none h-11 w-auto shrink-0 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]"
-        />
-        <div className="flex-1 sm:w-96 sm:flex-none min-w-0">
-          <AddressSearch onSelect={flyTo} />
-        </div>
+      <div className="absolute top-3 left-3 right-24 sm:right-auto sm:w-96 z-40">
+        <AddressSearch onSelect={flyTo} />
       </div>
+
+      {/* PIMP MY COURT logo (top-right) */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/logo-pmc.png"
+        alt="Pimp My Court"
+        className="pointer-events-none absolute top-3 right-3 z-40 h-11 w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]"
+      />
 
       {/* Legend (bottom-left map key) — head-in-dot to match the markers */}
       <div className="pointer-events-none absolute left-3 bottom-3 z-10 flex flex-col gap-1.5 text-[11px] bg-black/60 backdrop-blur rounded-lg p-2">
