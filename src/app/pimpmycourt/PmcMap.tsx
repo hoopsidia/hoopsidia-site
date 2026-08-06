@@ -44,7 +44,8 @@ function pointMarkerEl(etat: Etat): HTMLElement {
   // an INNER wrapper — mutating the root's transform would wipe MapLibre's
   // translate and snap the marker to the map's top-left corner.
   const el = document.createElement("div");
-  el.style.cssText = "width:24px;height:24px;cursor:pointer;";
+  // Replaced (green) markers stack above à-remplacer (orange) ones when zoomed out.
+  el.style.cssText = `width:24px;height:24px;cursor:pointer;z-index:${etat === "remplace" ? 2 : 1};`;
   const inner = document.createElement("div");
   inner.style.cssText = `width:100%;height:100%;border-radius:50%;background:${color};
     border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.5);

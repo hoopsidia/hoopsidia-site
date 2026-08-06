@@ -30,19 +30,7 @@ export default function MapShell() {
   const [placedPos, setPlacedPos] = useState<Pos | null>(null);
   const [reporting, setReporting] = useState(false);
   const [card, setCard] = useState<TerrainMarker | null>(null); // the shown place card
-  const [mapObj, setMapObj] = useState<MlMap | null>(null); // for render-time projection
-  const [, setMoveTick] = useState(0); // force re-render so the card tracks the pin
   const mapRef = useRef<MlMap | null>(null);
-
-  // Keep the place card anchored to its pin: re-render on every map move while
-  // a card is open, then project the terrain's coordinates to screen pixels.
-  useEffect(() => {
-    if (!mapObj || !card) return;
-    const onMove = () => setMoveTick((t) => t + 1);
-    mapObj.on("move", onMove);
-    return () => { mapObj.off("move", onMove); };
-  }, [mapObj, card]);
-  const cardPos = card && mapObj ? mapObj.project([card.longitude, card.latitude]) : null;
 
   // Count the visit once per page load (fire-and-forget).
   useEffect(() => {
@@ -51,7 +39,6 @@ export default function MapShell() {
 
   const handleMapReady = useCallback((map: MlMap) => {
     mapRef.current = map;
-    setMapObj(map);
 
     // Long-press (touch) / right-click (desktop) anywhere on the map: enter
     // placement mode centred exactly on that point, so the user can fine-tune
@@ -204,12 +191,9 @@ export default function MapShell() {
         </div>
       )}
 
-      {/* Place card — anchored above its pin. Stays until ✕ or another terrain. */}
-      {card && !reporting && !placing && cardPos && (
-        <div
-          className="absolute z-40"
-          style={{ left: cardPos.x, top: cardPos.y, transform: "translate(-50%, calc(-100% - 20px))" }}
-        >
+      {/* Place card — bottom-left. Stays until ✕ or another terrain. */}
+      {card && !reporting && !placing && (
+        <div className="absolute left-3 bottom-3 z-40">
           <TerrainCard terrain={card} onClose={closeCard} />
         </div>
       )}
