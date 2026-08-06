@@ -117,7 +117,7 @@ export default function MapShell() {
       {/* Search pill + PIMP MY COURT logo (top) — above the placement banner so
           mobile search results are never hidden */}
       {/* Search pill — with the PIMP MY COURT logo inside, loupe on the right */}
-      <div className="absolute top-3 left-3 right-3 sm:right-auto sm:w-[28rem] z-40">
+      <div className="absolute top-3 left-6 right-6 sm:left-3 sm:right-auto sm:w-96 z-40">
         <AddressSearch
           onSelect={flyTo}
           leading={

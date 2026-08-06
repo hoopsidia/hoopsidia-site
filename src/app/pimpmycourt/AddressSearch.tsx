@@ -64,7 +64,7 @@ export default function AddressSearch({
           value={q}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Chercher un lieu, une adresse…"
-          className="w-full min-w-0 bg-transparent text-center text-base text-white caret-orange placeholder:text-white/40 placeholder:text-sm outline-none pl-[20px]"
+          className="w-full min-w-0 bg-transparent text-center text-base text-white caret-orange placeholder:text-white/40 placeholder:text-sm outline-none pl-[10px]"
         />
         {q && (
           <button
