@@ -246,11 +246,11 @@ function Overview({
   return (
     <div className="space-y-6">
       {/* Stat cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         <StatCard label="Visites" value={visits?.pageviews ?? 0} accent="#ff7200" />
         <StatCard label="Filets remplacés" value={filetsRemplaces} accent="#2fc600" />
-        <StatCard label="Terrains signalés" value={terrains.length} accent="#ff7200" onClick={() => onGo("terrains")} />
-        <StatCard label="Terrains à modérer" value={by("signale")} accent="#ff7200" onClick={() => onGo("moderation")} />
+        <StatCard label="Terrains signalés" value={terrains.length} accent="#FFFFFF" onClick={() => onGo("terrains")} />
+        <StatCard label="Terrains à modérer" value={by("signale")} accent="#FFFFFF" onClick={() => onGo("moderation")} />
       </div>
 
       {/* Recent */}
