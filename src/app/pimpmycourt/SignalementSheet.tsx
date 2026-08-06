@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
 
 type Pos = { lat: number; lng: number };
 type Duplicate = { id: string; ville: string | null; nb_confirmations: number } | null;
@@ -125,19 +124,7 @@ export default function SignalementSheet({
               Merci ! On vérifie ton terrain sous <span className="text-orange font-bold">48 h</span>{" "}
               (modération manuelle) avant qu&apos;il apparaisse sur la carte.
             </p>
-            <div className="rounded-xl glass-subtle p-4">
-              <p className="font-heading font-bold text-white">Tu veux poser les filets toi-même ?</p>
-              <p className="text-sm text-white/60 mt-1">On t&apos;envoie le matériel. En échange, tu filmes la pose.</p>
-              <div className="mt-3 flex gap-2">
-                <Link href="/pimpmycourt/tournage" className="flex-1 text-center rounded-full glass-subtle px-4 py-2 text-sm font-heading font-bold hover:bg-white/10">
-                  Voir ce que ça implique
-                </Link>
-                <Link href="/pimpmycourt/kit" className="flex-1 text-center rounded-full bg-orange text-black px-4 py-2 text-sm font-heading font-bold hover:bg-orange-light">
-                  Demander un kit
-                </Link>
-              </div>
-            </div>
-            <button onClick={onClose} className="w-full rounded-full glass-subtle py-2.5 text-sm font-heading font-bold hover:bg-white/10">
+            <button onClick={onClose} className="w-full rounded-full bg-orange text-black py-2.5 text-sm font-heading font-bold hover:bg-orange-light">
               Fermer
             </button>
           </div>

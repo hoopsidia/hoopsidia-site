@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import Link from "next/link";
 import type { Map as MlMap } from "maplibre-gl";
 import { ETAT_COLOR, type Etat, type TerrainMarker } from "@/lib/pmc/types";
 import PmcMap from "./PmcMap";
@@ -10,16 +9,9 @@ import AddressSearch from "./AddressSearch";
 import TerrainCard from "./TerrainCard";
 
 // Google-Maps-style interface, brand-styled and adapted to court reporting:
-// a search pill + menu drawer, bottom-right map controls, a place card on
-// marker tap, and an "add a marker" flow (place → confirm → details sheet).
+// a search pill, bottom-right map controls, a place card on marker tap, and an
+// "add a marker" flow (place → confirm → details sheet).
 type Pos = { lat: number; lng: number };
-
-const NAV = [
-  { href: "/pimpmycourt", label: "La carte" },
-  { href: "/pimpmycourt/tournage", label: "Protocole de tournage" },
-  { href: "/pimpmycourt/kit", label: "Demander un kit" },
-  { href: "/pimpmycourt/donnees", label: "Données personnelles" },
-];
 
 function LegendDot({ etat }: { etat: Etat }) {
   return (
@@ -43,7 +35,6 @@ function CtrlBtn({ onClick, label, children }: { onClick: () => void; label: str
 }
 
 export default function MapShell() {
-  const [drawer, setDrawer] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [placedPos, setPlacedPos] = useState<Pos | null>(null);
   const [reporting, setReporting] = useState(false);
@@ -54,7 +45,49 @@ export default function MapShell() {
   // The place card shows the pinned terrain, or the hovered one as a preview.
   const card = selected ?? hovered;
 
-  const handleMapReady = useCallback((map: MlMap) => { mapRef.current = map; }, []);
+  const handleMapReady = useCallback((map: MlMap) => {
+    mapRef.current = map;
+
+    // Long-press (touch) / right-click (desktop) anywhere on the map to drop the
+    // report position right there, then open the form.
+    const openAt = (lat: number, lng: number) => {
+      setSelected(null);
+      setPlacing(false);
+      setPlacedPos({ lat, lng });
+      setReporting(true);
+    };
+    let lastLongPress = 0;
+    map.on("contextmenu", (e) => {
+      if (Date.now() - lastLongPress < 800) return; // avoid double-fire on touch
+      openAt(e.lngLat.lat, e.lngLat.lng);
+    });
+
+    // Manual long-press detector — reliable across mobile browsers.
+    const canvas = map.getCanvasContainer();
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let start: { x: number; y: number } | null = null;
+    const clear = () => { if (timer) { clearTimeout(timer); timer = null; } };
+    canvas.addEventListener("touchstart", (ev: TouchEvent) => {
+      if (ev.touches.length !== 1) { clear(); return; }
+      const t = ev.touches[0];
+      start = { x: t.clientX, y: t.clientY };
+      clear();
+      timer = setTimeout(() => {
+        if (!start) return;
+        const rect = canvas.getBoundingClientRect();
+        const p = map.unproject([start.x - rect.left, start.y - rect.top]);
+        lastLongPress = Date.now();
+        openAt(p.lat, p.lng);
+      }, 500);
+    }, { passive: true });
+    canvas.addEventListener("touchmove", (ev: TouchEvent) => {
+      if (!start || !timer) return;
+      const t = ev.touches[0];
+      if (Math.hypot(t.clientX - start.x, t.clientY - start.y) > 12) clear();
+    }, { passive: true });
+    canvas.addEventListener("touchend", clear, { passive: true });
+    canvas.addEventListener("touchcancel", clear, { passive: true });
+  }, []);
   const flyTo = useCallback((lng: number, lat: number) => {
     mapRef.current?.flyTo({ center: [lng, lat], zoom: 17 });
   }, []);
@@ -83,16 +116,10 @@ export default function MapShell() {
     <main className="relative h-[100dvh] w-full overflow-hidden bg-[#0d0d0d] text-white">
       <PmcMap onMapReady={handleMapReady} onSelectTerrain={onSelectTerrain} onHoverTerrain={setHovered} />
 
-      {/* Search pill + hamburger (top) */}
-      <div className="absolute top-3 left-3 right-3 sm:right-auto sm:w-96 z-30">
-        <AddressSearch
-          onSelect={flyTo}
-          leading={
-            <button onClick={() => setDrawer(true)} aria-label="Menu" className="text-white/80 hover:text-white p-1 shrink-0">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M3 6h18M3 18h18" /></svg>
-            </button>
-          }
-        />
+      {/* Search pill (top) — above the placement banner so mobile search
+          results are never hidden by it */}
+      <div className="absolute top-3 left-3 right-3 sm:right-auto sm:w-96 z-40">
+        <AddressSearch onSelect={flyTo} />
       </div>
 
       {/* Legend (bottom-left map key) — head-in-dot to match the markers */}
@@ -132,7 +159,7 @@ export default function MapShell() {
             <img
               src="/images/logo-head.png"
               alt=""
-              style={{ position: "absolute", top: 5, left: "50%", transform: "translateX(-50%)", width: 18, height: 18, filter: "brightness(0) invert(1)" }}
+              style={{ position: "absolute", top: 4, left: "50%", transform: "translateX(-50%)", width: 23, height: 23, filter: "brightness(0) invert(1)" }}
             />
           </div>
         </div>
@@ -143,7 +170,7 @@ export default function MapShell() {
         <>
           <div className="absolute inset-x-0 top-20 z-30 flex justify-center px-4">
             <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-heading font-bold text-black text-center shadow-lg">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0"><circle cx="12" cy="12" r="9" /><path d="M12 8v8M8 12h8" /></svg>
               Déplace la carte pour poser le repère sur le terrain
             </div>
           </div>
@@ -181,35 +208,6 @@ export default function MapShell() {
       {/* Reporting sheet (after confirming placement) */}
       {reporting && placedPos && (
         <SignalementSheet position={placedPos} onClose={() => { setReporting(false); setPlacedPos(null); }} />
-      )}
-
-      {/* Menu drawer */}
-      {drawer && (
-        <div className="absolute inset-0 z-50" onClick={() => setDrawer(false)}>
-          <div className="absolute inset-0 bg-black/50" />
-          <div
-            className="absolute top-0 left-0 h-full w-72 max-w-[80%] bg-black border-r border-white/10 p-5 flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between">
-              <Link href="/" className="font-heading text-xl font-bold italic">
-                <span className="text-orange">HOOPS</span><span className="text-white">IDIA</span>
-              </Link>
-              <button onClick={() => setDrawer(false)} aria-label="Fermer" className="text-white/50 hover:text-white text-2xl leading-none">×</button>
-            </div>
-            <span className="text-[11px] font-heading font-bold uppercase tracking-wide text-orange/80">Pimp My Court · La carte des filets</span>
-
-            <nav className="mt-6 flex flex-col gap-1 font-heading font-bold">
-              {NAV.map((l) => (
-                <Link key={l.href} href={l.href} onClick={() => setDrawer(false)} className="rounded-lg px-3 py-2.5 text-white/80 hover:bg-white/10 hover:text-white">
-                  {l.label}
-                </Link>
-              ))}
-            </nav>
-
-            <Link href="/" className="mt-auto text-sm text-white/40 hover:text-white">← Le site hoopsidia.com</Link>
-          </div>
-        </div>
       )}
     </main>
   );
