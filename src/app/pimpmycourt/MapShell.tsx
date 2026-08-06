@@ -53,13 +53,14 @@ export default function MapShell() {
   const handleMapReady = useCallback((map: MlMap) => {
     mapRef.current = map;
 
-    // Long-press (touch) / right-click (desktop) anywhere on the map to drop the
-    // report position right there, then open the form.
+    // Long-press (touch) / right-click (desktop) anywhere on the map: enter
+    // placement mode centred exactly on that point, so the user can fine-tune
+    // and then confirm with the button.
     const openAt = (lat: number, lng: number) => {
       setSelected(null);
-      setPlacing(false);
-      setPlacedPos({ lat, lng });
-      setReporting(true);
+      setReporting(false);
+      setPlacing(true);
+      map.easeTo({ center: [lng, lat] });
     };
     let lastLongPress = 0;
     map.on("contextmenu", (e) => {
