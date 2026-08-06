@@ -40,10 +40,23 @@ export default function MapShell() {
   const [reporting, setReporting] = useState(false);
   const [selected, setSelected] = useState<TerrainMarker | null>(null); // pinned (clicked)
   const [hovered, setHovered] = useState<TerrainMarker | null>(null); // transient (hover)
+  const [stats, setStats] = useState<{ total: number; remplaces: number; filetsRemplaces: number } | null>(null);
+  const [mapObj, setMapObj] = useState<MlMap | null>(null); // for render-time projection
+  const [, setMoveTick] = useState(0); // force re-render so the card tracks the pin
   const mapRef = useRef<MlMap | null>(null);
 
   // The place card shows the pinned terrain, or the hovered one as a preview.
   const card = selected ?? hovered;
+
+  // Keep the place card anchored to its pin: re-render on every map move while
+  // a card is open, then project the terrain's coordinates to screen pixels.
+  useEffect(() => {
+    if (!mapObj || !card) return;
+    const onMove = () => setMoveTick((t) => t + 1);
+    mapObj.on("move", onMove);
+    return () => { mapObj.off("move", onMove); };
+  }, [mapObj, card]);
+  const cardPos = card && mapObj ? mapObj.project([card.longitude, card.latitude]) : null;
 
   // Count the visit once per page load (fire-and-forget).
   useEffect(() => {
@@ -52,6 +65,7 @@ export default function MapShell() {
 
   const handleMapReady = useCallback((map: MlMap) => {
     mapRef.current = map;
+    setMapObj(map);
 
     // Clicking anywhere on the map (not a marker) dismisses the place card.
     map.on("click", () => { setSelected(null); setHovered(null); });
@@ -123,7 +137,7 @@ export default function MapShell() {
 
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden bg-[#0d0d0d] text-white">
-      <PmcMap onMapReady={handleMapReady} onSelectTerrain={onSelectTerrain} onHoverTerrain={setHovered} />
+      <PmcMap onStats={setStats} onMapReady={handleMapReady} onSelectTerrain={onSelectTerrain} onHoverTerrain={setHovered} />
 
       {/* Search pill + PIMP MY COURT logo (top) — above the placement banner so
           mobile search results are never hidden */}
@@ -148,6 +162,7 @@ export default function MapShell() {
         <span className="inline-flex items-center gap-1.5">
           <LegendDot etat="remplace" />
           Remplacés
+          {stats && <b className="text-white">· {stats.filetsRemplaces} filet{stats.filetsRemplaces > 1 ? "s" : ""}</b>}
         </span>
       </div>
 
@@ -215,9 +230,14 @@ export default function MapShell() {
         </div>
       )}
 
-      {/* Place card — pinned (click) or transient preview (hover) */}
-      {card && !reporting && !placing && (
-        <div onMouseEnter={() => setHovered(card)} onMouseLeave={() => { if (!selected) setHovered(null); }}>
+      {/* Place card — anchored above the selected/hovered pin */}
+      {card && !reporting && !placing && cardPos && (
+        <div
+          className="absolute z-40"
+          style={{ left: cardPos.x, top: cardPos.y, transform: "translate(-50%, calc(-100% - 20px))" }}
+          onMouseEnter={() => setHovered(card)}
+          onMouseLeave={() => { if (!selected) setHovered(null); }}
+        >
           <TerrainCard terrain={card} onClose={closeCard} />
         </div>
       )}

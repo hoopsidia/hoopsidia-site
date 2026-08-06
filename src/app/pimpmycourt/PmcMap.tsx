@@ -7,7 +7,7 @@ import Supercluster from "supercluster";
 import { supabaseBrowser } from "@/lib/pmc/supabase";
 import { ETAT_COLOR, type Etat, type TerrainMarker, type TerrainPublic } from "@/lib/pmc/types";
 
-type Stats = { total: number; remplaces: number };
+type Stats = { total: number; remplaces: number; filetsRemplaces: number };
 // Coordinates come from the feature geometry, not the stored properties.
 type PointProps = Omit<TerrainMarker, "latitude" | "longitude">;
 type ClusterProps = { remplace: number };
@@ -178,6 +178,7 @@ export default function PmcMap({
       onStats?.({
         total: rows.length,
         remplaces: rows.filter((r) => r.etat === "remplace").length,
+        filetsRemplaces: rows.reduce((s, r) => s + (r.etat === "remplace" ? (r.nb_filets_a_remplacer ?? 0) : 0), 0),
       });
       index.load(
         rows.map((r) => ({

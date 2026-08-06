@@ -43,7 +43,7 @@ export default function TerrainCard({ terrain, onClose }: { terrain: TerrainMark
   }
 
   return (
-    <div className="absolute inset-x-0 bottom-0 z-40 p-3 sm:left-3 sm:right-auto sm:w-80 sm:bottom-3">
+    <div className="w-72 max-w-[80vw]">
       <div className="rounded-2xl bg-black border border-white/10 shadow-2xl overflow-hidden">
         {/* Satellite preview of the exact location */}
         <div className="relative">
