@@ -609,6 +609,9 @@ function Terrains({ terrains, loading, error, reload, authHeaders }: {
                         <span className="text-white/40">{t.nb_confirmations} conf.</span>
                         {t.nb_filets_a_remplacer != null && <span className="text-white/40">{t.nb_filets_a_remplacer} filet(s)</span>}
                       </span>
+                      {t.commentaire && (
+                        <span className="mt-1 block text-xs text-white/60 italic">“{t.commentaire}”</span>
+                      )}
                     </span>
                   </button>
                   <button onClick={() => setEditing(t)} aria-label="Éditer" className="shrink-0 text-white/30 hover:text-orange px-1">
