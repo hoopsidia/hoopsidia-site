@@ -10,13 +10,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "non autorisé" }, { status: 403 });
   }
   const supabase = getSupabaseAdmin();
-  const withDate = "id, latitude, longitude, ville, departement, statut, photo_apres_url, date_remplacement, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at";
-  const noDate = "id, latitude, longitude, ville, departement, statut, photo_apres_url, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at";
+  const withDate = "id, latitude, longitude, ville, departement, statut, date_remplacement, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at";
+  const noDate = "id, latitude, longitude, ville, departement, statut, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at";
 
   type Row = {
     id: string; latitude: number; longitude: number;
     ville: string | null; departement: string | null; statut: string;
-    photo_apres_url: string | null; date_remplacement?: string | null;
+    date_remplacement?: string | null;
     nb_confirmations: number; nb_paniers: number | null; nb_filets_a_remplacer: number | null;
     nom_terrain: string | null; created_at: string;
   };
@@ -32,11 +32,11 @@ export async function GET(request: Request) {
     rows = (primary.data ?? []) as unknown as Row[];
   }
 
-  // `etat` isn't a stored column — it's derived: a replacement date (or a
-  // before/after photo) means the net has been replaced.
-  const terrains = rows.map(({ photo_apres_url, date_remplacement, ...rest }) => {
+  // `etat` isn't a stored column — it's derived from the replacement date,
+  // exactly like the public terrains_public view (so admin and map agree).
+  const terrains = rows.map(({ date_remplacement, ...rest }) => {
     const dr = date_remplacement ?? null;
-    return { ...rest, date_remplacement: dr, etat: dr || photo_apres_url ? "remplace" : "a_remplacer" };
+    return { ...rest, date_remplacement: dr, etat: dr ? "remplace" : "a_remplacer" };
   });
   return NextResponse.json({ terrains });
 }

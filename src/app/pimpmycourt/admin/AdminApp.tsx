@@ -235,7 +235,6 @@ function Overview({
 
   const by = (s: string) => terrains.filter((t) => t.statut === s).length;
   const filetsRemplaces = terrains.reduce((sum, t) => sum + (t.etat === "remplace" ? (t.nb_filets_a_remplacer ?? 0) : 0), 0);
-  const terrainsConfirmes = terrains.filter((t) => (t.nb_confirmations ?? 0) > 1).length;
 
   // Top villes among all terrains.
   const villeCounts = new Map<string, number>();
@@ -262,7 +261,7 @@ function Overview({
         <StatCard label="Visites" value={visits?.pageviews ?? 0} accent="#FFFFFF" />
         <StatCard label="Filets remplacés" value={filetsRemplaces} accent="#2fc600" />
         <StatCard label="Terrains signalés" value={terrains.length} accent="#ff7200" onClick={() => onGo("terrains")} />
-        <StatCard label="Terrains confirmés" value={terrainsConfirmes} accent="#FFFFFF" />
+        <StatCard label="Terrains à modérer" value={by("signale")} accent="#ff7200" onClick={() => onGo("moderation")} />
       </div>
 
       {/* Status distribution */}
@@ -448,7 +447,7 @@ function Moderation({ authHeaders, onModerated }: { authHeaders: Auth; onModerat
       )}
 
       <div className="mt-4 grid grid-cols-3 gap-2">
-        <button onClick={() => act("valider")} className="rounded-full bg-[#2fc600] text-white py-3 font-heading font-bold uppercase text-sm">Valider</button>
+        <button onClick={() => act("valider")} className="rounded-full bg-orange text-black py-3 font-heading font-bold uppercase text-sm">Valider (à remplacer)</button>
         <button onClick={() => act("doublon")} className="rounded-full bg-white/10 text-white py-3 font-heading font-bold uppercase text-sm">Doublon</button>
         <button onClick={() => act("rejeter")} className="rounded-full bg-[#E4572E] text-white py-3 font-heading font-bold uppercase text-sm">Rejeter</button>
       </div>
