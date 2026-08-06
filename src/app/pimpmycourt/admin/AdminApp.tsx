@@ -449,14 +449,19 @@ function Terrains({ terrains, loading, error, reload, authHeaders }: {
 }) {
   const [filter, setFilter] = useState<TFilter>("all");
   const [region, setRegion] = useState<string>("all");
+  const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [merging, setMerging] = useState(false);
   const [editing, setEditing] = useState<AdminTerrain | null>(null);
 
   const regionOf = (t: AdminTerrain) => t.departement?.trim() || t.ville?.trim() || "";
   const regions = [...new Set(terrains.map(regionOf).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  const q = search.trim().toLowerCase();
   const list = terrains.filter(
-    (t) => (filter === "all" || t.etat === filter) && (region === "all" || regionOf(t) === region),
+    (t) =>
+      (filter === "all" || t.etat === filter) &&
+      (region === "all" || regionOf(t) === region) &&
+      (!q || [t.ville, t.departement, t.nom_terrain].some((v) => v?.toLowerCase().includes(q))),
   );
   const selectedTerrains = terrains.filter((t) => selected.has(t.id));
   // Keep the most-confirmed terrain; fold the others into it.
@@ -521,6 +526,14 @@ function Terrains({ terrains, loading, error, reload, authHeaders }: {
 
   return (
     <div className="pb-24">
+      {/* Search by ville / région / terrain */}
+      <input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Rechercher une ville, une région, un terrain…"
+        className="mb-3 w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:border-orange"
+      />
+
       {/* Filter by état */}
       <div className="flex flex-wrap gap-2 mb-3 text-xs font-heading font-bold">
         {([["a_remplacer", "À remplacer"], ["remplace", "Remplacés"], ["all", "Tous les terrains"]] as [TFilter, string][]).map(([f, label]) => (
