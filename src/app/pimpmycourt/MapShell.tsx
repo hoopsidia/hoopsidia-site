@@ -166,19 +166,12 @@ export default function MapShell() {
       {/* Search pill — below the logo on mobile, top-left on desktop */}
       <div className="absolute top-16 left-3 right-3 sm:top-3 sm:right-auto sm:w-96 z-40">
         <AddressSearch onSelect={flyTo} />
-      </div>
-
-      {/* Legend (bottom-left map key) — head-in-dot to match the markers */}
-      <div className="pointer-events-none absolute left-3 bottom-3 z-10 flex flex-col gap-1.5 text-[11px] bg-black/60 backdrop-blur rounded-lg p-2">
-        <span className="inline-flex items-center gap-1.5">
-          <LegendDot etat="a_remplacer" />
-          Signalés
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <LegendDot etat="remplace" />
-          Remplacés
-          {stats && <b className="text-white">· {stats.filetsRemplaces} filet{stats.filetsRemplaces > 1 ? "s" : ""}</b>}
-        </span>
+        {stats && (
+          <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-black/70 backdrop-blur px-3 py-1.5 text-xs font-heading font-bold">
+            <LegendDot etat="remplace" />
+            <span className="text-white">{stats.filetsRemplaces} filet{stats.filetsRemplaces > 1 ? "s" : ""} remplacé{stats.filetsRemplaces > 1 ? "s" : ""}</span>
+          </div>
+        )}
       </div>
 
       {/* Map controls (bottom-right, Google-style) */}
