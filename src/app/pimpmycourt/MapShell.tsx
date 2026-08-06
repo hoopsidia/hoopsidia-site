@@ -142,7 +142,8 @@ export default function MapShell() {
       {placing && (
         <>
           <div className="absolute inset-x-0 top-20 z-30 flex justify-center px-4">
-            <div className="rounded-full bg-black/85 backdrop-blur px-4 py-2 text-sm font-heading font-bold text-center">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-heading font-bold text-black text-center shadow-lg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
               Déplace la carte pour poser le repère sur le terrain
             </div>
           </div>
@@ -162,7 +163,7 @@ export default function MapShell() {
         <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <button
             onClick={startPlacing}
-            className="flex items-center gap-2 rounded-full bg-orange px-7 py-3.5 font-heading font-bold uppercase text-sm tracking-wide text-black shadow-lg hover:bg-orange-light transition-colors"
+            className="flex items-center gap-2 rounded-full bg-orange px-7 py-3.5 font-heading font-bold uppercase text-sm tracking-wide text-white shadow-lg hover:bg-orange-light transition-colors"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14" /></svg>
             Signaler un terrain
