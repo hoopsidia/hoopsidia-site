@@ -48,7 +48,7 @@ export default function TerrainCard({ terrain, onClose }: { terrain: TerrainMark
         {/* Satellite preview of the exact location */}
         <div className="relative">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={satelliteImageUrl(terrain.latitude, terrain.longitude, 640, 300)} alt="Vue satellite du terrain" className="w-full h-36 object-cover bg-white/5" />
+          <img src={terrain.photo_apres_url ?? satelliteImageUrl(terrain.latitude, terrain.longitude, 640, 300)} alt={terrain.photo_apres_url ? "Terrain après remplacement" : "Vue satellite du terrain"} className="w-full h-36 object-cover bg-white/5" />
           <span className="absolute top-2 left-2 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-heading font-bold" style={{ background: "rgba(0,0,0,.7)", color }}>
             <span className="inline-block h-2 w-2 rounded-full" style={{ background: color }} />
             {remplace ? "Filet remplacé" : "À remplacer"}

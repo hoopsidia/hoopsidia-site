@@ -157,6 +157,7 @@ export default function PmcMap({
             ville: p.ville,
             departement: p.departement,
             photo_avant_url: p.photo_avant_url,
+            photo_apres_url: p.photo_apres_url,
             etat: p.etat,
             date_remplacement: p.date_remplacement,
             nb_confirmations: p.nb_confirmations,
@@ -189,6 +190,7 @@ export default function PmcMap({
             ville: r.ville,
             departement: r.departement,
             photo_avant_url: r.photo_avant_url,
+            photo_apres_url: r.photo_apres_url,
             etat: r.etat,
             date_remplacement: r.date_remplacement,
             nb_confirmations: r.nb_confirmations,
@@ -216,7 +218,7 @@ export default function PmcMap({
 
 async function fetchTerrains(): Promise<TerrainPublic[]> {
   if (!supabaseBrowser) return [];
-  const full = "id,latitude,longitude,ville,departement,photo_avant_url,etat,date_remplacement,nb_confirmations,nb_paniers,nb_filets_a_remplacer,nom_terrain";
+  const full = "id,latitude,longitude,ville,departement,photo_avant_url,photo_apres_url,etat,date_remplacement,nb_confirmations,nb_paniers,nb_filets_a_remplacer,nom_terrain";
   const base = "id,latitude,longitude,ville,departement,photo_avant_url,etat,nb_confirmations,nb_paniers";
   let res = await supabaseBrowser.from("terrains_public").select(full);
   if (res.error) {
@@ -226,7 +228,7 @@ async function fetchTerrains(): Promise<TerrainPublic[]> {
       console.error("terrains_public fetch error:", res.error.message);
       return [];
     }
-    return (res.data ?? []).map((r) => ({ ...r, nb_filets_a_remplacer: null, nom_terrain: null, date_remplacement: null })) as TerrainPublic[];
+    return (res.data ?? []).map((r) => ({ ...r, nb_filets_a_remplacer: null, nom_terrain: null, date_remplacement: null, photo_apres_url: null })) as TerrainPublic[];
   }
   return (res.data ?? []) as TerrainPublic[];
 }

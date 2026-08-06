@@ -31,6 +31,7 @@ export type TerrainMarker = {
   ville: string | null;
   departement: string | null;
   photo_avant_url: string | null;
+  photo_apres_url: string | null;
   etat: Etat;
   date_remplacement: string | null;
   nb_confirmations: number;
