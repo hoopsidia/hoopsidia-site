@@ -155,17 +155,18 @@ export default function MapShell() {
 
       {/* Search pill + PIMP MY COURT logo (top) — above the placement banner so
           mobile search results are never hidden */}
-      <div className="absolute top-3 left-3 right-24 sm:right-auto sm:w-96 z-40">
-        <AddressSearch onSelect={flyTo} />
-      </div>
-
-      {/* PIMP MY COURT logo (top-right) */}
+      {/* PIMP MY COURT logo — centred above the search on mobile, top-right on desktop */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/images/logo-pmc.png"
         alt="Pimp My Court"
-        className="pointer-events-none absolute top-3 right-3 z-40 h-11 w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]"
+        className="pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 sm:left-auto sm:right-3 sm:translate-x-0 z-40 h-11 w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]"
       />
+
+      {/* Search pill — below the logo on mobile, top-left on desktop */}
+      <div className="absolute top-16 left-3 right-3 sm:top-3 sm:right-auto sm:w-96 z-40">
+        <AddressSearch onSelect={flyTo} />
+      </div>
 
       {/* Legend (bottom-left map key) — head-in-dot to match the markers */}
       <div className="pointer-events-none absolute left-3 bottom-3 z-10 flex flex-col gap-1.5 text-[11px] bg-black/60 backdrop-blur rounded-lg p-2">
