@@ -7,7 +7,8 @@ type Pos = { lat: number; lng: number };
 type Duplicate = { id: string; ville: string | null; nb_confirmations: number } | null;
 type Phase = "form" | "duplicate" | "sending" | "done";
 
-const INPUT = "w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:border-orange";
+// text-base (16px) so iOS Safari doesn't auto-zoom the page on focus.
+const INPUT = "w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-base text-white placeholder:text-white/40 outline-none focus:border-orange";
 
 // Bottom sheet for reporting a court (§5). Position = current map centre (the
 // crosshair overlay); the map stays pannable above the sheet. Friction-minimal:
