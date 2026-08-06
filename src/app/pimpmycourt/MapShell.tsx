@@ -40,7 +40,7 @@ export default function MapShell() {
   const [reporting, setReporting] = useState(false);
   const [selected, setSelected] = useState<TerrainMarker | null>(null); // pinned (clicked)
   const [hovered, setHovered] = useState<TerrainMarker | null>(null); // transient (hover)
-  const [stats, setStats] = useState<{ total: number; remplaces: number; filetsRemplaces: number } | null>(null);
+  const [stats, setStats] = useState<{ total: number; remplaces: number; filetsRemplaces: number; filetsARemplacer: number } | null>(null);
   const [mapObj, setMapObj] = useState<MlMap | null>(null); // for render-time projection
   const [, setMoveTick] = useState(0); // force re-render so the card tracks the pin
   const mapRef = useRef<MlMap | null>(null);
@@ -155,21 +155,25 @@ export default function MapShell() {
 
       {/* Search pill + PIMP MY COURT logo (top) — above the placement banner so
           mobile search results are never hidden */}
-      {/* PIMP MY COURT logo — centred above the search on mobile, top-right on desktop */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/images/logo-pmc.png"
-        alt="Pimp My Court"
-        className="pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 sm:left-auto sm:right-3 sm:translate-x-0 z-40 h-11 w-auto drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]"
-      />
-
-      {/* Search pill — below the logo on mobile, top-left on desktop */}
-      <div className="absolute top-16 left-3 right-3 sm:top-3 sm:right-auto sm:w-96 z-40">
-        <AddressSearch onSelect={flyTo} />
+      {/* Search pill — with the PIMP MY COURT logo inside, loupe on the right */}
+      <div className="absolute top-3 left-3 right-3 sm:right-auto sm:w-[28rem] z-40">
+        <AddressSearch
+          onSelect={flyTo}
+          leading={
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src="/images/logo-pmc.png" alt="Pimp My Court" className="h-7 w-auto shrink-0" />
+          }
+        />
         {stats && (
-          <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-black/70 backdrop-blur px-3 py-1.5 text-xs font-heading font-bold">
-            <LegendDot etat="remplace" />
-            <span className="text-white">{stats.filetsRemplaces} filet{stats.filetsRemplaces > 1 ? "s" : ""} remplacé{stats.filetsRemplaces > 1 ? "s" : ""}</span>
+          <div className="mt-2 flex items-center gap-2 flex-wrap">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-black/70 backdrop-blur py-1 pl-1 pr-3 text-xs font-heading font-bold">
+              <LegendDot etat="remplace" />
+              <span className="text-white">{stats.filetsRemplaces} filet{stats.filetsRemplaces > 1 ? "s" : ""} remplacé{stats.filetsRemplaces > 1 ? "s" : ""}</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-black/70 backdrop-blur py-1 pl-1 pr-3 text-xs font-heading font-bold">
+              <LegendDot etat="a_remplacer" />
+              <span className="text-white">{stats.filetsARemplacer} filet{stats.filetsARemplacer > 1 ? "s" : ""} à remplacer</span>
+            </div>
           </div>
         )}
       </div>
