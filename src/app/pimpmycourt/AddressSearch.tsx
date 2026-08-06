@@ -2,7 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 
-type Suggestion = { name: string; detail: string; lng: number; lat: number };
+type Suggestion = { name: string; detail: string; lng?: number; lat?: number; placeId?: string };
 
 // Place / address search via Nominatim (OpenStreetMap) — like Google Maps, it
 // finds named places and POIs (stades, gymnases, parcs…), not only postal
@@ -27,6 +27,22 @@ export default function AddressSearch({
       return;
     }
     timer.current = setTimeout(async () => {
+      // Google Places suggestions first (richer POIs); fall back to Nominatim.
+      try {
+        const g = await fetch(`/api/pimpmycourt/places?q=${encodeURIComponent(value)}`).then((r) => r.json());
+        if (Array.isArray(g?.suggestions) && g.suggestions.length > 0) {
+          setItems(
+            (g.suggestions as { placeId: string; main: string; secondary: string }[]).map((s) => ({
+              name: s.main,
+              detail: s.secondary,
+              placeId: s.placeId,
+            })),
+          );
+          return;
+        }
+      } catch {
+        /* fall through to Nominatim */
+      }
       try {
         const res = await fetch(
           `https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=fr&limit=6&q=${encodeURIComponent(value)}`,
@@ -47,11 +63,21 @@ export default function AddressSearch({
       } catch {
         setItems([]);
       }
-    }, 500);
+    }, 400);
   }
 
-  function pick(s: Suggestion) {
-    onSelect(s.lng, s.lat);
+  async function pick(s: Suggestion) {
+    if (s.placeId) {
+      // Google prediction → resolve coordinates via Place Details.
+      try {
+        const d = await fetch(`/api/pimpmycourt/places?place_id=${encodeURIComponent(s.placeId)}`).then((r) => r.json());
+        if (typeof d?.lat === "number" && typeof d?.lng === "number") onSelect(d.lng, d.lat);
+      } catch {
+        /* ignore */
+      }
+    } else if (typeof s.lng === "number" && typeof s.lat === "number") {
+      onSelect(s.lng, s.lat);
+    }
     setQ(s.name);
     setItems([]);
   }

@@ -27,7 +27,7 @@ export default function DonneesPage() {
         <Link href="/pimpmycourt" className="text-sm text-white/50 hover:text-orange">← La carte des filets</Link>
         <h1 className="mt-4 font-heading text-3xl font-bold italic uppercase">Tes données</h1>
         <p className="mt-2 text-white/60 text-sm">
-          Responsable de traitement : <b>HOOPSIDIA SAS</b> — [À COMPLÉTER : adresse, SIREN].
+          Responsable de traitement : <b>HOOPSIDIA</b> (SAS au capital de 100&nbsp;€), 65 rue de la Croix, 92000 Nanterre — SIREN&nbsp;833&nbsp;951&nbsp;155.
           Contact : <a href="mailto:hoopsidia@gmail.com" className="text-orange">hoopsidia@gmail.com</a>.
         </p>
 
