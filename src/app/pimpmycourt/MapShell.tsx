@@ -48,9 +48,12 @@ export default function MapShell() {
   }, [mapObj, card]);
   const cardPos = card && mapObj ? mapObj.project([card.longitude, card.latitude]) : null;
 
-  // A hover preview card auto-dismisses after 1.5 s (a clicked/pinned card stays).
+  // A hover preview card auto-dismisses after 1.5 s (a clicked/pinned card
+  // stays). Skip this on touch devices, where the card would otherwise vanish
+  // before you can tap a button inside it (e.g. "S'y rendre").
   useEffect(() => {
     if (!hovered || selected) return;
+    if (typeof window !== "undefined" && window.matchMedia("(hover: none)").matches) return;
     const t = setTimeout(() => setHovered(null), 1500);
     return () => clearTimeout(t);
   }, [hovered, selected]);
