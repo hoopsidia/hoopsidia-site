@@ -149,15 +149,9 @@ body {
   border-bottom-color: #0d0d0d;
 }
 
-/* Keep the required tile attribution present but visually discreet. */
+/* Hide the tile attribution overlay on the maps (MapLibre v6 uses
+   .maplibregl-ctrl-attrib; older builds used .maplibregl-ctrl-attribution). */
+.maplibregl-ctrl-attrib,
 .maplibregl-ctrl-attribution {
-  opacity: 0.28;
-  font-size: 9px;
-  background: transparent !important;
-}
-.maplibregl-ctrl-attribution a {
-  color: rgba(255, 255, 255, 0.55) !important;
-}
-.maplibregl-ctrl-attribution:hover {
-  opacity: 0.8;
+  display: none !important;
 }

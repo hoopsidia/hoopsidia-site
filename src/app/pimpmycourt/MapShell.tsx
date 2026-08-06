@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Map as MlMap } from "maplibre-gl";
 import { ETAT_COLOR, type Etat, type TerrainMarker } from "@/lib/pmc/types";
 import PmcMap from "./PmcMap";
@@ -44,6 +44,11 @@ export default function MapShell() {
 
   // The place card shows the pinned terrain, or the hovered one as a preview.
   const card = selected ?? hovered;
+
+  // Count the visit once per page load (fire-and-forget).
+  useEffect(() => {
+    fetch("/api/pimpmycourt/visit", { method: "POST" }).catch(() => {});
+  }, []);
 
   const handleMapReady = useCallback((map: MlMap) => {
     mapRef.current = map;
@@ -147,19 +152,19 @@ export default function MapShell() {
         </CtrlBtn>
       </div>
 
-      {/* Centre pin — only while placing a new terrain: black pin, white
-          Hoopsidia head inside */}
+      {/* Centre marker — only while placing a new terrain: black circle with
+          the white Hoopsidia head inside, centred on the drop point */}
       {placing && (
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center" aria-hidden>
-          <div className="relative -translate-y-5 drop-shadow-[0_2px_5px_rgba(0,0,0,0.6)]" style={{ width: 30, height: 39 }}>
-            <svg viewBox="0 0 40 52" width="30" height="39" className="absolute inset-0">
-              <path d="M20 0C9 0 0 9 0 20c0 14 20 32 20 32s20-18 20-32C40 9 31 0 20 0z" fill="#0d0d0d" stroke="#fff" strokeWidth="2.5" />
-            </svg>
+          <div
+            className="flex items-center justify-center rounded-full border-2 border-white bg-[#0d0d0d] drop-shadow-[0_2px_5px_rgba(0,0,0,0.6)]"
+            style={{ width: 36, height: 36 }}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/logo-head.png"
               alt=""
-              style={{ position: "absolute", top: 4, left: "50%", transform: "translateX(-50%)", width: 23, height: 23, filter: "brightness(0) invert(1)" }}
+              style={{ width: 22, height: 22, filter: "brightness(0) invert(1)" }}
             />
           </div>
         </div>
@@ -175,10 +180,10 @@ export default function MapShell() {
             </div>
           </div>
           <div className="absolute inset-x-0 bottom-0 z-30 flex items-center justify-center gap-3 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-            <button onClick={() => setPlacing(false)} className="rounded-full glass-subtle px-6 py-3.5 font-heading font-bold uppercase text-sm hover:bg-white/10">
+            <button onClick={() => setPlacing(false)} className="rounded-full bg-white px-6 py-3.5 font-heading font-bold uppercase text-sm text-black shadow-lg hover:bg-white/90">
               Annuler
             </button>
-            <button onClick={confirmPlacement} className="flex-1 max-w-xs rounded-full bg-orange px-6 py-3.5 text-center font-heading font-bold uppercase text-sm tracking-wide text-black shadow-lg hover:bg-orange-light">
+            <button onClick={confirmPlacement} className="flex-1 max-w-xs rounded-full bg-orange px-6 py-3.5 text-center font-heading font-bold uppercase text-sm tracking-wide text-white shadow-lg hover:bg-orange-light">
               Confirmer la position
             </button>
           </div>

@@ -4,7 +4,7 @@ import { Redis } from "@upstash/redis";
 
 // IP rate limiting via Upstash Redis (reuses the site's existing KV creds). If
 // KV isn't configured (e.g. local dev), it no-ops and allows the request.
-function redis(): Redis | null {
+export function getRedis(): Redis | null {
   const url = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN;
   if (!url || !token) return null;
@@ -22,7 +22,7 @@ export function ipHash(ip: string): string {
 }
 
 export async function rateLimitOk(key: string, max: number, windowSec: number): Promise<boolean> {
-  const r = redis();
+  const r = getRedis();
   if (!r) return true;
   try {
     const n = await r.incr(key);

@@ -141,14 +141,12 @@ function Login({ supabase }: { supabase: NonNullable<ReturnType<typeof getSupaba
   );
 }
 
-type Section = "overview" | "map" | "moderation" | "terrains" | "kits" | "data";
+type Section = "overview" | "moderation" | "terrains" | "data";
 
 const SECTION_LABEL: Record<Section, string> = {
   overview: "Vue d'ensemble",
-  map: "Carte",
   moderation: "Modération",
   terrains: "Terrains",
-  kits: "Kits",
   data: "Données",
 };
 
@@ -200,10 +198,8 @@ function Dashboard({ token, onSignOut }: { token: string; onSignOut: () => void 
         <div className="max-w-3xl mx-auto p-4 md:p-6">
           <h1 className="font-heading text-2xl font-bold mb-4">{SECTION_LABEL[section]}</h1>
           {section === "overview" && <Overview terrains={terrains} loading={tLoading} error={tError} authHeaders={authHeaders} onGo={setSection} />}
-          {section === "map" && (tLoading ? <p className="text-white/40 text-center py-10">Chargement…</p> : <AdminMap terrains={terrains} />)}
           {section === "moderation" && <Moderation authHeaders={authHeaders} onModerated={loadTerrains} />}
           {section === "terrains" && <Terrains terrains={terrains} loading={tLoading} error={tError} reload={loadTerrains} authHeaders={authHeaders} />}
-          {section === "kits" && <Kits authHeaders={authHeaders} />}
           {section === "data" && <DataTools authHeaders={authHeaders} />}
         </div>
       </div>
@@ -224,13 +220,13 @@ function Overview({
   authHeaders: Auth;
   onGo: (s: Section) => void;
 }) {
-  const [kits, setKits] = useState<Kit[] | null>(null);
+  const [visits, setVisits] = useState<{ pageviews: number; visitors: number } | null>(null);
   useEffect(() => {
     let active = true;
-    fetch("/api/pimpmycourt/admin/kits", { headers: authHeaders() })
+    fetch("/api/pimpmycourt/admin/visits", { headers: authHeaders() })
       .then((r) => r.json())
-      .then((d) => { if (active) setKits(d.kits ?? []); })
-      .catch(() => { if (active) setKits([]); });
+      .then((d) => { if (active) setVisits({ pageviews: d.pageviews ?? 0, visitors: d.visitors ?? 0 }); })
+      .catch(() => { if (active) setVisits({ pageviews: 0, visitors: 0 }); });
     return () => { active = false; };
   }, [authHeaders]);
 
@@ -241,10 +237,7 @@ function Overview({
   const valides = terrains.filter((t) => t.statut === "verifie");
   const aRemplacer = valides.filter((t) => t.etat === "a_remplacer").length;
   const remplaces = valides.filter((t) => t.etat === "remplace").length;
-  const filetsARemplacer = valides.reduce((sum, t) => sum + (t.etat === "a_remplacer" ? (t.nb_filets_a_remplacer ?? 0) : 0), 0);
   const confirmations = terrains.reduce((sum, t) => sum + (t.nb_confirmations ?? 0), 0);
-  const kitsTotal = kits?.length ?? 0;
-  const kitsATraiter = (kits ?? []).filter((k) => !["expediee", "livree", "rejetee", "rushes_recus"].includes(k.statut_demande)).length;
 
   // Top villes among all terrains.
   const villeCounts = new Map<string, number>();
@@ -267,15 +260,14 @@ function Overview({
     <div className="space-y-6">
       {/* Stat cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <StatCard label="Visiteurs" value={visits?.visitors ?? 0} accent="#FC8D33" />
+        <StatCard label="Pages vues" value={visits?.pageviews ?? 0} accent="#FFFFFF" />
         <StatCard label="Signalements" value={terrains.length} accent="#FC8D33" />
         <StatCard label="En attente" value={by("signale")} accent="#FC8D33" onClick={() => onGo("moderation")} />
         <StatCard label="Validés" value={by("verifie")} accent="#2FA84F" onClick={() => onGo("terrains")} />
-        <StatCard label="À remplacer" value={aRemplacer} accent="#DC2626" />
+        <StatCard label="À remplacer" value={aRemplacer} accent="#FC8D33" />
         <StatCard label="Remplacés" value={remplaces} accent="#2FA84F" />
-        <StatCard label="Filets à remplacer" value={filetsARemplacer} accent="#DC2626" />
         <StatCard label="Confirmations" value={confirmations} accent="#FFFFFF" />
-        <StatCard label="Kits demandés" value={kitsTotal} accent="#FC8D33" onClick={() => onGo("kits")} />
-        <StatCard label="Kits à traiter" value={kitsATraiter} accent="#FC8D33" onClick={() => onGo("kits")} />
       </div>
 
       {/* Status distribution */}
@@ -333,9 +325,11 @@ function Overview({
         </div>
       </div>
 
-      <button onClick={() => onGo("map")} className="rounded-full glass-subtle px-5 py-2.5 text-sm font-heading font-bold hover:bg-white/10">
-        Voir la carte →
-      </button>
+      {/* Map on the home dashboard */}
+      <div>
+        <p className="font-heading font-bold uppercase text-xs text-white/50 mb-2">Carte</p>
+        <AdminMap terrains={terrains} />
+      </div>
     </div>
   );
 }
@@ -683,87 +677,6 @@ function formatDate(d: string): string {
   } catch {
     return d;
   }
-}
-
-type Kit = {
-  id: string; prenom: string | null; nom: string | null; email: string | null;
-  age: number | null; trepied: string | null; modele_telephone: string | null;
-  autorisation_validee: boolean; statut_demande: string; cout_kit: number | null;
-};
-
-function Kits({ authHeaders }: { authHeaders: Auth }) {
-  const [kits, setKits] = useState<Kit[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [tick, setTick] = useState(0);
-
-  useEffect(() => {
-    let active = true;
-    fetch("/api/pimpmycourt/admin/kits", { headers: authHeaders() })
-      .then((r) => r.json())
-      .then((d) => { if (active) { setKits(d.kits ?? []); setLoading(false); } });
-    return () => { active = false; };
-  }, [authHeaders, tick]);
-
-  async function act(id: string, action: string) {
-    const res = await fetch("/api/pimpmycourt/admin/kit-action", {
-      method: "POST",
-      headers: authHeaders({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ id, action }),
-    });
-    if (!res.ok) {
-      const d = await res.json().catch(() => ({}));
-      alert(d.error ?? "erreur");
-      return;
-    }
-    setTick((n) => n + 1);
-  }
-
-  if (loading) return <p className="text-white/40 text-center py-10">Chargement…</p>;
-  if (!kits.length) return <p className="text-white/40 text-center py-10">Aucune demande de kit pour l&apos;instant.</p>;
-
-  return (
-    <ul className="space-y-3">
-      {kits.map((k) => {
-        const minor = typeof k.age === "number" && k.age > 0 && k.age < 18;
-        return (
-          <li key={k.id} className="rounded-lg border border-white/10 p-3 text-sm">
-            <div className="flex items-center justify-between">
-              <div className="font-bold">{k.prenom ?? ""} {k.nom ?? ""}</div>
-              <span className="text-xs text-orange">{k.statut_demande}</span>
-            </div>
-            <div className="text-white/50 text-xs">{k.email}</div>
-            <div className="text-white/40 text-xs mt-1">
-              {k.age != null ? `${k.age} ans` : "âge ?"} · trépied: {k.trepied ?? "?"} · {k.modele_telephone ?? "tél ?"}
-              {k.cout_kit != null ? ` · ${k.cout_kit} €` : ""}
-            </div>
-            {minor && (
-              <div className={`text-xs mt-1 font-bold ${k.autorisation_validee ? "text-[#2FA84F]" : "text-[#E4572E]"}`}>
-                Mineur — autorisation {k.autorisation_validee ? "validée" : "à valider (envoi bloqué)"}
-              </div>
-            )}
-            <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
-              {minor && !k.autorisation_validee && (
-                <ActionBtn onClick={() => act(k.id, "validate_parental")}>Valider autorisation</ActionBtn>
-              )}
-              <ActionBtn onClick={() => act(k.id, "approve")}>Approuver</ActionBtn>
-              <ActionBtn onClick={() => act(k.id, "ship")}>Expédié</ActionBtn>
-              <ActionBtn onClick={() => act(k.id, "delivered")}>Livré</ActionBtn>
-              <ActionBtn onClick={() => act(k.id, "rushes")}>Rushes reçus</ActionBtn>
-              <ActionBtn onClick={() => act(k.id, "reject")}>Rejeter</ActionBtn>
-            </div>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-function ActionBtn({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button onClick={onClick} className="rounded-full border border-white/20 px-3 py-1 hover:bg-white/10 transition-colors">
-      {children}
-    </button>
-  );
 }
 
 function DataTools({ authHeaders }: { authHeaders: Auth }) {
