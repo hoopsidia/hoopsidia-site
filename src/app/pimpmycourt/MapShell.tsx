@@ -67,8 +67,15 @@ export default function MapShell() {
     mapRef.current = map;
     setMapObj(map);
 
-    // Clicking anywhere on the map (not a marker) dismisses the place card.
-    map.on("click", () => { setSelected(null); setHovered(null); });
+    // Clicking the map dismisses the place card — but not when a pin was
+    // clicked (that click bubbles up to the map and would otherwise reopen-then
+    // -close the card).
+    map.on("click", (e) => {
+      const target = e.originalEvent?.target as HTMLElement | null;
+      if (target?.closest?.(".maplibregl-marker")) return;
+      setSelected(null);
+      setHovered(null);
+    });
 
     // Long-press (touch) / right-click (desktop) anywhere on the map: enter
     // placement mode centred exactly on that point, so the user can fine-tune
@@ -142,15 +149,15 @@ export default function MapShell() {
       {/* Search pill + PIMP MY COURT logo (top) — above the placement banner so
           mobile search results are never hidden */}
       <div className="absolute top-3 left-3 right-3 sm:right-auto z-40 flex items-center gap-2">
-        <div className="flex-1 sm:w-96 sm:flex-none min-w-0">
-          <AddressSearch onSelect={flyTo} />
-        </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/logo-pmc.png"
           alt="Pimp My Court"
           className="pointer-events-none h-11 w-auto shrink-0 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]"
         />
+        <div className="flex-1 sm:w-96 sm:flex-none min-w-0">
+          <AddressSearch onSelect={flyTo} />
+        </div>
       </div>
 
       {/* Legend (bottom-left map key) — head-in-dot to match the markers */}

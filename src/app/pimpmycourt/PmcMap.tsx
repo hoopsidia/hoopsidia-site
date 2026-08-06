@@ -168,7 +168,7 @@ export default function PmcMap({
           // Hover → transient preview card; click → pin it (see MapShell).
           el.addEventListener("mouseenter", () => onHoverTerrain?.(payload));
           el.addEventListener("mouseleave", () => onHoverTerrain?.(null));
-          el.addEventListener("click", () => onSelectTerrain?.(payload));
+          el.addEventListener("click", (ev) => { ev.stopPropagation(); onSelectTerrain?.(payload); });
         }
         markers.push(new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([lng, lat]).addTo(map));
       }
