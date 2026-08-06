@@ -53,6 +53,9 @@ export default function MapShell() {
   const handleMapReady = useCallback((map: MlMap) => {
     mapRef.current = map;
 
+    // Clicking anywhere on the map (not a marker) dismisses the place card.
+    map.on("click", () => { setSelected(null); setHovered(null); });
+
     // Long-press (touch) / right-click (desktop) anywhere on the map: enter
     // placement mode centred exactly on that point, so the user can fine-tune
     // and then confirm with the button.
@@ -122,10 +125,18 @@ export default function MapShell() {
     <main className="relative h-[100dvh] w-full overflow-hidden bg-[#0d0d0d] text-white">
       <PmcMap onMapReady={handleMapReady} onSelectTerrain={onSelectTerrain} onHoverTerrain={setHovered} />
 
-      {/* Search pill (top) — above the placement banner so mobile search
-          results are never hidden by it */}
-      <div className="absolute top-3 left-3 right-3 sm:right-auto sm:w-96 z-40">
-        <AddressSearch onSelect={flyTo} />
+      {/* Search pill + PIMP MY COURT logo (top) — above the placement banner so
+          mobile search results are never hidden */}
+      <div className="absolute top-3 left-3 right-3 sm:right-auto z-40 flex items-center gap-2">
+        <div className="flex-1 sm:w-96 sm:flex-none min-w-0">
+          <AddressSearch onSelect={flyTo} />
+        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/logo-pmc.png"
+          alt="Pimp My Court"
+          className="pointer-events-none h-11 w-auto shrink-0 drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]"
+        />
       </div>
 
       {/* Legend (bottom-left map key) — head-in-dot to match the markers */}

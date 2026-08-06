@@ -32,16 +32,15 @@ export default function DonneesPage() {
         </p>
 
         <Section title="Données collectées">
-          <p><b>Signalement</b> : position du terrain, photo, email, éventuellement pseudo Instagram, prénom, commentaire.</p>
-          <p><b>Demande de kit</b> : identité, coordonnées, adresse postale, âge, matériel de tournage ; pour un mineur, coordonnées du représentant légal et autorisation parentale.</p>
+          <p><b>Signalement</b> : position du terrain, photo, email, éventuellement pseudo Instagram ou TikTok, prénom, nom, âge, commentaire.</p>
         </Section>
 
         <Section title="Finalités">
-          <p>Cartographier les terrains à équiper, sélectionner et livrer les kits, produire et diffuser le contenu vidéo associé au projet Pimp My Court.</p>
+          <p>Cartographier les terrains dont les filets sont à remplacer, suivre les remplacements et animer le projet Pimp My Court.</p>
         </Section>
 
         <Section title="Durées de conservation">
-          <p>L&apos;adresse postale est supprimée automatiquement 60 jours après l&apos;envoi du kit. Les autres données sont conservées le temps du projet, puis supprimées ou anonymisées.</p>
+          <p>Les données sont conservées le temps du projet, puis supprimées ou anonymisées. Tu peux demander leur suppression à tout moment (ci-dessous).</p>
         </Section>
 
         <Section title="Données publiques">
