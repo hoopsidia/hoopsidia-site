@@ -241,13 +241,22 @@ function Overview({
   const by = (s: string) => terrains.filter((t) => t.statut === s).length;
   const filetsRemplaces = terrains.reduce((sum, t) => sum + (t.etat === "remplace" ? (t.nb_filets_a_remplacer ?? 0) : 0), 0);
 
-  // Top villes among all terrains.
-  const villeCounts = new Map<string, number>();
+  // Top régions (by departement, falling back to ville) for the pie chart.
+  const regionCounts = new Map<string, number>();
   for (const t of terrains) {
-    const v = t.ville?.trim();
-    if (v) villeCounts.set(v, (villeCounts.get(v) ?? 0) + 1);
+    const r = t.departement?.trim() || t.ville?.trim();
+    if (r) regionCounts.set(r, (regionCounts.get(r) ?? 0) + 1);
   }
-  const topVilles = [...villeCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const sortedRegions = [...regionCounts.entries()].sort((a, b) => b[1] - a[1]);
+  const topRegions: Slice[] = sortedRegions.slice(0, 5).map(([label, value], i) => ({ label, value, color: PIE_COLORS[i] }));
+  const othersCount = sortedRegions.slice(5).reduce((s, [, n]) => s + n, 0);
+  if (othersCount > 0) topRegions.push({ label: "Autres", value: othersCount, color: "#8A8A8A" });
+
+  const etatData: Slice[] = [
+    { label: "À remplacer", value: terrains.filter((t) => t.etat === "a_remplacer").length, color: "#ff7200" },
+    { label: "Remplacés", value: terrains.filter((t) => t.etat === "remplace").length, color: "#2fc600" },
+  ].filter((d) => d.value > 0);
+
   const recent = [...terrains].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)).slice(0, 5);
 
   return (
@@ -261,40 +270,35 @@ function Overview({
       </div>
 
       <div className="grid sm:grid-cols-2 gap-6">
-        {/* Top villes */}
+        {/* Top régions pie */}
         <div>
-          <p className="font-heading font-bold uppercase text-xs text-white/50 mb-2">Top villes</p>
-          {topVilles.length === 0 ? (
-            <p className="text-white/30 text-sm">—</p>
-          ) : (
-            <ul className="space-y-1.5">
-              {topVilles.map(([ville, n]) => (
-                <li key={ville} className="flex items-center justify-between text-sm">
-                  <span className="text-white/80 truncate">{ville}</span>
-                  <span className="text-white/40">{n}</span>
-                </li>
-              ))}
-            </ul>
-          )}
+          <p className="font-heading font-bold uppercase text-xs text-white/50 mb-3">Top régions</p>
+          {topRegions.length === 0 ? <p className="text-white/30 text-sm">—</p> : <PieChart data={topRegions} />}
         </div>
 
-        {/* Recent */}
+        {/* État pie */}
         <div>
-          <p className="font-heading font-bold uppercase text-xs text-white/50 mb-2">Derniers signalements</p>
-          {recent.length === 0 ? (
-            <p className="text-white/30 text-sm">—</p>
-          ) : (
-            <ul className="space-y-1.5">
-              {recent.map((t) => (
-                <li key={t.id} className="flex items-center gap-2 text-sm">
-                  <span className="h-2 w-2 rounded-full shrink-0" style={{ background: STATUT_META[t.statut]?.color ?? "#8A8A8A" }} />
-                  <span className="text-white/80 truncate flex-1">{t.nom_terrain ?? t.ville ?? "Terrain"}</span>
-                  <span className="text-white/30 text-xs shrink-0">{t.ville ?? ""}</span>
-                </li>
-              ))}
-            </ul>
-          )}
+          <p className="font-heading font-bold uppercase text-xs text-white/50 mb-3">État des terrains</p>
+          {etatData.length === 0 ? <p className="text-white/30 text-sm">—</p> : <PieChart data={etatData} />}
         </div>
+      </div>
+
+      {/* Recent */}
+      <div>
+        <p className="font-heading font-bold uppercase text-xs text-white/50 mb-2">Derniers signalements</p>
+        {recent.length === 0 ? (
+          <p className="text-white/30 text-sm">—</p>
+        ) : (
+          <ul className="space-y-1.5">
+            {recent.map((t) => (
+              <li key={t.id} className="flex items-center gap-2 text-sm">
+                <span className="h-2 w-2 rounded-full shrink-0" style={{ background: STATUT_META[t.statut]?.color ?? "#8A8A8A" }} />
+                <span className="text-white/80 truncate flex-1">{t.nom_terrain ?? t.ville ?? "Terrain"}</span>
+                <span className="text-white/30 text-xs shrink-0">{t.ville ?? ""}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Map on the home dashboard */}
@@ -318,6 +322,45 @@ function StatCard({ label, value, accent, onClick }: { label: string; value: num
     <button onClick={onClick} className={`${base} hover:bg-white/[0.06] transition-colors`}>{inner}</button>
   ) : (
     <div className={base}>{inner}</div>
+  );
+}
+
+const PIE_COLORS = ["#ff7200", "#2fc600", "#3b82f6", "#a855f7", "#eab308"];
+
+type Slice = { label: string; value: number; color: string };
+
+// Lightweight SVG pie chart with a legend — no charting dependency.
+function PieChart({ data }: { data: Slice[] }) {
+  const total = data.reduce((s, d) => s + d.value, 0) || 1;
+  const R = 46, C = 50;
+  let acc = 0;
+  return (
+    <div className="flex items-center gap-4">
+      <svg viewBox="0 0 100 100" className="h-28 w-28 shrink-0">
+        {data.length === 1 ? (
+          <circle cx={C} cy={C} r={R} fill={data[0].color} />
+        ) : (
+          data.map((d) => {
+            const start = (acc / total) * 2 * Math.PI;
+            acc += d.value;
+            const end = (acc / total) * 2 * Math.PI;
+            const large = end - start > Math.PI ? 1 : 0;
+            const x1 = C + R * Math.sin(start), y1 = C - R * Math.cos(start);
+            const x2 = C + R * Math.sin(end), y2 = C - R * Math.cos(end);
+            return <path key={d.label} d={`M ${C} ${C} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${R} ${R} 0 ${large} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`} fill={d.color} stroke="#0d0d0d" strokeWidth="0.5" />;
+          })
+        )}
+      </svg>
+      <ul className="min-w-0 space-y-1.5 text-xs">
+        {data.map((d) => (
+          <li key={d.label} className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: d.color }} />
+            <span className="text-white/80 truncate">{d.label}</span>
+            <span className="text-white/40 ml-auto pl-2">{d.value}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
