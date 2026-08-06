@@ -29,14 +29,10 @@ export default function MapShell() {
   const [placing, setPlacing] = useState(false);
   const [placedPos, setPlacedPos] = useState<Pos | null>(null);
   const [reporting, setReporting] = useState(false);
-  const [selected, setSelected] = useState<TerrainMarker | null>(null); // pinned (clicked)
-  const [hovered, setHovered] = useState<TerrainMarker | null>(null); // transient (hover)
+  const [card, setCard] = useState<TerrainMarker | null>(null); // the shown place card
   const [mapObj, setMapObj] = useState<MlMap | null>(null); // for render-time projection
   const [, setMoveTick] = useState(0); // force re-render so the card tracks the pin
   const mapRef = useRef<MlMap | null>(null);
-
-  // The place card shows the pinned terrain, or the hovered one as a preview.
-  const card = selected ?? hovered;
 
   // Keep the place card anchored to its pin: re-render on every map move while
   // a card is open, then project the terrain's coordinates to screen pixels.
@@ -48,16 +44,6 @@ export default function MapShell() {
   }, [mapObj, card]);
   const cardPos = card && mapObj ? mapObj.project([card.longitude, card.latitude]) : null;
 
-  // A hover preview card auto-dismisses after 1.5 s (a clicked/pinned card
-  // stays). Skip this on touch devices, where the card would otherwise vanish
-  // before you can tap a button inside it (e.g. "S'y rendre").
-  useEffect(() => {
-    if (!hovered || selected) return;
-    if (typeof window !== "undefined" && window.matchMedia("(hover: none)").matches) return;
-    const t = setTimeout(() => setHovered(null), 1500);
-    return () => clearTimeout(t);
-  }, [hovered, selected]);
-
   // Count the visit once per page load (fire-and-forget).
   useEffect(() => {
     fetch("/api/pimpmycourt/visit", { method: "POST" }).catch(() => {});
@@ -67,21 +53,11 @@ export default function MapShell() {
     mapRef.current = map;
     setMapObj(map);
 
-    // Clicking the map dismisses the place card — but not when a pin was
-    // clicked (that click bubbles up to the map and would otherwise reopen-then
-    // -close the card).
-    map.on("click", (e) => {
-      const target = e.originalEvent?.target as HTMLElement | null;
-      if (target?.closest?.(".maplibregl-marker")) return;
-      setSelected(null);
-      setHovered(null);
-    });
-
     // Long-press (touch) / right-click (desktop) anywhere on the map: enter
     // placement mode centred exactly on that point, so the user can fine-tune
     // and then confirm with the button.
     const openAt = (lat: number, lng: number) => {
-      setSelected(null);
+      setCard(null);
       setReporting(false);
       setPlacing(true);
       map.easeTo({ center: [lng, lat] });
@@ -123,9 +99,14 @@ export default function MapShell() {
   }, []);
   const onSelectTerrain = useCallback((t: TerrainMarker) => {
     setPlacing(false);
-    setSelected(t);
+    setCard(t);
   }, []);
-  const closeCard = useCallback(() => { setSelected(null); setHovered(null); }, []);
+  const onHoverTerrain = useCallback((t: TerrainMarker | null) => {
+    // Hovering a terrain shows its card and keeps it; leaving a pin never
+    // closes it (only the ✕ or another terrain does).
+    if (t) setCard(t);
+  }, []);
+  const closeCard = useCallback(() => { setCard(null); }, []);
 
   const locateMe = () => {
     if (!navigator.geolocation) return;
@@ -134,7 +115,7 @@ export default function MapShell() {
     );
   };
 
-  const startPlacing = () => { setSelected(null); setPlacing(true); };
+  const startPlacing = () => { setCard(null); setPlacing(true); };
   const confirmPlacement = () => {
     const c = mapRef.current?.getCenter();
     setPlacedPos({ lat: c?.lat ?? 46.6, lng: c?.lng ?? 2.4 });
@@ -144,7 +125,7 @@ export default function MapShell() {
 
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden bg-[#0d0d0d] text-white">
-      <PmcMap onMapReady={handleMapReady} onSelectTerrain={onSelectTerrain} onHoverTerrain={setHovered} />
+      <PmcMap onMapReady={handleMapReady} onSelectTerrain={onSelectTerrain} onHoverTerrain={onHoverTerrain} />
 
       {/* Search pill + PIMP MY COURT logo (top) — above the placement banner so
           mobile search results are never hidden */}
@@ -223,13 +204,11 @@ export default function MapShell() {
         </div>
       )}
 
-      {/* Place card — anchored above the selected/hovered pin */}
+      {/* Place card — anchored above its pin. Stays until ✕ or another terrain. */}
       {card && !reporting && !placing && cardPos && (
         <div
           className="absolute z-40"
           style={{ left: cardPos.x, top: cardPos.y, transform: "translate(-50%, calc(-100% - 20px))" }}
-          onMouseEnter={() => setHovered(card)}
-          onMouseLeave={() => { if (!selected) setHovered(null); }}
         >
           <TerrainCard terrain={card} onClose={closeCard} />
         </div>
