@@ -107,16 +107,19 @@ export default function SignalementSheet({
   }
 
   return (
-    <div className="absolute inset-x-0 bottom-0 z-30 max-h-[75dvh] overflow-y-auto rounded-t-2xl bg-[#0d0d0d] border-t border-white/10 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,0,0,0.6)]">
-      <div className="mx-auto max-w-md">
-        <div className="flex items-center justify-between mb-4">
+    <div className="absolute inset-x-0 bottom-0 z-30 max-h-[75dvh] overflow-y-auto rounded-t-2xl bg-[#0d0d0d] border-t border-white/10 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,0,0,0.6)]">
+      {/* Sticky header so the close button stays visible while scrolling */}
+      <div className="sticky top-0 z-10 bg-[#0d0d0d]/95 backdrop-blur border-b border-white/10 px-5 py-3">
+        <div className="mx-auto max-w-md flex items-center justify-between">
           <h2 className="font-heading text-xl font-bold italic uppercase text-white">
             {phase === "done" ? "Terrain signalé" : "Signaler un terrain"}
           </h2>
-          <button onClick={onClose} aria-label="Fermer" className="text-white/50 hover:text-white text-2xl leading-none">
+          <button onClick={onClose} aria-label="Fermer" className="w-8 h-8 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/10 text-2xl leading-none">
             ×
           </button>
         </div>
+      </div>
+      <div className="mx-auto max-w-md px-5 py-4">
 
         {phase === "done" && (
           <div className="text-white/80 space-y-4">

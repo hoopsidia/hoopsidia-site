@@ -3,24 +3,33 @@
 import { useEffect, useRef } from "react";
 import * as maplibregl from "maplibre-gl";
 import type { Map as MlMap, Marker } from "maplibre-gl";
+import { ETAT_COLOR } from "@/lib/pmc/types";
 
-// Back-office map: plots every terrain (any status) over satellite imagery, so
-// the admin can see coverage at a glance. Coloured by moderation status.
+// Back-office map: plots every terrain over satellite imagery, using the same
+// round head markers as the public map (orange = à remplacer, green = remplacé).
 export type AdminMapTerrain = {
   id: string;
   latitude: number;
   longitude: number;
   ville: string | null;
   statut: string;
+  etat: "a_remplacer" | "remplace";
   nom_terrain: string | null;
 };
 
-const STATUT_COLOR: Record<string, string> = {
-  verifie: "#2FA84F",
-  signale: "#FC8D33",
-  doublon: "#8A8A8A",
-  rejete: "#E4572E",
-};
+// Round marker with the white Hoopsidia head inside, coloured by etat — matches
+// the public map's markers.
+function headMarkerEl(etat: "a_remplacer" | "remplace"): HTMLElement {
+  const el = document.createElement("div");
+  el.style.cssText = `width:24px;height:24px;border-radius:50%;cursor:pointer;background:${ETAT_COLOR[etat]};
+    border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;`;
+  const head = document.createElement("img");
+  head.src = "/images/logo-head.png";
+  head.alt = "";
+  head.style.cssText = "width:14px;height:14px;filter:brightness(0) invert(1);";
+  el.appendChild(head);
+  return el;
+}
 
 const FRANCE_CENTER: [number, number] = [2.4, 46.6];
 
@@ -78,9 +87,7 @@ export default function AdminMap({ terrains }: { terrains: AdminMapTerrain[] }) 
       let n = 0;
       for (const t of terrains) {
         if (typeof t.latitude !== "number" || typeof t.longitude !== "number") continue;
-        const el = document.createElement("div");
-        el.style.cssText = `width:14px;height:14px;border-radius:50%;cursor:pointer;
-          background:${STATUT_COLOR[t.statut] ?? "#8A8A8A"};box-shadow:0 0 0 2px rgba(255,255,255,.85),0 1px 3px rgba(0,0,0,.5);`;
+        const el = headMarkerEl(t.etat);
         const popup = new maplibregl.Popup({ offset: 12, closeButton: false, className: "pmc-popup" }).setText(
           `${t.nom_terrain ?? t.ville ?? "Terrain"} — ${t.statut}`,
         );

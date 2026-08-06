@@ -159,13 +159,13 @@ export default function MapShell() {
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center" aria-hidden>
           <div
             className="flex items-center justify-center rounded-full border-2 border-white bg-[#0d0d0d] drop-shadow-[0_2px_5px_rgba(0,0,0,0.6)]"
-            style={{ width: 36, height: 36 }}
+            style={{ width: 24, height: 24 }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/logo-head.png"
               alt=""
-              style={{ width: 22, height: 22, filter: "brightness(0) invert(1)" }}
+              style={{ width: 14, height: 14, filter: "brightness(0) invert(1)" }}
             />
           </div>
         </div>
