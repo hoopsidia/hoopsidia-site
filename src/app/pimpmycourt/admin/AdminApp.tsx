@@ -668,6 +668,7 @@ function EditTerrain({ terrain, authHeaders, onClose, onSaved }: {
   const [nbPaniers, setNbPaniers] = useState(terrain.nb_paniers != null ? String(terrain.nb_paniers) : "");
   const [nbFilets, setNbFilets] = useState(terrain.nb_filets_a_remplacer != null ? String(terrain.nb_filets_a_remplacer) : "");
   const [statut, setStatut] = useState(terrain.statut);
+  const [remplaceDate, setRemplaceDate] = useState(terrain.date_remplacement ?? "");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -719,6 +720,21 @@ function EditTerrain({ terrain, authHeaders, onClose, onSaved }: {
     onSaved();
   }
 
+  async function setRemplace(date: string | null) {
+    setBusy(true); setMsg(null);
+    const res = await fetch("/api/pimpmycourt/admin/remplace", {
+      method: "POST",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ id: terrain.id, date }),
+    });
+    setBusy(false);
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { setMsg(d.error ?? "erreur"); return; }
+    if (!date) setRemplaceDate("");
+    setMsg(date ? "Marqué remplacé ✓" : "Remplacement retiré ✓");
+    onSaved();
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60" onClick={onClose}>
       <div className="w-full max-w-md rounded-2xl bg-[#0d0d0d] border border-white/10 p-5 max-h-[85dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
@@ -750,6 +766,21 @@ function EditTerrain({ terrain, authHeaders, onClose, onSaved }: {
               <option value="rejete">Rejeté</option>
             </select>
           </label>
+
+          {/* Replacement — mark/undo a replaced net */}
+          <div className="pt-1">
+            <p className="text-xs text-white/50 mb-1">Remplacement du filet</p>
+            {terrain.date_remplacement && (
+              <p className="text-xs mb-1.5 font-bold" style={{ color: ETAT_COLOR.remplace }}>✓ Remplacé le {formatDate(terrain.date_remplacement)}</p>
+            )}
+            <div className="flex items-center gap-2 flex-wrap">
+              <input type="date" value={remplaceDate} onChange={(e) => setRemplaceDate(e.target.value)} className={`${INPUT} !w-auto [color-scheme:dark]`} />
+              <button onClick={() => setRemplace(remplaceDate || new Date().toISOString().slice(0, 10))} disabled={busy} className="rounded-full text-white px-3 py-2 text-xs font-heading font-bold uppercase disabled:opacity-40" style={{ background: ETAT_COLOR.remplace }}>Marquer remplacé</button>
+              {terrain.date_remplacement && (
+                <button onClick={() => setRemplace(null)} disabled={busy} className="rounded-full bg-white/10 text-white px-3 py-2 text-xs font-heading font-bold uppercase hover:bg-white/20 disabled:opacity-40">Retirer</button>
+              )}
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 gap-3 pt-1">
             <label className="block text-xs text-white/50">Photo avant
