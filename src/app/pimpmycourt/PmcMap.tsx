@@ -115,7 +115,7 @@ export default function PmcMap({
     // No default controls — MapShell renders custom Google-style controls.
 
     const index = new Supercluster<PointProps, ClusterProps>({
-      radius: 55,
+      radius: 0, // no clustering — every terrain is its own marker
       maxZoom: 15,
       map: (props) => ({ remplace: props.etat === "remplace" ? 1 : 0 }),
       reduce: (acc, props) => {

@@ -169,6 +169,8 @@ function Dashboard({ token, onSignOut }: { token: string; onSignOut: () => void 
   }, [authHeaders]);
   useEffect(() => { loadTerrains(); }, [loadTerrains]);
 
+  const pendingCount = terrains.filter((t) => t.statut === "signale").length;
+
   return (
     <main className="min-h-[100dvh] bg-black text-white md:flex">
       {/* Left column */}
@@ -182,9 +184,12 @@ function Dashboard({ token, onSignOut }: { token: string; onSignOut: () => void 
             <button
               key={s}
               onClick={() => setSection(s)}
-              className={`text-left rounded-lg px-3 py-2 text-sm font-heading font-bold whitespace-nowrap transition-colors ${section === s ? "bg-orange text-black" : "text-white/60 hover:bg-white/10 hover:text-white"}`}
+              className={`relative flex items-center gap-1.5 text-left rounded-lg px-3 py-2 text-sm font-heading font-bold whitespace-nowrap transition-colors ${section === s ? "bg-orange text-black" : "text-white/60 hover:bg-white/10 hover:text-white"}`}
             >
               {SECTION_LABEL[s]}
+              {s === "moderation" && pendingCount > 0 && (
+                <span className="inline-block h-2 w-2 rounded-full bg-[#ef4444]" aria-label={`${pendingCount} à modérer`} />
+              )}
             </button>
           ))}
         </nav>
