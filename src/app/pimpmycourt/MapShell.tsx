@@ -165,12 +165,12 @@ export default function MapShell() {
           }
         />
         {stats && (
-          <div className="mt-2 flex items-center gap-2 flex-wrap">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-black/70 backdrop-blur py-1 pl-1 pr-3 text-xs font-heading font-bold">
+          <div className="mt-2 flex items-center justify-center gap-2 flex-wrap">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-black/70 backdrop-blur py-1 pl-1 pr-3 text-xs font-medium">
               <LegendDot etat="remplace" />
               <span className="text-white">{stats.filetsRemplaces} filet{stats.filetsRemplaces > 1 ? "s" : ""} remplacé{stats.filetsRemplaces > 1 ? "s" : ""}</span>
             </div>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-black/70 backdrop-blur py-1 pl-1 pr-3 text-xs font-heading font-bold">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-black/70 backdrop-blur py-1 pl-1 pr-3 text-xs font-medium">
               <LegendDot etat="a_remplacer" />
               <span className="text-white">{stats.filetsARemplacer} filet{stats.filetsARemplacer > 1 ? "s" : ""} à remplacer</span>
             </div>
