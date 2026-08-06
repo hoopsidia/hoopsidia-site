@@ -241,46 +241,16 @@ function Overview({
   const by = (s: string) => terrains.filter((t) => t.statut === s).length;
   const filetsRemplaces = terrains.reduce((sum, t) => sum + (t.etat === "remplace" ? (t.nb_filets_a_remplacer ?? 0) : 0), 0);
 
-  // Top régions (by departement, falling back to ville) for the pie chart.
-  const regionCounts = new Map<string, number>();
-  for (const t of terrains) {
-    const r = t.departement?.trim() || t.ville?.trim();
-    if (r) regionCounts.set(r, (regionCounts.get(r) ?? 0) + 1);
-  }
-  const sortedRegions = [...regionCounts.entries()].sort((a, b) => b[1] - a[1]);
-  const topRegions: Slice[] = sortedRegions.slice(0, 5).map(([label, value], i) => ({ label, value, color: PIE_COLORS[i] }));
-  const othersCount = sortedRegions.slice(5).reduce((s, [, n]) => s + n, 0);
-  if (othersCount > 0) topRegions.push({ label: "Autres", value: othersCount, color: "#8A8A8A" });
-
-  const etatData: Slice[] = [
-    { label: "À remplacer", value: terrains.filter((t) => t.etat === "a_remplacer").length, color: "#ff7200" },
-    { label: "Remplacés", value: terrains.filter((t) => t.etat === "remplace").length, color: "#2fc600" },
-  ].filter((d) => d.value > 0);
-
   const recent = [...terrains].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)).slice(0, 5);
 
   return (
     <div className="space-y-6">
       {/* Stat cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <StatCard label="Visites" value={visits?.pageviews ?? 0} accent="#FFFFFF" />
+        <StatCard label="Visites" value={visits?.pageviews ?? 0} accent="#ff7200" />
         <StatCard label="Filets remplacés" value={filetsRemplaces} accent="#2fc600" />
         <StatCard label="Terrains signalés" value={terrains.length} accent="#ff7200" onClick={() => onGo("terrains")} />
         <StatCard label="Terrains à modérer" value={by("signale")} accent="#ff7200" onClick={() => onGo("moderation")} />
-      </div>
-
-      <div className="grid sm:grid-cols-2 gap-6">
-        {/* Top régions pie */}
-        <div>
-          <p className="font-heading font-bold uppercase text-xs text-white/50 mb-3">Top régions</p>
-          {topRegions.length === 0 ? <p className="text-white/30 text-sm">—</p> : <PieChart data={topRegions} />}
-        </div>
-
-        {/* État pie */}
-        <div>
-          <p className="font-heading font-bold uppercase text-xs text-white/50 mb-3">État des terrains</p>
-          {etatData.length === 0 ? <p className="text-white/30 text-sm">—</p> : <PieChart data={etatData} />}
-        </div>
       </div>
 
       {/* Recent */}
@@ -325,44 +295,6 @@ function StatCard({ label, value, accent, onClick }: { label: string; value: num
   );
 }
 
-const PIE_COLORS = ["#ff7200", "#2fc600", "#3b82f6", "#a855f7", "#eab308"];
-
-type Slice = { label: string; value: number; color: string };
-
-// Lightweight SVG pie chart with a legend — no charting dependency.
-function PieChart({ data }: { data: Slice[] }) {
-  const total = data.reduce((s, d) => s + d.value, 0) || 1;
-  const R = 46, C = 50;
-  let acc = 0;
-  return (
-    <div className="flex items-center gap-4">
-      <svg viewBox="0 0 100 100" className="h-28 w-28 shrink-0">
-        {data.length === 1 ? (
-          <circle cx={C} cy={C} r={R} fill={data[0].color} />
-        ) : (
-          data.map((d) => {
-            const start = (acc / total) * 2 * Math.PI;
-            acc += d.value;
-            const end = (acc / total) * 2 * Math.PI;
-            const large = end - start > Math.PI ? 1 : 0;
-            const x1 = C + R * Math.sin(start), y1 = C - R * Math.cos(start);
-            const x2 = C + R * Math.sin(end), y2 = C - R * Math.cos(end);
-            return <path key={d.label} d={`M ${C} ${C} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${R} ${R} 0 ${large} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`} fill={d.color} stroke="#0d0d0d" strokeWidth="0.5" />;
-          })
-        )}
-      </svg>
-      <ul className="min-w-0 space-y-1.5 text-xs">
-        {data.map((d) => (
-          <li key={d.label} className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: d.color }} />
-            <span className="text-white/80 truncate">{d.label}</span>
-            <span className="text-white/40 ml-auto pl-2">{d.value}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
 
 type Auth = (extra?: Record<string, string>) => Record<string, string>;
 
@@ -506,7 +438,7 @@ const STATUT_META: Record<string, { label: string; color: string }> = {
   rejete: { label: "Rejeté", color: "#E4572E" },
 };
 
-type TFilter = "verifie" | "signale" | "all";
+type TFilter = "a_remplacer" | "remplace" | "all";
 
 function Terrains({ terrains, loading, error, reload, authHeaders }: {
   terrains: AdminTerrain[];
@@ -515,12 +447,17 @@ function Terrains({ terrains, loading, error, reload, authHeaders }: {
   reload: () => void;
   authHeaders: Auth;
 }) {
-  const [filter, setFilter] = useState<TFilter>("verifie");
+  const [filter, setFilter] = useState<TFilter>("all");
+  const [region, setRegion] = useState<string>("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [merging, setMerging] = useState(false);
   const [editing, setEditing] = useState<AdminTerrain | null>(null);
 
-  const list = terrains.filter((t) => (filter === "all" ? true : t.statut === filter));
+  const regionOf = (t: AdminTerrain) => t.departement?.trim() || t.ville?.trim() || "";
+  const regions = [...new Set(terrains.map(regionOf).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  const list = terrains.filter(
+    (t) => (filter === "all" || t.etat === filter) && (region === "all" || regionOf(t) === region),
+  );
   const selectedTerrains = terrains.filter((t) => selected.has(t.id));
   // Keep the most-confirmed terrain; fold the others into it.
   const keep = selectedTerrains.reduce<AdminTerrain | null>(
@@ -584,18 +521,32 @@ function Terrains({ terrains, loading, error, reload, authHeaders }: {
 
   return (
     <div className="pb-24">
-      {/* Filter chips */}
-      <div className="flex gap-2 mb-3 text-xs font-heading font-bold">
-        {([["verifie", "Validés"], ["signale", "Signalés"], ["all", "Tous"]] as [TFilter, string][]).map(([f, label]) => (
+      {/* Filter by état */}
+      <div className="flex flex-wrap gap-2 mb-3 text-xs font-heading font-bold">
+        {([["a_remplacer", "À remplacer"], ["remplace", "Remplacés"], ["all", "Tous les terrains"]] as [TFilter, string][]).map(([f, label]) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={`rounded-full px-3 py-1.5 border ${filter === f ? "bg-orange text-black border-orange" : "border-white/15 text-white/60 hover:text-white"}`}
           >
-            {label} {f === "all" ? terrains.length : terrains.filter((t) => t.statut === f).length}
+            {label} {f === "all" ? terrains.length : terrains.filter((t) => t.etat === f).length}
           </button>
         ))}
       </div>
+
+      {/* Filter by région */}
+      {regions.length > 0 && (
+        <select
+          value={region}
+          onChange={(e) => setRegion(e.target.value)}
+          className="mb-3 w-full sm:w-auto rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-orange"
+        >
+          <option value="all">Toutes les régions</option>
+          {regions.map((r) => (
+            <option key={r} value={r}>{r} ({terrains.filter((t) => regionOf(t) === r).length})</option>
+          ))}
+        </select>
+      )}
 
       <p className="text-[11px] text-white/30 mb-2">Touche un terrain pour le sélectionner, puis fusionne les doublons.</p>
 
