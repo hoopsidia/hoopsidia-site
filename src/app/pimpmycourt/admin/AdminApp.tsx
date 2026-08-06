@@ -248,7 +248,7 @@ function Overview({
 
   const statusBar = [
     { s: "signale", label: "Signalés", color: "#ff7200", n: by("signale") },
-    { s: "verifie", label: "Validés", color: "#3cff00", n: by("verifie") },
+    { s: "verifie", label: "Validés", color: "#2fc600", n: by("verifie") },
     { s: "doublon", label: "Doublons", color: "#8A8A8A", n: by("doublon") },
     { s: "rejete", label: "Rejetés", color: "#E4572E", n: by("rejete") },
   ];
@@ -260,7 +260,7 @@ function Overview({
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <StatCard label="Visiteurs uniques" value={visits?.visitors ?? 0} accent="#ff7200" />
         <StatCard label="Visites" value={visits?.pageviews ?? 0} accent="#FFFFFF" />
-        <StatCard label="Filets remplacés" value={filetsRemplaces} accent="#3cff00" />
+        <StatCard label="Filets remplacés" value={filetsRemplaces} accent="#2fc600" />
         <StatCard label="Terrains signalés" value={terrains.length} accent="#ff7200" onClick={() => onGo("terrains")} />
         <StatCard label="Terrains confirmés" value={terrainsConfirmes} accent="#FFFFFF" />
       </div>
@@ -448,7 +448,7 @@ function Moderation({ authHeaders, onModerated }: { authHeaders: Auth; onModerat
       )}
 
       <div className="mt-4 grid grid-cols-3 gap-2">
-        <button onClick={() => act("valider")} className="rounded-full bg-[#3cff00] text-white py-3 font-heading font-bold uppercase text-sm">Valider</button>
+        <button onClick={() => act("valider")} className="rounded-full bg-[#2fc600] text-white py-3 font-heading font-bold uppercase text-sm">Valider</button>
         <button onClick={() => act("doublon")} className="rounded-full bg-white/10 text-white py-3 font-heading font-bold uppercase text-sm">Doublon</button>
         <button onClick={() => act("rejeter")} className="rounded-full bg-[#E4572E] text-white py-3 font-heading font-bold uppercase text-sm">Rejeter</button>
       </div>
@@ -473,7 +473,7 @@ type AdminTerrain = {
 };
 
 const STATUT_META: Record<string, { label: string; color: string }> = {
-  verifie: { label: "Validé", color: "#3cff00" },
+  verifie: { label: "Validé", color: "#2fc600" },
   signale: { label: "Signalé", color: "#ff7200" },
   doublon: { label: "Doublon", color: "#8A8A8A" },
   rejete: { label: "Rejeté", color: "#E4572E" },
@@ -784,7 +784,7 @@ function ReplaceControl({ onMark }: { onMark: (date: string) => void }) {
         onChange={(e) => setDate(e.target.value)}
         className="rounded bg-white/5 border border-white/10 px-2 py-1 text-white text-xs [color-scheme:dark]"
       />
-      <button onClick={() => onMark(date)} className="rounded-full text-white px-3 py-1 font-bold" style={{ background: "#3cff00" }}>
+      <button onClick={() => onMark(date)} className="rounded-full text-white px-3 py-1 font-bold" style={{ background: "#2fc600" }}>
         Marquer remplacé
       </button>
     </div>

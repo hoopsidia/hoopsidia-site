@@ -43,5 +43,5 @@ export type TerrainMarker = {
 // light basemap. Distinction is not hue-only: markers also differ by shape.
 export const ETAT_COLOR: Record<Etat, string> = {
   a_remplacer: "#ff7200", // brand orange
-  remplace: "#3cff00", // green
+  remplace: "#2fc600", // green
 };
