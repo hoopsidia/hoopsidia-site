@@ -250,41 +250,14 @@ function Overview({
   const topVilles = [...villeCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
   const recent = [...terrains].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)).slice(0, 5);
 
-  const statusBar = [
-    { s: "signale", label: "Signalés", color: "#ff7200", n: by("signale") },
-    { s: "verifie", label: "Validés", color: "#2fc600", n: by("verifie") },
-    { s: "doublon", label: "Doublons", color: "#8A8A8A", n: by("doublon") },
-    { s: "rejete", label: "Rejetés", color: "#E4572E", n: by("rejete") },
-  ];
-  const totalForBar = statusBar.reduce((s, x) => s + x.n, 0) || 1;
-
   return (
     <div className="space-y-6">
       {/* Stat cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <StatCard label="Visiteurs uniques" value={visits?.visitors ?? 0} accent="#ff7200" />
         <StatCard label="Visites" value={visits?.pageviews ?? 0} accent="#FFFFFF" />
         <StatCard label="Filets remplacés" value={filetsRemplaces} accent="#2fc600" />
         <StatCard label="Terrains signalés" value={terrains.length} accent="#ff7200" onClick={() => onGo("terrains")} />
         <StatCard label="Terrains à modérer" value={by("signale")} accent="#ff7200" onClick={() => onGo("moderation")} />
-      </div>
-
-      {/* Status distribution */}
-      <div>
-        <p className="font-heading font-bold uppercase text-xs text-white/50 mb-2">Répartition des statuts</p>
-        <div className="flex h-3 w-full overflow-hidden rounded-full bg-white/5">
-          {statusBar.map((x) => (
-            x.n > 0 ? <div key={x.s} style={{ width: `${(x.n / totalForBar) * 100}%`, background: x.color }} title={`${x.label}: ${x.n}`} /> : null
-          ))}
-        </div>
-        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/50">
-          {statusBar.map((x) => (
-            <span key={x.s} className="inline-flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: x.color }} />
-              {x.label} · {x.n}
-            </span>
-          ))}
-        </div>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-6">
