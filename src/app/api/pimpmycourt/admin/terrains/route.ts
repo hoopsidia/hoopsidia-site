@@ -10,8 +10,9 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "non autorisé" }, { status: 403 });
   }
   const supabase = getSupabaseAdmin();
-  const withDate = "id, latitude, longitude, ville, departement, statut, date_remplacement, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at";
-  const noDate = "id, latitude, longitude, ville, departement, statut, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at";
+  const contact = "prenom, nom, age, contact_email, contact_instagram, contact_tiktok, commentaire";
+  const withDate = `id, latitude, longitude, ville, departement, statut, date_remplacement, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at, ${contact}`;
+  const noDate = `id, latitude, longitude, ville, departement, statut, nb_confirmations, nb_paniers, nb_filets_a_remplacer, nom_terrain, created_at, ${contact}`;
 
   type Row = {
     id: string; latitude: number; longitude: number;
@@ -19,6 +20,9 @@ export async function GET(request: Request) {
     date_remplacement?: string | null;
     nb_confirmations: number; nb_paniers: number | null; nb_filets_a_remplacer: number | null;
     nom_terrain: string | null; created_at: string;
+    prenom: string | null; nom: string | null; age: number | null;
+    contact_email: string | null; contact_instagram: string | null; contact_tiktok: string | null;
+    commentaire: string | null;
   };
 
   let rows: Row[];

@@ -77,11 +77,10 @@ export default async function TerrainPage({ params }: { params: Promise<{ id: st
             {t.commentaire && <p className="mt-3 text-white/70 italic">“{t.commentaire}”</p>}
 
             {/* Actions */}
-            <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm font-heading font-bold">
+            <div className="mt-5 grid grid-cols-3 gap-2 text-sm font-heading font-bold">
               <a href={googleDirectionsUrl(t.latitude, t.longitude)} target="_blank" rel="noopener noreferrer" className="rounded-full bg-white/10 text-white text-center py-2.5 hover:bg-white/20">Itinéraire</a>
               <a href={googleMapsUrl(t.latitude, t.longitude)} target="_blank" rel="noopener noreferrer" className="rounded-full bg-white/10 text-white text-center py-2.5 hover:bg-white/20">Google Maps</a>
               <ShareButton url={`${BASE_URL}/pimpmycourt/terrain/${t.id}`} />
-              <Link href="/pimpmycourt/kit" className="rounded-full bg-orange text-black text-center py-2.5 hover:bg-orange-light">Demander un kit</Link>
             </div>
           </div>
         </div>

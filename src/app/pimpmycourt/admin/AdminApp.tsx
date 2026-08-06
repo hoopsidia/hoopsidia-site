@@ -474,6 +474,13 @@ type AdminTerrain = {
   nb_filets_a_remplacer: number | null;
   nom_terrain: string | null;
   created_at: string;
+  prenom: string | null;
+  nom: string | null;
+  age: number | null;
+  contact_email: string | null;
+  contact_instagram: string | null;
+  contact_tiktok: string | null;
+  commentaire: string | null;
 };
 
 const STATUT_META: Record<string, { label: string; color: string }> = {
@@ -748,6 +755,20 @@ function EditTerrain({ terrain, authHeaders, onClose, onSaved }: {
         </div>
 
         <div className="space-y-3">
+          {/* Reporter's form info (read-only) */}
+          {(terrain.prenom || terrain.nom || terrain.contact_email || terrain.contact_instagram || terrain.contact_tiktok || terrain.commentaire) && (
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs space-y-1">
+              <p className="font-heading font-bold uppercase text-white/50 text-[11px]">Signalé par</p>
+              {(terrain.prenom || terrain.nom || terrain.age != null) && (
+                <p className="text-white/80">{[terrain.prenom, terrain.nom].filter(Boolean).join(" ") || "—"}{terrain.age != null ? ` · ${terrain.age} ans` : ""}</p>
+              )}
+              {terrain.contact_email && <p className="text-white/60">✉ <a href={`mailto:${terrain.contact_email}`} className="hover:text-orange">{terrain.contact_email}</a></p>}
+              {terrain.contact_instagram && <p className="text-white/60">Instagram : {terrain.contact_instagram}</p>}
+              {terrain.contact_tiktok && <p className="text-white/60">TikTok : {terrain.contact_tiktok}</p>}
+              {terrain.commentaire && <p className="text-white/70 italic">“{terrain.commentaire}”</p>}
+            </div>
+          )}
+
           <label className="block text-xs text-white/50">Nom du terrain
             <input value={nom} onChange={(e) => setNom(e.target.value)} className={`${INPUT} mt-1`} />
           </label>
