@@ -43,9 +43,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-orange: #FC8D33;
-  --color-orange-light: #FFA55C;
-  --color-orange-dark: #E07020;
+  --color-orange: #ff7200;
+  --color-orange-light: #ff8c33;
+  --color-orange-dark: #d96200;
   --font-heading: "Diamante", sans-serif;
 }
 

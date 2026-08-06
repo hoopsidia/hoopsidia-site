@@ -30,7 +30,7 @@ export default async function Image({ params }: { params: { id: string } }) {
             <span style={{ color: "#fff", fontSize: 72, fontWeight: 800, fontStyle: "italic" }}>
               {t?.ville ?? "Terrain de basket"}
             </span>
-            <span style={{ color: "#FC8D33", fontSize: 34, fontWeight: 700 }}>
+            <span style={{ color: "#ff7200", fontSize: 34, fontWeight: 700 }}>
               La carte des filets · Pimp My Court
             </span>
           </div>

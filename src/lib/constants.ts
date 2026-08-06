@@ -1,6 +1,6 @@
 export const BASE_URL = "https://hoopsidia.com";
 
-export const BRAND_ORANGE = "#FC8D33";
+export const BRAND_ORANGE = "#ff7200";
 
 export const HERO_STATS = {
   youtube: 113000,

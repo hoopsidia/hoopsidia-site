@@ -42,6 +42,6 @@ export type TerrainMarker = {
 // Status color couple (§12) — distinct from brand orange, legible over an OSM
 // light basemap. Distinction is not hue-only: markers also differ by shape.
 export const ETAT_COLOR: Record<Etat, string> = {
-  a_remplacer: "#FC8D33", // brand orange
-  remplace: "#2FA84F", // green
+  a_remplacer: "#ff7200", // brand orange
+  remplace: "#3cff00", // green
 };

@@ -35,7 +35,7 @@ function getTimeline(t: (key: string) => string): TimelineItem[] {
       subtitle: t("cv.items.hoopsidia.subtitle"),
       description: t("cv.items.hoopsidia.description"),
       icon: "basketball",
-      color: "#FC8D33",
+      color: "#ff7200",
     },
     {
       year: "2019",
@@ -138,7 +138,7 @@ export default function CvTimeline() {
                 {/* Year */}
                 <span
                   className="font-heading text-lg font-bold italic mb-1"
-                  style={{ color: item.color || "#FC8D33" }}
+                  style={{ color: item.color || "#ff7200" }}
                 >
                   {item.year}
                 </span>
@@ -194,7 +194,7 @@ export default function CvTimeline() {
                 <div className="ml-4">
                   <span
                     className="font-heading text-base font-bold italic"
-                    style={{ color: item.color || "#FC8D33" }}
+                    style={{ color: item.color || "#ff7200" }}
                   >
                     {item.year}
                   </span>

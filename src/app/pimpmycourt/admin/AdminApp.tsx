@@ -234,10 +234,8 @@ function Overview({
   if (error) return <p className="text-red-400 text-center py-10">Erreur : {error}</p>;
 
   const by = (s: string) => terrains.filter((t) => t.statut === s).length;
-  const valides = terrains.filter((t) => t.statut === "verifie");
-  const aRemplacer = valides.filter((t) => t.etat === "a_remplacer").length;
-  const remplaces = valides.filter((t) => t.etat === "remplace").length;
-  const confirmations = terrains.reduce((sum, t) => sum + (t.nb_confirmations ?? 0), 0);
+  const filetsRemplaces = terrains.reduce((sum, t) => sum + (t.etat === "remplace" ? (t.nb_filets_a_remplacer ?? 0) : 0), 0);
+  const terrainsConfirmes = terrains.filter((t) => (t.nb_confirmations ?? 0) > 1).length;
 
   // Top villes among all terrains.
   const villeCounts = new Map<string, number>();
@@ -249,8 +247,8 @@ function Overview({
   const recent = [...terrains].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)).slice(0, 5);
 
   const statusBar = [
-    { s: "signale", label: "Signalés", color: "#FC8D33", n: by("signale") },
-    { s: "verifie", label: "Validés", color: "#2FA84F", n: by("verifie") },
+    { s: "signale", label: "Signalés", color: "#ff7200", n: by("signale") },
+    { s: "verifie", label: "Validés", color: "#3cff00", n: by("verifie") },
     { s: "doublon", label: "Doublons", color: "#8A8A8A", n: by("doublon") },
     { s: "rejete", label: "Rejetés", color: "#E4572E", n: by("rejete") },
   ];
@@ -260,14 +258,11 @@ function Overview({
     <div className="space-y-6">
       {/* Stat cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <StatCard label="Visiteurs" value={visits?.visitors ?? 0} accent="#FC8D33" />
-        <StatCard label="Pages vues" value={visits?.pageviews ?? 0} accent="#FFFFFF" />
-        <StatCard label="Signalements" value={terrains.length} accent="#FC8D33" />
-        <StatCard label="En attente" value={by("signale")} accent="#FC8D33" onClick={() => onGo("moderation")} />
-        <StatCard label="Validés" value={by("verifie")} accent="#2FA84F" onClick={() => onGo("terrains")} />
-        <StatCard label="À remplacer" value={aRemplacer} accent="#FC8D33" />
-        <StatCard label="Remplacés" value={remplaces} accent="#2FA84F" />
-        <StatCard label="Confirmations" value={confirmations} accent="#FFFFFF" />
+        <StatCard label="Visiteurs uniques" value={visits?.visitors ?? 0} accent="#ff7200" />
+        <StatCard label="Visites" value={visits?.pageviews ?? 0} accent="#FFFFFF" />
+        <StatCard label="Filets remplacés" value={filetsRemplaces} accent="#3cff00" />
+        <StatCard label="Terrains signalés" value={terrains.length} accent="#ff7200" onClick={() => onGo("terrains")} />
+        <StatCard label="Terrains confirmés" value={terrainsConfirmes} accent="#FFFFFF" />
       </div>
 
       {/* Status distribution */}
@@ -453,7 +448,7 @@ function Moderation({ authHeaders, onModerated }: { authHeaders: Auth; onModerat
       )}
 
       <div className="mt-4 grid grid-cols-3 gap-2">
-        <button onClick={() => act("valider")} className="rounded-full bg-[#2FA84F] text-white py-3 font-heading font-bold uppercase text-sm">Valider</button>
+        <button onClick={() => act("valider")} className="rounded-full bg-[#3cff00] text-white py-3 font-heading font-bold uppercase text-sm">Valider</button>
         <button onClick={() => act("doublon")} className="rounded-full bg-white/10 text-white py-3 font-heading font-bold uppercase text-sm">Doublon</button>
         <button onClick={() => act("rejeter")} className="rounded-full bg-[#E4572E] text-white py-3 font-heading font-bold uppercase text-sm">Rejeter</button>
       </div>
@@ -478,8 +473,8 @@ type AdminTerrain = {
 };
 
 const STATUT_META: Record<string, { label: string; color: string }> = {
-  verifie: { label: "Validé", color: "#2FA84F" },
-  signale: { label: "Signalé", color: "#FC8D33" },
+  verifie: { label: "Validé", color: "#3cff00" },
+  signale: { label: "Signalé", color: "#ff7200" },
   doublon: { label: "Doublon", color: "#8A8A8A" },
   rejete: { label: "Rejeté", color: "#E4572E" },
 };
@@ -496,6 +491,7 @@ function Terrains({ terrains, loading, error, reload, authHeaders }: {
   const [filter, setFilter] = useState<TFilter>("verifie");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [merging, setMerging] = useState(false);
+  const [editing, setEditing] = useState<AdminTerrain | null>(null);
 
   const list = terrains.filter((t) => (filter === "all" ? true : t.statut === filter));
   const selectedTerrains = terrains.filter((t) => selected.has(t.id));
@@ -604,6 +600,9 @@ function Terrains({ terrains, loading, error, reload, authHeaders }: {
                       </span>
                     </span>
                   </button>
+                  <button onClick={() => setEditing(t)} aria-label="Éditer" className="shrink-0 text-white/30 hover:text-orange px-1">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+                  </button>
                   <a href={`/pimpmycourt/terrain/${t.id}`} target="_blank" rel="noopener noreferrer" className="shrink-0 text-white/30 hover:text-orange text-sm px-1" aria-label="Ouvrir la fiche">↗</a>
                   <button onClick={() => toggle(t.id)} aria-label="Sélectionner" className={`shrink-0 h-5 w-5 rounded-md border flex items-center justify-center text-[11px] ${sel ? "bg-orange border-orange text-black" : "border-white/25 text-transparent"}`}>✓</button>
                 </div>
@@ -650,6 +649,127 @@ function Terrains({ terrains, loading, error, reload, authHeaders }: {
           </div>
         </div>
       )}
+
+      {editing && (
+        <EditTerrain terrain={editing} authHeaders={authHeaders} onClose={() => setEditing(null)} onSaved={reload} />
+      )}
+    </div>
+  );
+}
+
+function EditTerrain({ terrain, authHeaders, onClose, onSaved }: {
+  terrain: AdminTerrain;
+  authHeaders: Auth;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [nom, setNom] = useState(terrain.nom_terrain ?? "");
+  const [ville, setVille] = useState(terrain.ville ?? "");
+  const [nbPaniers, setNbPaniers] = useState(terrain.nb_paniers != null ? String(terrain.nb_paniers) : "");
+  const [nbFilets, setNbFilets] = useState(terrain.nb_filets_a_remplacer != null ? String(terrain.nb_filets_a_remplacer) : "");
+  const [statut, setStatut] = useState(terrain.statut);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const INPUT = "w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none focus:border-orange";
+
+  async function save() {
+    setBusy(true); setMsg(null);
+    const res = await fetch("/api/pimpmycourt/admin/update", {
+      method: "POST",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({
+        id: terrain.id,
+        nom_terrain: nom.trim() || null,
+        ville: ville.trim() || null,
+        nb_paniers: nbPaniers === "" ? null : Number(nbPaniers),
+        nb_filets_a_remplacer: nbFilets === "" ? null : Number(nbFilets),
+        statut,
+      }),
+    });
+    setBusy(false);
+    if (!res.ok) { const d = await res.json().catch(() => ({})); setMsg(d.error ?? "erreur"); return; }
+    onSaved(); onClose();
+  }
+
+  async function remove() {
+    if (!window.confirm("Supprimer définitivement ce terrain ?")) return;
+    setBusy(true); setMsg(null);
+    const res = await fetch("/api/pimpmycourt/admin/delete", {
+      method: "POST",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ id: terrain.id }),
+    });
+    setBusy(false);
+    if (!res.ok) { const d = await res.json().catch(() => ({})); setMsg(d.error ?? "erreur"); return; }
+    onSaved(); onClose();
+  }
+
+  async function uploadPhoto(which: "avant" | "apres", file: File) {
+    setBusy(true); setMsg(null);
+    const fd = new FormData();
+    fd.set("id", terrain.id);
+    fd.set("which", which);
+    fd.set("photo", file);
+    const res = await fetch("/api/pimpmycourt/admin/photo", { method: "POST", headers: authHeaders(), body: fd });
+    setBusy(false);
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { setMsg(d.error ?? "erreur photo"); return; }
+    setMsg("Photo mise à jour ✓");
+    onSaved();
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60" onClick={onClose}>
+      <div className="w-full max-w-md rounded-2xl bg-[#0d0d0d] border border-white/10 p-5 max-h-[85dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-heading text-lg font-bold">Éditer le terrain</h3>
+          <button onClick={onClose} aria-label="Fermer" className="w-8 h-8 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/10 text-2xl leading-none">×</button>
+        </div>
+
+        <div className="space-y-3">
+          <label className="block text-xs text-white/50">Nom du terrain
+            <input value={nom} onChange={(e) => setNom(e.target.value)} className={`${INPUT} mt-1`} />
+          </label>
+          <label className="block text-xs text-white/50">Ville
+            <input value={ville} onChange={(e) => setVille(e.target.value)} className={`${INPUT} mt-1`} />
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block text-xs text-white/50">Paniers
+              <input type="number" min="0" value={nbPaniers} onChange={(e) => setNbPaniers(e.target.value)} className={`${INPUT} mt-1`} />
+            </label>
+            <label className="block text-xs text-white/50">Filets à remplacer
+              <input type="number" min="0" value={nbFilets} onChange={(e) => setNbFilets(e.target.value)} className={`${INPUT} mt-1`} />
+            </label>
+          </div>
+          <label className="block text-xs text-white/50">Statut
+            <select value={statut} onChange={(e) => setStatut(e.target.value)} className={`${INPUT} mt-1`}>
+              <option value="signale">Signalé</option>
+              <option value="verifie">Validé</option>
+              <option value="doublon">Doublon</option>
+              <option value="rejete">Rejeté</option>
+            </select>
+          </label>
+
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            <label className="block text-xs text-white/50">Photo avant
+              <input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto("avant", e.target.files[0])} className="mt-1 block w-full text-xs text-white/70 file:mr-2 file:rounded-full file:border-0 file:bg-orange file:px-3 file:py-1.5 file:text-black file:font-bold" />
+            </label>
+            <label className="block text-xs text-white/50">Photo après
+              <input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto("apres", e.target.files[0])} className="mt-1 block w-full text-xs text-white/70 file:mr-2 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-white file:font-bold" />
+            </label>
+          </div>
+
+          {msg && <p className="text-xs text-white/70">{msg}</p>}
+
+          <div className="flex items-center gap-2 pt-2">
+            <button onClick={remove} disabled={busy} className="rounded-full bg-[#E4572E] text-white px-4 py-2.5 text-sm font-heading font-bold uppercase disabled:opacity-40">Supprimer</button>
+            <button onClick={save} disabled={busy} className="flex-1 rounded-full bg-orange text-black px-4 py-2.5 text-sm font-heading font-bold uppercase hover:bg-orange-light disabled:opacity-40">
+              {busy ? "…" : "Enregistrer"}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -664,7 +784,7 @@ function ReplaceControl({ onMark }: { onMark: (date: string) => void }) {
         onChange={(e) => setDate(e.target.value)}
         className="rounded bg-white/5 border border-white/10 px-2 py-1 text-white text-xs [color-scheme:dark]"
       />
-      <button onClick={() => onMark(date)} className="rounded-full text-white px-3 py-1 font-bold" style={{ background: "#2FA84F" }}>
+      <button onClick={() => onMark(date)} className="rounded-full text-white px-3 py-1 font-bold" style={{ background: "#3cff00" }}>
         Marquer remplacé
       </button>
     </div>
