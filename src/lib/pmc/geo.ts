@@ -1,21 +1,5 @@
 import "server-only";
 
-// Rough bounding boxes: metropolitan France + the five DOM. Used to reject
-// signalements outside French territory (§10 anti-spam).
-const BOXES: Array<[number, number, number, number]> = [
-  // [minLat, minLng, maxLat, maxLng]
-  [41.2, -5.6, 51.6, 9.8], // métropole (+ Corse)
-  [15.8, -61.9, 16.6, -60.8], // Guadeloupe
-  [14.3, -61.3, 14.9, -60.7], // Martinique
-  [2.0, -54.7, 6.0, -51.5], // Guyane
-  [-21.5, 55.1, -20.8, 55.9], // La Réunion
-  [-13.1, 44.9, -12.5, 45.4], // Mayotte
-];
-
-export function isInFrance(lat: number, lng: number): boolean {
-  return BOXES.some(([a, b, c, d]) => lat >= a && lat <= c && lng >= b && lng <= d);
-}
-
 export type ReverseGeo = {
   ville: string | null;
   code_postal: string | null;
@@ -23,23 +7,24 @@ export type ReverseGeo = {
   adresse: string | null;
 };
 
-// Reverse geocode via the free French government API (api-adresse.data.gouv.fr).
-// The `context` property looks like "75, Paris, Île-de-France" — first token is
-// the department code.
+// Reverse geocode worldwide via Nominatim (OpenStreetMap).
 export async function reverseGeocode(lat: number, lng: number): Promise<ReverseGeo> {
   try {
     const res = await fetch(
-      `https://api-adresse.data.gouv.fr/reverse/?lon=${lng}&lat=${lat}`,
-      { signal: AbortSignal.timeout(5000) },
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=16&addressdetails=1&lat=${lat}&lon=${lng}`,
+      {
+        signal: AbortSignal.timeout(5000),
+        headers: { "User-Agent": "PimpMyCourt/1.0 (+https://hoopsidia.com)", "Accept-Language": "fr" },
+      },
     );
     const data = await res.json();
-    const p = data?.features?.[0]?.properties;
-    if (!p) return { ville: null, code_postal: null, departement: null, adresse: null };
+    const a = data?.address;
+    if (!a) return { ville: null, code_postal: null, departement: null, adresse: data?.display_name ?? null };
     return {
-      ville: p.city ?? null,
-      code_postal: p.postcode ?? null,
-      departement: typeof p.context === "string" ? p.context.split(",")[0].trim() : null,
-      adresse: p.label ?? null,
+      ville: a.city ?? a.town ?? a.village ?? a.municipality ?? a.suburb ?? null,
+      code_postal: a.postcode ?? null,
+      departement: a.state ?? a.county ?? a.region ?? a.country ?? null,
+      adresse: data.display_name ?? null,
     };
   } catch {
     return { ville: null, code_postal: null, departement: null, adresse: null };

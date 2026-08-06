@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/pmc/supabaseAdmin";
-import { isInFrance, reverseGeocode } from "@/lib/pmc/geo";
+import { reverseGeocode } from "@/lib/pmc/geo";
 import { sendSignalementRecu } from "@/lib/pmc/email";
 import { rateLimitOk, clientIp, ipHash } from "@/lib/pmc/rateLimit";
 
@@ -33,8 +33,8 @@ export async function POST(request: Request) {
   const email = String(form.get("email") ?? "").trim();
   const consent = form.get("consent");
 
-  if (!Number.isFinite(lat) || !Number.isFinite(lng) || !isInFrance(lat, lng)) {
-    return NextResponse.json({ error: "position hors de France" }, { status: 400 });
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    return NextResponse.json({ error: "position invalide" }, { status: 400 });
   }
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return NextResponse.json({ error: "email invalide" }, { status: 400 });

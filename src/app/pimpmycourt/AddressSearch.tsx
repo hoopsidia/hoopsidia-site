@@ -29,7 +29,7 @@ export default function AddressSearch({
     timer.current = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=fr&limit=6&q=${encodeURIComponent(value)}`,
+          `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&q=${encodeURIComponent(value)}`,
           { headers: { "Accept-Language": "fr" } },
         );
         const data = await res.json();

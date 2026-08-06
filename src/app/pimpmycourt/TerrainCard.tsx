@@ -17,9 +17,9 @@ export default function TerrainCard({ terrain, onClose }: { terrain: TerrainMark
 
   useEffect(() => {
     let active = true;
-    fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${terrain.longitude}&lat=${terrain.latitude}`)
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${terrain.latitude}&lon=${terrain.longitude}`, { headers: { "Accept-Language": "fr" } })
       .then((r) => r.json())
-      .then((d) => { if (active) setAddress(d?.features?.[0]?.properties?.label ?? null); })
+      .then((d) => { if (active) setAddress(d?.display_name ?? null); })
       .catch(() => {});
     return () => { active = false; };
   }, [terrain.latitude, terrain.longitude]);

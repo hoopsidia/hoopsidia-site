@@ -41,9 +41,9 @@ export default function SignalementSheet({
   // Reverse-geocode the chosen position for the address shown at the top.
   useEffect(() => {
     let active = true;
-    fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${position.lng}&lat=${position.lat}`)
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${position.lat}&lon=${position.lng}`, { headers: { "Accept-Language": "fr" } })
       .then((r) => r.json())
-      .then((d) => { if (active) setAddress(d?.features?.[0]?.properties?.label ?? null); })
+      .then((d) => { if (active) setAddress(d?.display_name ?? null); })
       .catch(() => {});
     return () => { active = false; };
   }, [position.lat, position.lng]);

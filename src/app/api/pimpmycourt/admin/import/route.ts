@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/pmc/supabaseAdmin";
 import { verifyAdmin } from "@/lib/pmc/adminAuth";
-import { isInFrance } from "@/lib/pmc/geo";
 
 const STATUTS = new Set([
   "signale", "verifie", "kit_demande", "kit_envoye", "pose_effectuee", "rushes_recus",
@@ -36,7 +35,7 @@ export async function POST(request: Request) {
     const photo = (c[iPhoto] ?? "").trim();
     const statut = iStatut >= 0 ? (c[iStatut] ?? "").trim() : "verifie";
     const categorie = iCat >= 0 ? (c[iCat] ?? "").trim() || "filet" : "filet";
-    if (!Number.isFinite(lat) || !Number.isFinite(lng) || !isInFrance(lat, lng) || !photo) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180 || !photo) {
       skipped++; continue;
     }
     rows.push({
