@@ -249,9 +249,9 @@ function Overview({
       {/* Stat cards */}
       <div className="grid grid-cols-5 gap-2 sm:gap-3">
         <StatCard label="Visites" value={visits?.pageviews ?? 0} accent="#ff7200" />
+        <StatCard label="Terrains signalés" value={terrains.length} accent="#FFFFFF" onClick={() => onGo("terrains")} />
         <StatCard label="Filets à remplacer" value={filetsARemplacer} accent="#ff7200" />
         <StatCard label="Filets remplacés" value={filetsRemplaces} accent="#2fc600" />
-        <StatCard label="Terrains signalés" value={terrains.length} accent="#FFFFFF" onClick={() => onGo("terrains")} />
         <StatCard label="Terrains à modérer" value={by("signale")} accent="#FFFFFF" onClick={() => onGo("moderation")} />
       </div>
 
