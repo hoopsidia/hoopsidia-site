@@ -240,14 +240,16 @@ function Overview({
 
   const by = (s: string) => terrains.filter((t) => t.statut === s).length;
   const filetsRemplaces = terrains.reduce((sum, t) => sum + (t.etat === "remplace" ? (t.nb_filets_a_remplacer ?? 0) : 0), 0);
+  const filetsARemplacer = terrains.reduce((sum, t) => sum + (t.etat === "a_remplacer" ? (t.nb_filets_a_remplacer ?? 0) : 0), 0);
 
   const recent = [...terrains].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)).slice(0, 5);
 
   return (
     <div className="space-y-6">
       {/* Stat cards */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-5 gap-2 sm:gap-3">
         <StatCard label="Visites" value={visits?.pageviews ?? 0} accent="#ff7200" />
+        <StatCard label="Filets à remplacer" value={filetsARemplacer} accent="#ff7200" />
         <StatCard label="Filets remplacés" value={filetsRemplaces} accent="#2fc600" />
         <StatCard label="Terrains signalés" value={terrains.length} accent="#FFFFFF" onClick={() => onGo("terrains")} />
         <StatCard label="Terrains à modérer" value={by("signale")} accent="#FFFFFF" onClick={() => onGo("moderation")} />
