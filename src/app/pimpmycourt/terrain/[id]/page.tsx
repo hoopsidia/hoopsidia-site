@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const t = await getTerrainPublic(id);
   const title = t ? `Terrain de basket — ${t.ville ?? "France"}` : "Fiche terrain";
   const description = t
-    ? `${t.etat === "remplace" ? "Filet remplacé" : "Filet à remplacer"} · ${t.nb_confirmations} confirmation(s) — La carte des filets, Pimp My Court.`
+    ? `${t.etat === "remplace" ? ((t.nb_filets_a_remplacer ?? 2) > 1 ? "Filets remplacés" : "Filet remplacé") : "Filet à remplacer"} · ${t.nb_confirmations} confirmation(s) — La carte des filets, Pimp My Court.`
     : "La carte des filets — Pimp My Court.";
   return {
     title,
@@ -32,6 +32,7 @@ export default async function TerrainPage({ params }: { params: Promise<{ id: st
 
   const remplace = t.etat === "remplace";
   const color = remplace ? ETAT_COLOR.remplace : ETAT_COLOR.a_remplacer;
+  const remplaceLabel = (t.nb_filets_a_remplacer ?? 2) > 1 ? "Filets remplacés" : "Filet remplacé";
   const geo = await reverseGeocode(t.latitude, t.longitude);
   const address = geo.adresse ?? [t.ville, t.departement].filter(Boolean).join(", ");
   const date = new Date(t.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
@@ -51,7 +52,7 @@ export default async function TerrainPage({ params }: { params: Promise<{ id: st
             <TerrainMiniMap lat={t.latitude} lng={t.longitude} etat={t.etat} />
             <span className="pointer-events-none absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-heading font-bold" style={{ background: "rgba(0,0,0,.7)", color }}>
               <span className="inline-block h-2 w-2 rounded-full" style={{ background: color }} />
-              {remplace ? "Filet remplacé" : "À remplacer"}
+              {remplace ? remplaceLabel : "À remplacer"}
             </span>
           </div>
 
@@ -65,7 +66,7 @@ export default async function TerrainPage({ params }: { params: Promise<{ id: st
             <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/60">
               {remplace ? (
                 <span className="font-bold" style={{ color }}>
-                  Filet remplacé{t.date_remplacement ? ` le ${new Date(t.date_remplacement).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}` : ""}
+                  {remplaceLabel}{t.date_remplacement ? ` le ${new Date(t.date_remplacement).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}` : ""}
                 </span>
               ) : (
                 t.nb_filets_a_remplacer != null && <span>{t.nb_filets_a_remplacer} filet{t.nb_filets_a_remplacer > 1 ? "s" : ""} à remplacer</span>

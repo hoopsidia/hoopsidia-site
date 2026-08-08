@@ -14,6 +14,7 @@ export default function TerrainCard({ terrain, onClose }: { terrain: TerrainMark
   const [address, setAddress] = useState<string | null>(null);
   const remplace = terrain.etat === "remplace";
   const color = remplace ? ETAT_COLOR.remplace : ETAT_COLOR.a_remplacer;
+  const remplaceLabel = (terrain.nb_filets_a_remplacer ?? 2) > 1 ? "Filets remplacés" : "Filet remplacé";
 
   useEffect(() => {
     let active = true;
@@ -51,7 +52,7 @@ export default function TerrainCard({ terrain, onClose }: { terrain: TerrainMark
           <img src={terrain.photo_apres_url ?? satelliteImageUrl(terrain.latitude, terrain.longitude, 640, 300)} alt={terrain.photo_apres_url ? "Terrain après remplacement" : "Vue satellite du terrain"} className="w-full h-36 object-cover bg-white/5" />
           <span className="absolute top-2 left-2 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-heading font-bold" style={{ background: "rgba(0,0,0,.7)", color }}>
             <span className="inline-block h-2 w-2 rounded-full" style={{ background: color }} />
-            {remplace ? "Filet remplacé" : "À remplacer"}
+            {remplace ? remplaceLabel : "À remplacer"}
           </span>
           <button onClick={onClose} aria-label="Fermer" className="absolute top-2 right-2 h-7 w-7 rounded-full bg-black/70 text-white flex items-center justify-center text-lg leading-none">×</button>
         </div>
@@ -63,7 +64,7 @@ export default function TerrainCard({ terrain, onClose }: { terrain: TerrainMark
           <p className="text-xs text-white/50 mt-0.5">{address ?? `${terrain.ville ?? ""}`}</p>
           {remplace ? (
             <div className="mt-1 text-xs font-bold" style={{ color }}>
-              Filet remplacé{terrain.date_remplacement ? ` le ${new Date(terrain.date_remplacement).toLocaleDateString("fr-FR")}` : ""}
+              {remplaceLabel}{terrain.date_remplacement ? ` le ${new Date(terrain.date_remplacement).toLocaleDateString("fr-FR")}` : ""}
               <span className="text-white/40 font-normal"> · {terrain.nb_confirmations} confirmation{terrain.nb_confirmations > 1 ? "s" : ""}</span>
             </div>
           ) : (
