@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAccessToken } from "@/lib/igToken";
 import { fetchReelInsights } from "@/lib/igInsights";
+import { HIDDEN_REEL_IDS } from "@/lib/hiddenReels";
 
 // Manual view overrides for reels where API doesn't report sponsored views
 const VIEW_OVERRIDES: Record<string, number> = {
@@ -32,8 +33,10 @@ export async function GET() {
 
     const baseReels = (data.data ?? [])
       .filter(
-        (item: { media_type: string; caption?: string }) =>
-          item.media_type === "VIDEO" && !isHidden(item.caption)
+        (item: { id: string; media_type: string; caption?: string }) =>
+          item.media_type === "VIDEO" &&
+          !HIDDEN_REEL_IDS.has(item.id) &&
+          !isHidden(item.caption)
       )
       .slice(0, 12)
       .map((item: { id: string; permalink: string; thumbnail_url?: string; media_url?: string; caption?: string; like_count?: number; comments_count?: number }) => ({
