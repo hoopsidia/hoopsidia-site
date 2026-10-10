@@ -15,7 +15,7 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <Hero />
-        <LyonCourt />
+        {/* <LyonCourt /> — Pimp My Court section hidden */}
         <ReelsGrid />
         <StatsDashboard />
         <ClientsCarousel />
