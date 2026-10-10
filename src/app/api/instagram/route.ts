@@ -22,7 +22,7 @@ export async function GET() {
 
     const [profileRes, mediaRes, insightsRes, followerHistoryRes] = await Promise.all([
       fetch(`${baseUrl}/me?fields=followers_count,media_count&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
-      fetch(`${baseUrl}/me/media?fields=like_count,comments_count,timestamp&limit=25&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
+      fetch(`${baseUrl}/me/media?fields=like_count,comments_count,timestamp&limit=50&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
       fetch(`${baseUrl}/me/insights?metric=reach,views&period=day&metric_type=total_value&since=${since30d}&until=${now}&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
       fetch(`${baseUrl}/me/insights?metric=follower_count&period=day&since=${sinceYear}&until=${now}&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
     ]);
@@ -36,17 +36,23 @@ export async function GET() {
 
     const followers = profile.followers_count ?? PLACEHOLDER_IG_STATS.followers;
 
-    // Calculate engagement rate from recent posts
+    // Engagement rate from matured posts only. Brand-new posts (<72h) haven't
+    // accumulated likes yet; averaging them in tanks the rate (e.g. 0.18%).
+    // Use the 12 most recent posts older than 72h; fall back to all posts if
+    // too few have matured. Media comes back newest-first.
+    type Post = { like_count?: number; comments_count?: number; timestamp?: string };
     let engagementRate = PLACEHOLDER_IG_STATS.engagementRate;
-    if (media.data && media.data.length > 0) {
-      const totalEngagement = media.data.reduce(
-        (sum: number, post: { like_count?: number; comments_count?: number }) =>
-          sum + (post.like_count ?? 0) + (post.comments_count ?? 0),
-        0
+    if (Array.isArray(media.data) && media.data.length > 0 && followers > 0) {
+      const nowMs = Date.now();
+      const matured = (media.data as Post[]).filter(
+        (p) => p.timestamp && nowMs - new Date(p.timestamp).getTime() > 72 * 3600 * 1000,
       );
-      engagementRate =
-        Math.round((totalEngagement / media.data.length / followers) * 10000) /
-        100;
+      const sample = (matured.length >= 3 ? matured : (media.data as Post[])).slice(0, 12);
+      const totalEngagement = sample.reduce(
+        (sum, post) => sum + (post.like_count ?? 0) + (post.comments_count ?? 0),
+        0,
+      );
+      engagementRate = Math.round((totalEngagement / sample.length / followers) * 10000) / 100;
     }
 
     // Extract insights values
