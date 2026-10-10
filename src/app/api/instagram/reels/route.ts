@@ -22,10 +22,18 @@ export async function GET() {
     );
     const data = await res.json();
 
+    // A reel is kept off the site when its caption carries one of these
+    // markers (test / draft reels). Add e.g. "#noweb" to a caption to hide it.
+    const HIDE_MARKERS = ["#noweb", "#essai", "#test", "#brouillon"];
+    const isHidden = (caption?: string) => {
+      const c = (caption ?? "").toLowerCase();
+      return HIDE_MARKERS.some((m) => c.includes(m));
+    };
+
     const baseReels = (data.data ?? [])
       .filter(
-        (item: { media_type: string }) =>
-          item.media_type === "VIDEO"
+        (item: { media_type: string; caption?: string }) =>
+          item.media_type === "VIDEO" && !isHidden(item.caption)
       )
       .slice(0, 12)
       .map((item: { id: string; permalink: string; thumbnail_url?: string; media_url?: string; caption?: string; like_count?: number; comments_count?: number }) => ({
