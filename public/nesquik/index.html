@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="La tournée de rénovation de terrains de basket : une proposition de HOOPSIDIA pour Nestlé.">
+<link rel="icon" href="/favicon.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<title>Tournée HOOPSIDIA x NESQUIK</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+@font-face { font-family: "Diamante Bold"; src: url("/nesquik/assets/diamante-bold.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Diamante Medium"; src: url("/nesquik/assets/diamante-medium.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Diamante BoldIta"; src: url("/nesquik/assets/diamante-bold-italic.ttf") format("truetype"); font-display: swap; }
+
+/* Mise en page : une longue page noire (charte HOOPSIDIA) qui suit la journée d'un terrain,
+   une bande jaune Nesquik pour l'idée, des emplacements photo en pointillés à remplir. Un seul thème, sombre, par choix. */
+:root {
+  color-scheme: dark;
+  --noir: #000000;
+  --carte: #151310;
+  --trait: #2c2824;
+  --frais: #4a433d;
+  --gris: #8f877e;
+  --doux: #d8d2cb;
+  --blanc: #ffffff;
+  --orange: #ff7200;
+  --jaune: #F9E50A;      /* relevé sur les films Nesquik 2023, à confirmer par la charte Nestlé */
+  --bleu-nuit: #000D7C;  /* exact, logo Nesquik 2023 */
+  --display: "Diamante Bold", "Arial Narrow", Arial, sans-serif;
+  --texte: "Diamante Medium", Arial, sans-serif;
+  --signature: "Diamante BoldIta", "Arial Narrow", Arial, sans-serif;
+  --radius: 5px;
+  --gouttiere: clamp(16px, 4vw, 56px);
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 76px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body { margin: 0; background: var(--noir); color: var(--blanc); font-family: var(--texte); font-size: 18px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p, ul, ol { margin: 0; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1.02; text-wrap: balance; }
+h2 { font-size: clamp(40px, 6vw, 80px); }
+img { max-width: 100%; }
+a:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; border-radius: 2px; }
+
+.wrap {
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-left: max(var(--gouttiere), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gouttiere), env(safe-area-inset-right, 0px));
+}
+section { padding-block: clamp(64px, 10vw, 128px); }
+.eyebrow { font-family: var(--display); font-size: 14px; letter-spacing: .3em; text-transform: uppercase; color: var(--orange); }
+.lead { font-size: clamp(19px, 2vw, 24px); line-height: 1.45; color: var(--doux); max-width: 34em; }
+.tete-sec { display: grid; gap: 18px; margin-bottom: clamp(40px, 5vw, 64px); }
+.orange { color: var(--orange); }
+/* l'espace insécable de Diamante est très large : espaces normaux + pas de retour à la ligne dans les montants et les heures */
+.nb, .prix .m, .ligne-barre .bt, .ligne-temps .h { white-space: nowrap; }
+.jaune { color: var(--jaune); }
+
+/* emplacements photo à remplir */
+.ph {
+  background: var(--carte);
+  border: 2px dashed var(--gris);
+  border-radius: var(--radius);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  text-align: center; padding: 24px; max-width: 100%; min-width: 0;
+}
+.ph .pht { font-family: var(--display); font-size: clamp(22px, 2.4vw, 30px); letter-spacing: .04em; text-transform: uppercase; color: var(--gris); }
+.ph .phd { font-size: 15px; color: var(--gris); max-width: 22em; }
+
+/* en-tête */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--noir); }
+.barre-haut { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: rgba(0, 0, 0, .9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--trait); }
+.barre-haut .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-block: 12px; }
+.marques { display: flex; align-items: center; gap: 14px; }
+.marques .hoops { height: 19px; width: auto; display: block; }
+.marques .x { font-family: var(--display); font-size: 14px; color: var(--gris); }
+.marques .nq { height: 34px; width: auto; display: block; }
+nav { display: flex; gap: 28px; }
+nav a { font-family: var(--display); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--blanc); text-decoration: none; }
+nav a:hover { color: var(--orange); }
+@media (max-width: 820px) { nav { display: none; } }
+
+/* ouverture */
+.hero { padding-block: clamp(40px, 7vw, 96px) clamp(56px, 8vw, 104px); }
+.hero .grille { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: end; }
+.hero .tete { width: 54px; height: auto; display: block; margin-bottom: 32px; }
+.hero h1 { font-size: clamp(52px, 8vw, 116px); margin: 18px 0 28px; }
+.hero .signe { margin-top: 20px; font-size: 15px; color: var(--gris); }
+.kv { aspect-ratio: 4 / 5; width: 100%; }
+.faits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: clamp(48px, 6vw, 80px); border-top: 1px solid var(--trait); }
+.fait { padding: 22px 24px 0 0; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.fait .v { font-family: var(--display); font-size: clamp(44px, 5vw, 64px); line-height: 1; color: var(--orange); }
+.fait .l { font-size: 16px; color: var(--doux); }
+@media (max-width: 860px) {
+  .hero .grille { grid-template-columns: minmax(0, 1fr); }
+  .kv { aspect-ratio: 1 / 1; }
+}
+@media (max-width: 560px) {
+  .faits { grid-template-columns: minmax(0, 1fr); }
+  .fait { flex-direction: row; align-items: baseline; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--trait); }
+  .fait .v { min-width: 1.4em; }
+}
+
+/* l'idée, bande jaune */
+.idee { background: var(--jaune); color: var(--bleu-nuit); }
+.idee .grille { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 48px; align-items: end; }
+.idee .eyebrow { color: var(--bleu-nuit); }
+.idee h2 { font-size: clamp(40px, 6.2vw, 88px); color: var(--bleu-nuit); margin: 20px 0 32px; max-width: 13em; }
+.idee .lead { color: var(--bleu-nuit); }
+.idee .nq { width: clamp(150px, 18vw, 240px); height: auto; display: block; }
+@media (max-width: 760px) { .idee .grille { grid-template-columns: minmax(0, 1fr); gap: 36px; } }
+
+/* principe */
+.cartes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.carte { background: var(--carte); border-radius: var(--radius); padding: clamp(24px, 3vw, 40px); display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.carte .n { font-family: var(--display); font-size: 72px; line-height: 1; color: var(--orange); }
+.carte h3 { font-size: 30px; }
+.carte p:last-child { color: var(--doux); }
+@media (max-width: 860px) { .cartes { grid-template-columns: minmax(0, 1fr); } }
+
+/* planning type */
+.journee { border-top: 1px solid var(--trait); }
+.ligne-temps { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 20px; }
+.ligne-temps li { position: relative; border-top: 2px solid var(--trait); padding-top: 28px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.ligne-temps li::before { content: ""; position: absolute; top: -8px; left: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--orange); }
+.ligne-temps .h { font-family: var(--display); font-size: 26px; line-height: 1; color: var(--orange); white-space: nowrap; }
+.ligne-temps h3 { font-size: 22px; }
+.ligne-temps .d { font-size: 16px; color: var(--doux); }
+.petit { margin-top: 36px; font-size: 15px; color: var(--gris); }
+@media (max-width: 980px) {
+  .ligne-temps { grid-template-columns: minmax(0, 1fr); gap: 0; border-left: 2px solid var(--trait); margin-left: 6px; }
+  .ligne-temps li { border-top: 0; padding: 0 0 30px 30px; }
+  .ligne-temps li:last-child { padding-bottom: 0; }
+  .ligne-temps li::before { top: 4px; left: -8px; }
+}
+
+/* van */
+.van { background: var(--carte); }
+.van .grille { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
+.van h2 { margin: 18px 0 24px; }
+.dans-van { margin-top: 32px; display: grid; gap: 12px; }
+.dans-van .t { font-family: var(--display); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--gris); }
+.dans-van ul { list-style: none; padding: 0; display: grid; gap: 0; }
+.dans-van li { padding: 12px 0; border-bottom: 1px solid var(--trait); font-size: 19px; }
+.van .ph { aspect-ratio: 4 / 3; width: 100%; background: var(--noir); }
+@media (max-width: 860px) { .van .grille { grid-template-columns: minmax(0, 1fr); } }
+
+/* en images */
+.photos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.photos .ph { aspect-ratio: 4 / 5; width: 100%; }
+@media (max-width: 760px) { .photos { grid-template-columns: minmax(0, 1fr); } .photos .ph { aspect-ratio: 4 / 3; } }
+
+/* contenus */
+.contenus { border-top: 1px solid var(--trait); }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-bottom: 48px; }
+.stat { background: var(--carte); border-radius: var(--radius); padding: 28px 32px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.stat .v { font-family: var(--display); font-size: clamp(72px, 8vw, 104px); line-height: .9; color: var(--orange); }
+.stat .l { font-size: 18px; }
+.stat .f { font-family: var(--display); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--jaune); }
+.declinaisons { list-style: none; padding: 0; }
+.declinaisons li { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .8fr) minmax(0, 2fr); gap: 24px; padding: 20px 0; border-bottom: 1px solid var(--trait); align-items: baseline; }
+.declinaisons li:first-child { border-top: 1px solid var(--trait); }
+.declinaisons .nom { font-family: var(--display); font-size: 22px; line-height: 1.15; }
+.declinaisons .fmt { font-family: var(--display); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--jaune); }
+.declinaisons .d { color: var(--doux); }
+@media (max-width: 760px) {
+  .stats { grid-template-columns: minmax(0, 1fr); }
+  .declinaisons li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+
+/* formules */
+.formules-sec { background: var(--carte); }
+.formules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.formule { background: var(--noir); border: 1px solid var(--trait); border-radius: var(--radius); padding: clamp(24px, 3vw, 36px); display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.formule .fn { font-family: var(--display); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--orange); }
+.formule h3 { font-size: 34px; }
+.prix { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding-top: 18px; border-top: 1px solid var(--trait); }
+.prix .m { font-family: var(--display); font-size: clamp(36px, 3.6vw, 48px); line-height: 1; font-variant-numeric: tabular-nums; }
+.prix .ht { font-family: var(--display); font-size: 15px; color: var(--gris); }
+.par { font-size: 16px; color: var(--doux); margin-top: -8px; }
+.inclus { list-style: none; padding: 0; display: grid; gap: 0; margin-top: auto; }
+.inclus li { padding: 10px 0; border-top: 1px solid var(--trait); font-size: 16px; color: var(--doux); }
+.inclus b { font-family: var(--display); font-weight: 400; color: var(--blanc); }
+@media (max-width: 900px) { .formules { grid-template-columns: minmax(0, 1fr); } }
+
+.cout { margin-top: clamp(48px, 6vw, 80px); display: grid; gap: 28px; }
+.cout h3 { font-size: clamp(26px, 3vw, 36px); }
+.legende { display: flex; flex-wrap: wrap; gap: 10px 28px; font-size: 15px; color: var(--doux); }
+.legende span { display: inline-flex; align-items: center; gap: 10px; }
+.legende i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.legende .k-p { background: var(--orange); }
+.legende .k-f { background: var(--frais); }
+.barres { display: grid; gap: 16px; }
+.ligne-barre { display: grid; grid-template-columns: 120px minmax(0, 1fr) 128px; gap: 18px; align-items: center; }
+.ligne-barre .bl { font-family: var(--display); font-size: 16px; color: var(--doux); }
+.ligne-barre .bt { font-family: var(--display); font-size: 22px; text-align: right; font-variant-numeric: tabular-nums; }
+.piste { display: flex; height: 46px; }
+.piste span { display: flex; align-items: center; padding-left: 10px; font-family: var(--display); font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.piste .p { background: var(--orange); color: var(--noir); border-radius: var(--radius) 0 0 var(--radius); }
+.piste .f { background: var(--frais); color: var(--blanc); border-radius: 0 var(--radius) var(--radius) 0; }
+@media (max-width: 640px) {
+  .ligne-barre { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
+  .ligne-barre .piste { grid-column: 1 / -1; grid-row: 2; }
+}
+
+.couvre { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; padding-top: 32px; border-top: 1px solid var(--trait); }
+.couvre div { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.couvre .t { font-family: var(--display); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--orange); }
+.couvre p { font-size: 16px; color: var(--doux); }
+.note { margin-top: 32px; font-size: 15px; color: var(--gris); }
+@media (max-width: 760px) { .couvre { grid-template-columns: minmax(0, 1fr); gap: 24px; } }
+
+/* fin */
+.fin { text-align: center; padding-block: clamp(80px, 12vw, 160px); }
+.fin .wrap { display: flex; flex-direction: column; align-items: center; gap: 32px; }
+.fin .tete { width: 96px; height: auto; display: block; }
+.fin h2 { font-size: clamp(52px, 8vw, 112px); }
+.contact { font-size: 19px; color: var(--doux); }
+.a-remplir { display: inline-block; padding: 2px 10px; border: 1.5px dashed var(--gris); border-radius: var(--radius); color: var(--gris); }
+
+footer { border-top: 1px solid var(--trait); }
+footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding-block: 28px; }
+footer p { font-size: 14px; color: var(--gris); max-width: 40em; }
+footer .sig { font-family: var(--signature); font-size: 18px; color: var(--blanc); }
+</style>
+</head>
+<body>
+<div class="barre-haut">
+  <div class="wrap">
+    <a class="marques" href="#haut" aria-label="Haut de page">
+      <img class="hoops" src="/nesquik/assets/hoopsidia-logo.png" alt="HOOPSIDIA">
+      <span class="x">x</span>
+      <img class="nq" src="/nesquik/assets/nesquik-logo.svg" alt="Nestlé Nesquik">
+    </a>
+    <nav aria-label="Sections">
+      <a href="#idee">L’idée</a>
+      <a href="#journee">La journée</a>
+      <a href="#contenus">Les contenus</a>
+      <a href="#formules">Les formules</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero" id="haut">
+  <div class="wrap">
+    <div class="grille">
+      <div>
+        <img class="tete" src="/nesquik/assets/hoopsidia-tete.png" alt="">
+        <p class="eyebrow">Proposition · novembre 2026</p>
+        <h1>HOOPSIDIA<br><span class="jaune">x NESQUIK</span></h1>
+        <p class="lead">La tournée de rénovation de terrains de basket.</p>
+        <p class="signe">Une proposition de HOOPSIDIA pour Nestlé.</p>
+      </div>
+      <div class="ph kv">
+        <p class="pht">Visuel clé</p>
+        <p class="phd">Emplacement réservé, format 4:5</p>
+      </div>
+    </div>
+    <div class="faits">
+      <div class="fait"><p class="v">1</p><p class="l">terrain rénové par jour</p></div>
+      <div class="fait"><p class="v">5</p><p class="l">villes pour commencer</p></div>
+      <div class="fait"><p class="v">1</p><p class="l">van pour toute la tournée</p></div>
+    </div>
+  </div>
+</header>
+
+<section class="idee" id="idee">
+  <div class="wrap">
+    <div class="grille">
+      <div>
+        <p class="eyebrow">L’idée</p>
+        <h2>La première tournée de rénovation de terrains de basket en France.</h2>
+        <p class="lead">Un van, une équipe et des abonnés. On arrive le matin sur un terrain abîmé, on le repeint, et le soir on joue dessus. Cinq villes pour commencer, choisies avec Nestlé, à l’approche de l’été.</p>
+      </div>
+      <img class="nq" src="/nesquik/assets/nesquik-logo.svg" alt="Nestlé Nesquik">
+    </div>
+  </div>
+</section>
+
+<section id="principe">
+  <div class="wrap">
+    <div class="tete-sec">
+      <p class="eyebrow">Le principe</p>
+      <h2>Une journée, un terrain.</h2>
+    </div>
+    <div class="cartes">
+      <article class="carte">
+        <p class="n">01</p>
+        <h3>Le rendez-vous</h3>
+        <p>Tôt le matin, les abonnés retrouvent l’équipe sur le terrain. Petit-déjeuner Nesquik pour tout le monde.</p>
+      </article>
+      <article class="carte">
+        <p class="n">02</p>
+        <h3>La rénovation</h3>
+        <p>Nettoyage, scotch, peinture, filets neufs. Tout le monde met la main au rouleau.</p>
+      </article>
+      <article class="carte">
+        <p class="n">03</p>
+        <h3>Le premier match</h3>
+        <p>La peinture sèche pendant le déjeuner, puis on joue l’après-midi sur le terrain tout neuf.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="journee" id="journee">
+  <div class="wrap">
+    <div class="tete-sec">
+      <p class="eyebrow">Planning type</p>
+      <h2>La rénovation d’un terrain.</h2>
+    </div>
+    <ol class="ligne-temps">
+      <li><p class="h">La veille</p><h3>Arrivée et repérage</h3><p class="d">État du terrain, mesures, rencontre avec la ville ou le club.</p></li>
+      <li><p class="h">8 h 00</p><h3>Rendez-vous abonnés</h3><p class="d">Accueil sur le terrain et petit-déjeuner Nesquik.</p></li>
+      <li><p class="h">9 h 00</p><h3>Préparation</h3><p class="d">Souffleur, nettoyage du sol, pose du scotch de marquage.</p></li>
+      <li><p class="h">10 h 30</p><h3>Peinture</h3><p class="d">Les couleurs du terrain, puis les lignes. Changement des filets.</p></li>
+      <li><p class="h">12 h 30</p><h3>Séchage</h3><p class="d">Pause déjeuner pendant que la peinture sèche.</p></li>
+      <li><p class="h">15 h 00</p><h3>Premier match</h3><p class="d">On joue sur le terrain neuf jusqu’en fin de journée.</p></li>
+    </ol>
+    <p class="petit">Horaires indicatifs, ajustés selon la météo et le temps de séchage de la peinture.</p>
+  </div>
+</section>
+
+<section class="van" id="van">
+  <div class="wrap">
+    <div class="grille">
+      <div>
+        <p class="eyebrow">Le véhicule</p>
+        <h2>Le van de la tournée.</h2>
+        <p class="lead">Un seul van pour toute la tournée, stické aux couleurs de HOOPSIDIA et de Nesquik. Il revient dans chaque vidéo, d’une ville à l’autre.</p>
+        <div class="dans-van">
+          <p class="t">Dans le van</p>
+          <ul>
+            <li>La peinture et le scotch de marquage</li>
+            <li>Les filets neufs</li>
+            <li>Les escabeaux et le souffleur</li>
+            <li>Les rouleaux, les pinceaux et les protections</li>
+          </ul>
+        </div>
+      </div>
+      <div class="ph">
+        <p class="pht">Photo ou maquette du van</p>
+        <p class="phd">Van noir, stickage publicitaire, au bord d’un terrain</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="images">
+  <div class="wrap">
+    <div class="tete-sec">
+      <p class="eyebrow">En images</p>
+      <h2>Avant, pendant, après.</h2>
+    </div>
+    <div class="photos">
+      <div class="ph"><p class="pht">Avant</p><p class="phd">Photo du terrain abîmé</p></div>
+      <div class="ph"><p class="pht">Pendant</p><p class="phd">Photo de la rénovation avec les abonnés</p></div>
+      <div class="ph"><p class="pht">Après</p><p class="phd">Photo du terrain neuf et du premier match</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="contenus" id="contenus">
+  <div class="wrap">
+    <div class="tete-sec">
+      <p class="eyebrow">Les contenus</p>
+      <h2>Pour chaque terrain rénové.</h2>
+    </div>
+    <div class="stats">
+      <div class="stat"><p class="v">1</p><p class="l">vidéo YouTube</p><p class="f">Horizontal 16:9</p></div>
+      <div class="stat"><p class="v">5</p><p class="l">reels Instagram et TikTok</p><p class="f">Vertical 9:16</p></div>
+      <div class="stat"><p class="v">4</p><p class="l">déclinaisons en plus</p><p class="f">Stories, carrousel, contenus Nesquik</p></div>
+    </div>
+    <ul class="declinaisons">
+      <li><p class="nom">Story d’annonce</p><p class="fmt">Vertical 9:16</p><p class="d">La ville et le rendez-vous, quelques jours avant.</p></li>
+      <li><p class="nom">Stories du jour</p><p class="fmt">Vertical 9:16</p><p class="d">La rénovation en direct, du petit-déjeuner au match.</p></li>
+      <li><p class="nom">Carrousel avant / après</p><p class="fmt">Photo 4:5</p><p class="d">Le terrain avant et après, en un seul post.</p></li>
+      <li><p class="nom">Contenus pour Nesquik</p><p class="fmt">Photos et vidéos</p><p class="d">Livrés à Nesquik pour ses propres comptes.</p></li>
+    </ul>
+  </div>
+</section>
+
+<section class="formules-sec" id="formules">
+  <div class="wrap">
+    <div class="tete-sec">
+      <p class="eyebrow">Les formules</p>
+      <h2>Un terrain, une tournée ou trois ans.</h2>
+      <p class="lead">Plus il y a de terrains, moins chaque terrain coûte. Le van, son stickage et le matériel réutilisable se partagent sur toute la tournée.</p>
+    </div>
+
+    <div class="formules">
+      <article class="formule">
+        <p class="fn">Formule 1</p>
+        <h3>Un terrain</h3>
+        <p class="prix"><span class="m">15 616 €</span><span class="ht">HT</span></p>
+        <p class="par">Une journée de rénovation</p>
+        <ul class="inclus">
+          <li><b>1</b> terrain rénové</li>
+          <li><b>1</b> vidéo YouTube</li>
+          <li><b>5</b> reels Instagram et TikTok</li>
+          <li>Stories et carrousel avant / après</li>
+          <li>Le van de tournée, stické</li>
+        </ul>
+      </article>
+      <article class="formule">
+        <p class="fn">Formule 2</p>
+        <h3>Cinq terrains</h3>
+        <p class="prix"><span class="m">60 580 €</span><span class="ht">HT</span></p>
+        <p class="par">Soit <span class="nb">12 116 €</span> par terrain, sur une tournée</p>
+        <ul class="inclus">
+          <li><b>5</b> terrains rénovés</li>
+          <li><b>5</b> vidéos YouTube</li>
+          <li><b>25</b> reels Instagram et TikTok</li>
+          <li>Stories et carrousel à chaque terrain</li>
+          <li>Un van pour toute la tournée, stické une fois</li>
+        </ul>
+      </article>
+      <article class="formule">
+        <p class="fn">Formule 3</p>
+        <h3>Trois ans, quinze épisodes</h3>
+        <p class="prix"><span class="m">165 540 €</span><span class="ht">HT</span></p>
+        <p class="par">Soit <span class="nb">11 036 €</span> par terrain et <span class="nb">55 180 €</span> par an</p>
+        <ul class="inclus">
+          <li><b>15</b> terrains rénovés, 5 par an</li>
+          <li><b>15</b> vidéos YouTube</li>
+          <li><b>75</b> reels Instagram et TikTok</li>
+          <li>Stories et carrousel à chaque terrain</li>
+          <li>Le van reloué et stické chaque année</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="cout">
+      <h3>Ce que coûte un terrain, selon la formule</h3>
+      <div class="legende">
+        <span><i class="k-p"></i>Prestation HOOPSIDIA</span>
+        <span><i class="k-f"></i>Frais de tournage, matériel et véhicule</span>
+      </div>
+      <!-- Barres à l'échelle : 100 % = 15 616 € (formule 1). -->
+      <div class="barres" role="list">
+        <div class="ligne-barre" role="listitem">
+          <p class="bl">Formule 1</p>
+          <div class="piste"><span class="p" style="width:51.23%">8 000 €</span><span class="f" style="width:48.77%">7 616 €</span></div>
+          <p class="bt">15 616 €</p>
+        </div>
+        <div class="ligne-barre" role="listitem">
+          <p class="bl">Formule 2</p>
+          <div class="piste"><span class="p" style="width:38.42%">6 000 €</span><span class="f" style="width:39.17%">6 116 €</span></div>
+          <p class="bt">12 116 €</p>
+        </div>
+        <div class="ligne-barre" role="listitem">
+          <p class="bl">Formule 3</p>
+          <div class="piste"><span class="p" style="width:32.02%">5 000 €</span><span class="f" style="width:38.65%">6 036 €</span></div>
+          <p class="bt">11 036 €</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="couvre">
+      <div><p class="t">Frais de tournage</p><p>Déplacement, hébergement et repas de l’équipe. L’équipe de tournage est comprise dans la prestation.</p></div>
+      <div><p class="t">Matériel de rénovation</p><p>Peinture, scotch de marquage et filets rachetés à chaque terrain. Pinceaux, équipements de protection et escabeaux achetés une fois.</p></div>
+      <div><p class="t">Véhicule de tournée</p><p>Le même van pour toute une tournée, stické une fois par tournée. Son coût se répartit sur les terrains de la tournée.</p></div>
+    </div>
+    <p class="note">Montants hors taxes. Frais de tournage, matériel et véhicule estimés, ajustés sur devis.</p>
+  </div>
+</section>
+
+<section class="fin">
+  <div class="wrap">
+    <img class="tete" src="/nesquik/assets/hoopsidia-tete.png" alt="">
+    <h2>La tournée<br><span class="orange">qui régale.</span></h2>
+    <p class="contact">Valentin · HOOPSIDIA · <span class="a-remplir">contact à ajouter</span></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="sig">HOOPSIDIA</p>
+    <p>Proposition de HOOPSIDIA pour Nestlé, novembre 2026. Nesquik est une marque de Nestlé.</p>
+  </div>
+</footer>
+</body>
+</html>
