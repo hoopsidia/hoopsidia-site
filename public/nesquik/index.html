@@ -207,11 +207,12 @@ nav a:hover { color: var(--orange); }
   .ligne-barre .piste { grid-column: 1 / -1; grid-row: 2; }
 }
 
-.couvre { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; padding-top: 32px; border-top: 1px solid var(--trait); }
+.couvre { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; padding-top: 32px; border-top: 1px solid var(--trait); }
 .couvre div { display: grid; gap: 8px; align-content: start; min-width: 0; }
 .couvre .t { font-family: var(--display); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--orange); }
 .couvre p { font-size: 16px; color: var(--doux); }
 .note { margin-top: 32px; font-size: 15px; color: var(--gris); }
+@media (max-width: 980px) { .couvre { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 760px) { .couvre { grid-template-columns: minmax(0, 1fr); gap: 24px; } }
 
 /* fin */
@@ -396,7 +397,7 @@ footer .sig { font-family: var(--signature); font-size: 18px; color: var(--blanc
       <article class="formule">
         <p class="fn">Formule 1</p>
         <h3>Un terrain</h3>
-        <p class="prix"><span class="m">15 616 €</span><span class="ht">HT</span></p>
+        <p class="prix"><span class="m">17 222 €</span><span class="ht">HT</span></p>
         <p class="par">Une journée de rénovation</p>
         <ul class="inclus">
           <li><b>1</b> terrain rénové</li>
@@ -404,32 +405,35 @@ footer .sig { font-family: var(--signature); font-size: 18px; color: var(--blanc
           <li><b>5</b> reels Instagram et TikTok</li>
           <li>Stories et carrousel avant / après</li>
           <li>Le van de tournée, stické</li>
+          <li><b>50</b> ballons de basket personnalisés</li>
         </ul>
       </article>
       <article class="formule">
         <p class="fn">Formule 2</p>
         <h3>Cinq terrains</h3>
-        <p class="prix"><span class="m">60 580 €</span><span class="ht">HT</span></p>
-        <p class="par">Soit <span class="nb">12 116 €</span> par terrain, sur une tournée</p>
+        <p class="prix"><span class="m">62 186 €</span><span class="ht">HT</span></p>
+        <p class="par">Soit <span class="nb">12 437 €</span> par terrain, sur une tournée</p>
         <ul class="inclus">
           <li><b>5</b> terrains rénovés</li>
           <li><b>5</b> vidéos YouTube</li>
           <li><b>25</b> reels Instagram et TikTok</li>
           <li>Stories et carrousel à chaque terrain</li>
           <li>Un van pour toute la tournée, stické une fois</li>
+          <li><b>50</b> ballons de basket personnalisés</li>
         </ul>
       </article>
       <article class="formule">
         <p class="fn">Formule 3</p>
         <h3>Trois ans, quinze épisodes</h3>
-        <p class="prix"><span class="m">165 540 €</span><span class="ht">HT</span></p>
-        <p class="par">Soit <span class="nb">11 036 €</span> par terrain et <span class="nb">55 180 €</span> par an</p>
+        <p class="prix"><span class="m">170 358 €</span><span class="ht">HT</span></p>
+        <p class="par">Soit <span class="nb">11 357 €</span> par terrain et <span class="nb">56 786 €</span> par an</p>
         <ul class="inclus">
           <li><b>15</b> terrains rénovés, 5 par an</li>
           <li><b>15</b> vidéos YouTube</li>
           <li><b>75</b> reels Instagram et TikTok</li>
           <li>Stories et carrousel à chaque terrain</li>
           <li>Le van reloué et stické chaque année</li>
+          <li><b>150</b> ballons personnalisés, 50 par an</li>
         </ul>
       </article>
     </div>
@@ -438,24 +442,24 @@ footer .sig { font-family: var(--signature); font-size: 18px; color: var(--blanc
       <h3>Ce que coûte un terrain, selon la formule</h3>
       <div class="legende">
         <span><i class="k-p"></i>Prestation HOOPSIDIA</span>
-        <span><i class="k-f"></i>Frais de tournage, matériel et véhicule</span>
+        <span><i class="k-f"></i>Frais de tournage, matériel, véhicule et ballons</span>
       </div>
-      <!-- Barres à l'échelle : 100 % = 15 616 € (formule 1). -->
+      <!-- Barres à l'échelle : 100 % = 17 222 € (formule 1). -->
       <div class="barres" role="list">
         <div class="ligne-barre" role="listitem">
           <p class="bl">Formule 1</p>
-          <div class="piste"><span class="p" style="width:51.23%">8 000 €</span><span class="f" style="width:48.77%">7 616 €</span></div>
-          <p class="bt">15 616 €</p>
+          <div class="piste"><span class="p" style="width:46.45%">8 000 €</span><span class="f" style="width:53.55%">9 222 €</span></div>
+          <p class="bt">17 222 €</p>
         </div>
         <div class="ligne-barre" role="listitem">
           <p class="bl">Formule 2</p>
-          <div class="piste"><span class="p" style="width:38.42%">6 000 €</span><span class="f" style="width:39.17%">6 116 €</span></div>
-          <p class="bt">12 116 €</p>
+          <div class="piste"><span class="p" style="width:34.84%">6 000 €</span><span class="f" style="width:37.38%">6 437 €</span></div>
+          <p class="bt">12 437 €</p>
         </div>
         <div class="ligne-barre" role="listitem">
           <p class="bl">Formule 3</p>
-          <div class="piste"><span class="p" style="width:32.02%">5 000 €</span><span class="f" style="width:38.65%">6 036 €</span></div>
-          <p class="bt">11 036 €</p>
+          <div class="piste"><span class="p" style="width:29.03%">5 000 €</span><span class="f" style="width:36.91%">6 357 €</span></div>
+          <p class="bt">11 357 €</p>
         </div>
       </div>
     </div>
@@ -464,8 +468,9 @@ footer .sig { font-family: var(--signature); font-size: 18px; color: var(--blanc
       <div><p class="t">Frais de tournage</p><p>Déplacement, hébergement et repas de l’équipe. L’équipe de tournage est comprise dans la prestation.</p></div>
       <div><p class="t">Matériel de rénovation</p><p>Peinture, scotch de marquage et filets rachetés à chaque terrain. Pinceaux, équipements de protection et escabeaux achetés une fois.</p></div>
       <div><p class="t">Véhicule de tournée</p><p>Le même van pour toute une tournée, stické une fois par tournée. Son coût se répartit sur les terrains de la tournée.</p></div>
+      <div><p class="t">Ballons personnalisés</p><p>50 ballons de basket taille 7 par tournée, au logo HOOPSIDIA x NESQUIK. Marquage et livraison compris.</p></div>
     </div>
-    <p class="note">Montants hors taxes. Frais de tournage, matériel et véhicule estimés, ajustés sur devis.</p>
+    <p class="note">Montants hors taxes. Frais de tournage, matériel, véhicule et ballons estimés, ajustés sur devis.</p>
   </div>
 </section>
 
