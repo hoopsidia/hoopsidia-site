@@ -31,7 +31,7 @@ export async function GET() {
 
     const [profileRes, mediaRes, insightsRes, followerHistoryRes] = await Promise.all([
       fetch(`${baseUrl}/me?fields=followers_count,media_count&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
-      fetch(`${baseUrl}/me/media?fields=id,like_count,comments_count,timestamp,caption&limit=50&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
+      fetch(`${baseUrl}/me/media?fields=id,media_type,like_count,comments_count,timestamp,caption&limit=50&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
       fetch(`${baseUrl}/me/insights?metric=reach,views&period=day&metric_type=total_value&since=${since30d}&until=${now}&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
       fetch(`${baseUrl}/me/insights?metric=follower_count&period=day&since=${sinceYear}&until=${now}&access_token=${accessToken}`, { next: { revalidate: 3600 } }),
     ]);
@@ -45,16 +45,18 @@ export async function GET() {
 
     const followers = profile.followers_count ?? PLACEHOLDER_IG_STATS.followers;
 
-    // Engagement rate from matured posts only. Brand-new posts (<72h) haven't
-    // accumulated likes yet; averaging them in tanks the rate (e.g. 0.18%).
-    // Use the 12 most recent posts older than 72h; fall back to all posts if
-    // too few have matured. Media comes back newest-first.
-    type Post = { id?: string; like_count?: number; comments_count?: number; timestamp?: string; caption?: string };
+    // Engagement rate from the reels actually kept on the feed — the same set
+    // the site's reels grid shows. We take VIDEO posts only, drop any reel
+    // hidden from the site (HIDDEN_REEL_IDS or a caption marker), and drop
+    // brand-new posts (<72h) that haven't accumulated likes yet (they would
+    // otherwise tank the rate). Average of the 12 most recent such reels.
+    type Post = { id?: string; media_type?: string; like_count?: number; comments_count?: number; timestamp?: string; caption?: string };
     let engagementRate = PLACEHOLDER_IG_STATS.engagementRate;
     if (Array.isArray(media.data) && media.data.length > 0 && followers > 0) {
       const nowMs = Date.now();
       const matured = (media.data as Post[]).filter(
         (p) =>
+          p.media_type === "VIDEO" &&
           p.timestamp &&
           nowMs - new Date(p.timestamp).getTime() > 72 * 3600 * 1000 &&
           !(p.id && HIDDEN_REEL_IDS.has(p.id)) &&
