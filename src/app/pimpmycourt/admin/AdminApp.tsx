@@ -141,12 +141,13 @@ function Login({ supabase }: { supabase: NonNullable<ReturnType<typeof getSupaba
   );
 }
 
-type Section = "overview" | "moderation" | "terrains" | "data";
+type Section = "overview" | "moderation" | "terrains" | "messages" | "data";
 
 const SECTION_LABEL: Record<Section, string> = {
   overview: "Vue d'ensemble",
   moderation: "Modération",
   terrains: "Terrains",
+  messages: "Messages",
   data: "Données",
 };
 
@@ -205,6 +206,7 @@ function Dashboard({ token, onSignOut }: { token: string; onSignOut: () => void 
           {section === "overview" && <Overview terrains={terrains} loading={tLoading} error={tError} authHeaders={authHeaders} onGo={setSection} />}
           {section === "moderation" && <Moderation authHeaders={authHeaders} onModerated={loadTerrains} />}
           {section === "terrains" && <Terrains terrains={terrains} loading={tLoading} error={tError} reload={loadTerrains} authHeaders={authHeaders} />}
+          {section === "messages" && <Messages terrains={terrains} loading={tLoading} error={tError} />}
           {section === "data" && <DataTools authHeaders={authHeaders} />}
         </div>
       </div>
@@ -299,6 +301,70 @@ function StatCard({ label, value, accent, onClick }: { label: string; value: num
 
 
 type Auth = (extra?: Record<string, string>) => Record<string, string>;
+
+// All the free-text messages people left in the signalement form, newest first.
+function Messages({ terrains, loading, error }: { terrains: AdminTerrain[]; loading: boolean; error: string | null }) {
+  const [q, setQ] = useState("");
+
+  const withMessage = terrains
+    .filter((t) => (t.commentaire ?? "").trim().length > 0)
+    .sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
+
+  const needle = q.trim().toLowerCase();
+  const list = needle
+    ? withMessage.filter((t) =>
+        [t.commentaire, t.prenom, t.ville, t.nom_terrain, t.contact_instagram, t.contact_tiktok]
+          .some((v) => (v ?? "").toLowerCase().includes(needle)),
+      )
+    : withMessage;
+
+  if (loading) return <p className="text-white/40 text-sm">Chargement…</p>;
+  if (error) return <p className="text-red-400 text-sm">{error}</p>;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+        <h2 className="font-heading text-lg font-bold">Messages <span className="text-white/40">{withMessage.length}</span></h2>
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Rechercher un message, un prénom, une ville…"
+          className="flex-1 min-w-[200px] max-w-sm rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-orange"
+        />
+      </div>
+
+      {list.length === 0 ? (
+        <p className="text-white/40 text-sm">{withMessage.length === 0 ? "Aucun message pour l'instant." : "Aucun résultat."}</p>
+      ) : (
+        <div className="space-y-2">
+          {list.map((t) => {
+            const meta = STATUT_META[t.statut];
+            return (
+              <div key={t.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <p className="text-white/90 italic leading-snug">“{t.commentaire}”</p>
+                <div className="mt-2.5 flex items-center gap-x-3 gap-y-1 flex-wrap text-xs text-white/50">
+                  {t.prenom && <span className="text-white/80 font-heading font-bold">{t.prenom}</span>}
+                  <span>{[t.ville, t.nom_terrain].filter(Boolean).join(" · ") || "Terrain"}</span>
+                  <span>{new Date(t.created_at).toLocaleDateString("fr-FR")}</span>
+                  {meta && (
+                    <span className="inline-flex items-center gap-1">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: meta.color }} />
+                      {meta.label}
+                    </span>
+                  )}
+                  {t.contact_instagram && <span className="text-white/40">IG {t.contact_instagram}</span>}
+                  {t.contact_tiktok && <span className="text-white/40">TikTok {t.contact_tiktok}</span>}
+                  {t.contact_email && <a href={`mailto:${t.contact_email}`} className="text-white/40 hover:text-orange">{t.contact_email}</a>}
+                  <a href={`/pimpmycourt/terrain/${t.id}`} target="_blank" rel="noopener noreferrer" className="ml-auto text-white/30 hover:text-orange" aria-label="Ouvrir la fiche">↗</a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Moderation({ authHeaders, onModerated }: { authHeaders: Auth; onModerated?: () => void }) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
